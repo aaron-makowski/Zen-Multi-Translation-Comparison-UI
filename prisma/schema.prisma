@@ -1,0 +1,136 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = "file:./dev.db"
+}
+
+model User {
+  id            String    @id @default(cuid())
+  name          String?
+  email         String    @unique
+  password      String
+  image         String?
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+  favorites     Favorite[]
+  comments      Comment[]
+  notes         Note[]
+}
+
+model Book {
+  id            String    @id @default(cuid())
+  title         String
+  originalTitle String?
+  description   String?
+  author        String?
+  year          String?
+  language      String    @default("Chinese")
+  coverImage    String?
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+  chapters      Chapter[]
+  translations  Translation[]
+  favorites     Favorite[]
+  comments      Comment[]
+}
+
+model Chapter {
+  id            String    @id @default(cuid())
+  number        Int
+  title         String?
+  bookId        String
+  book          Book      @relation(fields: [bookId], references: [id], onDelete: Cascade)
+  verses        Verse[]
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+}
+
+model Verse {
+  id            String    @id @default(cuid())
+  number        Int
+  chapterId     String
+  chapter       Chapter   @relation(fields: [chapterId], references: [id], onDelete: Cascade)
+  originalText  String
+  romanization  String?
+  lines         VerseLines[]
+  comments      Comment[]
+  notes         Note[]
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+}
+
+model VerseLines {
+  id            String    @id @default(cuid())
+  verseId       String
+  verse         Verse     @relation(fields: [verseId], references: [id], onDelete: Cascade)
+  lineNumber    Int
+  originalText  String
+  romanization  String?
+  translations  LineTranslation[]
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+}
+
+model Translation {
+  id            String    @id @default(cuid())
+  title         String
+  translator    String
+  year          String?
+  description   String?
+  language      String    @default("English")
+  bookId        String
+  book          Book      @relation(fields: [bookId], references: [id], onDelete: Cascade)
+  lineTranslations LineTranslation[]
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+}
+
+model LineTranslation {
+  id            String    @id @default(cuid())
+  text          String
+  translationId String
+  translation   Translation @relation(fields: [translationId], references: [id], onDelete: Cascade)
+  lineId        String
+  line          VerseLines @relation(fields: [lineId], references: [id], onDelete: Cascade)
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+}
+
+model Favorite {
+  id            String    @id @default(cuid())
+  userId        String
+  user          User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  bookId        String?
+  book          Book?     @relation(fields: [bookId], references: [id], onDelete: Cascade)
+  createdAt     DateTime  @default(now())
+}
+
+model Comment {
+  id            String    @id @default(cuid())
+  text          String
+  userId        String
+  user          User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  bookId        String?
+  book          Book?     @relation(fields: [bookId], references: [id], onDelete: Cascade)
+  verseId       String?
+  verse         Verse?    @relation(fields: [verseId], references: [id], onDelete: Cascade)
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+}
+
+model Note {
+  id            String    @id @default(cuid())
+  text          String
+  userId        String
+  user          User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  verseId       String
+  verse         Verse     @relation(fields: [verseId], references: [id], onDelete: Cascade)
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+}
