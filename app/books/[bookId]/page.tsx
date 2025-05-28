@@ -1,49 +1,24 @@
-import { prisma } from "@/lib/db"
-import { getCurrentUser } from "@/lib/auth"
-import { notFound } from "next/navigation"
 import Link from "next/link"
-import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { ArrowLeft, BookOpen, Heart } from "lucide-react"
-import { FavoriteButton } from "@/components/books/favorite-button"
-import { CommentSection } from "@/components/books/comment-section"
+import { notFound } from "next/navigation"
+import { prisma } from "@/lib/db"
 
 export default async function BookPage({ params }: { params: { bookId: string } }) {
-  const user = await getCurrentUser()
-
   const book = await prisma.book.findUnique({
-    where: { id: params.bookId },
+    where: {
+      id: params.bookId,
+    },
     include: {
-      chapters: {
-        orderBy: { number: "asc" },
-        include: {
-          verses: {
-            orderBy: { number: "asc" },
-          },
+      verses: {
+        orderBy: {
+          number: "asc",
         },
-      },
-      translations: {
-        orderBy: { title: "asc" },
-      },
-      comments: {
-        where: { verseId: null },
-        orderBy: { createdAt: "desc" },
         include: {
-          user: {
+          translations: {
             select: {
-              id: true,
-              name: true,
-              image: true,
+              translator: true,
             },
+            distinct: ["translator"],
           },
-        },
-        take: 10,
-      },
-      _count: {
-        select: {
-          favorites: true,
-          comments: true,
         },
       },
     },
@@ -53,144 +28,52 @@ export default async function BookPage({ params }: { params: { bookId: string } 
     notFound()
   }
 
-  // Check if user has favorited this book
-  let isFavorited = false
-  if (user) {
-    const favorite = await prisma.favorite.findFirst({
-      where: {
-        userId: user.id,
-        bookId: book.id,
-      },
-    })
-    isFavorited = !!favorite
-  }
+  // Get unique translators
+  const translators = Array.from(new Set(book.verses.flatMap((verse) => verse.translations.map((t) => t.translator))))
 
   return (
-    <div className="container py-6">
-      <div className="mb-6">
-        <Link href="/books" className="flex items-center text-sm text-muted-foreground hover:text-foreground mb-4">
-          <ArrowLeft size={16} className="mr-1" /> Back to Books
-        </Link>
-
-        <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
-          <div>
-            <h1 className="text-3xl font-bold">{book.title}</h1>
-            {book.originalTitle && <p className="text-lg text-muted-foreground">{book.originalTitle}</p>}
-          </div>
-
-          {user ? (
-            <FavoriteButton bookId={book.id} initialFavorited={isFavorited} />
-          ) : (
-            <Button asChild variant="outline" size="sm">
-              <Link href={`/login?return_to=/books/${book.id}`}>Sign in to favorite</Link>
-            </Button>
-          )}
+    <main className="flex min-h-screen flex-col items-center p-4 md:p-24">
+      <div className="max-w-4xl w-full">
+        <div className="mb-6">
+          <Link href="/books" className="text-blue-600 hover:underline mb-4 inline-block">
+            ← Back to Books
+          </Link>
+          <h1 className="text-3xl font-bold">{book.title}</h1>
+          {book.author && <p className="text-gray-600">By {book.author}</p>}
         </div>
 
-        <div className="flex items-center gap-4 mt-2 text-sm text-muted-foreground">
-          {book.author && <div>Author: {book.author}</div>}
-          {book.year && <div>Year: {book.year}</div>}
-          {book.language && <div>Original Language: {book.language}</div>}
+        <div className="bg-white rounded-lg shadow-md p-6 mb-8">
+          <h2 className="text-xl font-semibold mb-2">About this Book</h2>
+          <p className="text-gray-600 mb-4">{book.description}</p>
+
+          <div className="mt-4">
+            <h3 className="text-lg font-medium mb-2">Available Translators:</h3>
+            <div className="flex flex-wrap gap-2">
+              {translators.map((translator) => (
+                <span key={translator} className="bg-gray-100 px-3 py-1 rounded-full text-sm">
+                  {translator}
+                </span>
+              ))}
+            </div>
+          </div>
         </div>
 
-        {book.description && <p className="mt-4 text-muted-foreground">{book.description}</p>}
-
-        <div className="flex items-center gap-4 mt-4">
-          <div className="flex items-center gap-1 text-sm">
-            <Heart className="h-4 w-4" />
-            <span>{book._count.favorites} favorites</span>
-          </div>
-          <div className="flex items-center gap-1 text-sm">
-            <BookOpen className="h-4 w-4" />
-            <span>{book.chapters.length} chapters</span>
+        <div>
+          <h2 className="text-xl font-semibold mb-4">Verses</h2>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            {book.verses.map((verse) => (
+              <Link
+                key={verse.id}
+                href={`/books/${book.id}/verses/${verse.id}`}
+                className="bg-white rounded-lg shadow-md p-4 hover:shadow-lg transition-shadow"
+              >
+                <h3 className="font-medium">Verse {verse.number}</h3>
+                <p className="text-sm text-gray-500 mt-1">{verse.translations.length} translations available</p>
+              </Link>
+            ))}
           </div>
         </div>
       </div>
-
-      <Tabs defaultValue="chapters" className="w-full">
-        <TabsList className="grid w-full grid-cols-3">
-          <TabsTrigger value="chapters">Chapters & Verses</TabsTrigger>
-          <TabsTrigger value="translations">Translations</TabsTrigger>
-          <TabsTrigger value="discussion">Discussion</TabsTrigger>
-        </TabsList>
-
-        <TabsContent value="chapters" className="mt-6">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            {book.chapters.map((chapter) => (
-              <Card key={chapter.id}>
-                <CardHeader>
-                  <CardTitle>
-                    Chapter {chapter.number}: {chapter.title || `Chapter ${chapter.number}`}
-                  </CardTitle>
-                  <CardDescription>{chapter.verses.length} verses</CardDescription>
-                </CardHeader>
-                <CardContent>
-                  <ul className="space-y-1">
-                    {chapter.verses.slice(0, 5).map((verse) => (
-                      <li key={verse.id}>
-                        <Link href={`/books/${book.id}/verses/${verse.id}`} className="text-sm hover:underline">
-                          Verse {verse.number}
-                        </Link>
-                      </li>
-                    ))}
-                    {chapter.verses.length > 5 && (
-                      <li className="text-sm text-muted-foreground">+ {chapter.verses.length - 5} more verses</li>
-                    )}
-                  </ul>
-                  <div className="mt-4">
-                    <Button asChild variant="outline" size="sm">
-                      <Link href={`/books/${book.id}/chapters/${chapter.id}`}>View Chapter</Link>
-                    </Button>
-                  </div>
-                </CardContent>
-              </Card>
-            ))}
-          </div>
-
-          {book.chapters.length === 0 && (
-            <div className="text-center py-12">
-              <h3 className="text-lg font-medium mb-2">No chapters available yet</h3>
-              <p className="text-muted-foreground">Check back later for content updates.</p>
-            </div>
-          )}
-        </TabsContent>
-
-        <TabsContent value="translations" className="mt-6">
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {book.translations.map((translation) => (
-              <Card key={translation.id}>
-                <CardHeader>
-                  <CardTitle>{translation.title}</CardTitle>
-                  <CardDescription>
-                    By {translation.translator} ({translation.year || "Unknown"})
-                  </CardDescription>
-                </CardHeader>
-                <CardContent>
-                  <p className="text-sm text-muted-foreground">
-                    {translation.description || "No description available."}
-                  </p>
-                  <div className="mt-4">
-                    <Button asChild variant="outline" size="sm">
-                      <Link href={`/books/${book.id}/translations/${translation.id}`}>View Translation</Link>
-                    </Button>
-                  </div>
-                </CardContent>
-              </Card>
-            ))}
-          </div>
-
-          {book.translations.length === 0 && (
-            <div className="text-center py-12">
-              <h3 className="text-lg font-medium mb-2">No translations available yet</h3>
-              <p className="text-muted-foreground">Check back later for new translations.</p>
-            </div>
-          )}
-        </TabsContent>
-
-        <TabsContent value="discussion" className="mt-6">
-          <CommentSection bookId={book.id} comments={book.comments} currentUser={user} />
-        </TabsContent>
-      </Tabs>
-    </div>
+    </main>
   )
 }

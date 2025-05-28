@@ -1,78 +1,45 @@
-import { prisma } from "@/lib/db"
 import Link from "next/link"
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
-import { Badge } from "@/components/ui/badge"
+import { prisma } from "@/lib/db"
 import { Button } from "@/components/ui/button"
-import { BookOpen, User } from "lucide-react"
 
 export default async function BooksPage() {
   const books = await prisma.book.findMany({
-    include: {
-      _count: {
-        select: {
-          translations: true,
-          chapters: true,
-        },
-      },
-    },
     orderBy: {
       title: "asc",
     },
   })
 
   return (
-    <div className="container py-6">
-      <div className="flex justify-between items-center mb-6">
-        <h1 className="text-3xl font-bold">Zen Texts Library</h1>
-      </div>
+    <main className="flex min-h-screen flex-col items-center p-4 md:p-24">
+      <div className="max-w-4xl w-full">
+        <h1 className="text-3xl font-bold mb-6">Books</h1>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {books.map((book) => (
-          <Card key={book.id} className="overflow-hidden">
-            {book.coverImage && (
-              <div className="aspect-[3/2] relative">
-                <img
-                  src={book.coverImage || "/placeholder.svg"}
-                  alt={book.title}
-                  className="object-cover w-full h-full"
-                />
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          {books.map((book) => (
+            <div key={book.id} className="bg-white rounded-lg shadow-md overflow-hidden">
+              <div className="p-6">
+                <h2 className="text-xl font-semibold mb-2">{book.title}</h2>
+                <p className="text-gray-600 mb-4">{book.description}</p>
+                <div className="flex justify-between items-center">
+                  <div className="text-sm text-gray-500">{book.author && <p>By {book.author}</p>}</div>
+                  <Link href={`/books/${book.id}`} passHref>
+                    <Button>View Book</Button>
+                  </Link>
+                </div>
               </div>
-            )}
-            <CardHeader>
-              <CardTitle>{book.title}</CardTitle>
-              {book.originalTitle && <CardDescription>{book.originalTitle}</CardDescription>}
-            </CardHeader>
-            <CardContent>
-              <div className="flex flex-wrap gap-2 mb-4">
-                <Badge variant="outline" className="flex items-center gap-1">
-                  <BookOpen className="h-3 w-3" />
-                  {book._count.chapters} chapters
-                </Badge>
-                <Badge variant="outline" className="flex items-center gap-1">
-                  <User className="h-3 w-3" />
-                  {book._count.translations} translations
-                </Badge>
-                {book.language && <Badge variant="secondary">{book.language}</Badge>}
-              </div>
-              <p className="text-sm text-muted-foreground line-clamp-3">
-                {book.description || "No description available."}
-              </p>
-            </CardContent>
-            <CardFooter>
-              <Button asChild className="w-full">
-                <Link href={`/books/${book.id}`}>Explore</Link>
-              </Button>
-            </CardFooter>
-          </Card>
-        ))}
-      </div>
-
-      {books.length === 0 && (
-        <div className="text-center py-12">
-          <h3 className="text-lg font-medium mb-2">No books available yet</h3>
-          <p className="text-muted-foreground">Check back later for new additions to our library.</p>
+            </div>
+          ))}
         </div>
-      )}
-    </div>
+
+        {books.length === 0 && (
+          <div className="text-center py-12">
+            <p className="text-gray-600 mb-4">No books found. Please make sure the database is seeded.</p>
+            <Link href="/" passHref>
+              <Button>Return Home</Button>
+            </Link>
+          </div>
+        )}
+      </div>
+    </main>
   )
 }
