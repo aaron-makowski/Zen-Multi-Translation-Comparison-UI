@@ -1,25 +1,19 @@
 import Link from "next/link"
 import { notFound } from "next/navigation"
-import { prisma } from "@/lib/db"
+import { Button } from "@/components/ui/button"
+import { Card } from "@/components/ui/card"
+import { db } from "@/lib/db"
+import { books } from "@/lib/schema"
+import { eq } from "drizzle-orm"
+
+export const revalidate = 60
 
 export default async function BookPage({ params }: { params: { bookId: string } }) {
-  const book = await prisma.book.findUnique({
-    where: {
-      id: params.bookId,
-    },
-    include: {
+  const book = await db.query.books.findFirst({
+    where: eq(books.id, params.bookId),
+    with: {
       verses: {
-        orderBy: {
-          number: "asc",
-        },
-        include: {
-          translations: {
-            select: {
-              translator: true,
-            },
-            distinct: ["translator"],
-          },
-        },
+        orderBy: (verses, { asc }) => [asc(verses.number)],
       },
     },
   })
@@ -28,49 +22,49 @@ export default async function BookPage({ params }: { params: { bookId: string } 
     notFound()
   }
 
-  // Get unique translators
-  const translators = Array.from(new Set(book.verses.flatMap((verse) => verse.translations.map((t) => t.translator))))
-
   return (
     <main className="flex min-h-screen flex-col items-center p-4 md:p-24">
       <div className="max-w-4xl w-full">
-        <div className="mb-6">
-          <Link href="/books" className="text-blue-600 hover:underline mb-4 inline-block">
-            ← Back to Books
-          </Link>
-          <h1 className="text-3xl font-bold">{book.title}</h1>
-          {book.author && <p className="text-gray-600">By {book.author}</p>}
+        <div className="flex items-center gap-2 mb-6">
+          <Button asChild variant="outline" size="sm">
+            <Link href="/books">← Back to Books</Link>
+          </Button>
         </div>
 
-        <div className="bg-white rounded-lg shadow-md p-6 mb-8">
-          <h2 className="text-xl font-semibold mb-2">About this Book</h2>
-          <p className="text-gray-600 mb-4">{book.description}</p>
+        <div className="flex flex-col md:flex-row gap-8 mb-8">
+          <div className="md:w-1/3">
+            <Card className="overflow-hidden sticky top-24">
+              <div className="aspect-[3/4] relative">
+                <img
+                  src={book.coverImage || "/placeholder.svg?height=450&width=300&query=zen+text+cover"}
+                  alt={book.title}
+                  className="object-cover w-full h-full"
+                />
+              </div>
+            </Card>
+          </div>
+          <div className="md:w-2/3">
+            <h1 className="text-3xl font-bold mb-2">{book.title}</h1>
+            <p className="text-muted-foreground mb-4">By: {book.author || "Unknown"}</p>
+            <div className="prose max-w-none mb-6">
+              <p>{book.description}</p>
+            </div>
 
-          <div className="mt-4">
-            <h3 className="text-lg font-medium mb-2">Available Translators:</h3>
-            <div className="flex flex-wrap gap-2">
-              {translators.map((translator) => (
-                <span key={translator} className="bg-gray-100 px-3 py-1 rounded-full text-sm">
-                  {translator}
-                </span>
+            <h2 className="text-2xl font-semibold mb-4 border-t pt-4">Verses</h2>
+            <div className="space-y-3 mb-8">
+              {book.verses.map((verse) => (
+                <Card key={verse.id} className="p-4">
+                  <div className="flex justify-between items-center">
+                    <div>
+                      <span className="font-medium">Verse {verse.number}</span>
+                    </div>
+                    <Button asChild size="sm" variant="outline">
+                      <Link href={`/books/${book.id}/verses/${verse.id}`}>View Translations</Link>
+                    </Button>
+                  </div>
+                </Card>
               ))}
             </div>
-          </div>
-        </div>
-
-        <div>
-          <h2 className="text-xl font-semibold mb-4">Verses</h2>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            {book.verses.map((verse) => (
-              <Link
-                key={verse.id}
-                href={`/books/${book.id}/verses/${verse.id}`}
-                className="bg-white rounded-lg shadow-md p-4 hover:shadow-lg transition-shadow"
-              >
-                <h3 className="font-medium">Verse {verse.number}</h3>
-                <p className="text-sm text-gray-500 mt-1">{verse.translations.length} translations available</p>
-              </Link>
-            ))}
           </div>
         </div>
       </div>

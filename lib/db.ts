@@ -1,19 +1,20 @@
-import { PrismaClient } from "@prisma/client"
-import { neon } from "@neondatabase/serverless"
+import { neon, neonConfig } from "@neondatabase/serverless"
+import { drizzle } from "drizzle-orm/neon-http"
+import * as schema from "./schema"
 
-// PrismaClient is attached to the `global` object in development to prevent
-// exhausting your database connection limit.
-// Learn more: https://pris.ly/d/help/next-js-best-practices
+// This approach doesn't use Prisma, which is causing deployment issues
+// Instead, we'll use Neon's serverless driver directly with Drizzle ORM
 
-const globalForPrisma = global as unknown as { prisma: PrismaClient }
+// Optional: Configure neon to use WebSockets for better performance
+if (typeof WebSocket !== "undefined") {
+  neonConfig.webSocketConstructor = WebSocket
+}
 
-export const prisma =
-  globalForPrisma.prisma ||
-  new PrismaClient({
-    log: process.env.NODE_ENV === "development" ? ["query", "error", "warn"] : ["error"],
-  })
+// Create a SQL executor using the Neon serverless driver
+const sql = neon(process.env.DATABASE_URL!)
 
-if (process.env.NODE_ENV !== "production") globalForPrisma.prisma = prisma
+// Pass the schema with relations to the drizzle function
+export const db = drizzle(sql, { schema })
 
-// Direct SQL client for operations not supported by Prisma
-export const sql = neon(process.env.DATABASE_URL!)
+// Export the SQL executor for direct queries
+export { sql }
