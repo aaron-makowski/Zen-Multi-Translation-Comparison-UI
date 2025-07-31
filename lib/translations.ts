@@ -158,6 +158,48 @@ export const translators: Translator[] = [
     description: "Trust in the Heart",
     link: "https://en.wikipedia.org/wiki/Edward_Conze",
   },
+  {
+    id: "translator24",
+    name: "Translator 24",
+    year: "2024",
+    description: "Additional Version",
+  },
+  {
+    id: "translator25",
+    name: "Translator 25",
+    year: "2024",
+    description: "Additional Version",
+  },
+  {
+    id: "translator26",
+    name: "Translator 26",
+    year: "2024",
+    description: "Additional Version",
+  },
+  {
+    id: "translator27",
+    name: "Translator 27",
+    year: "2024",
+    description: "Additional Version",
+  },
+  {
+    id: "translator28",
+    name: "Translator 28",
+    year: "2024",
+    description: "Additional Version",
+  },
+  {
+    id: "translator29",
+    name: "Translator 29",
+    year: "2024",
+    description: "Additional Version",
+  },
+  {
+    id: "translator30",
+    name: "Translator 30",
+    year: "2024",
+    description: "Additional Version",
+  },
   // Add more translators as needed
 ]
 

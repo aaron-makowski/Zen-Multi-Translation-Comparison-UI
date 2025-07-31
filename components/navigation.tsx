@@ -5,6 +5,7 @@ import type React from "react"
 import Link from "next/link"
 import { usePathname } from "next/navigation"
 import { Button } from "@/components/ui/button"
+import { ThemeToggle } from "@/components/theme-toggle"
 
 export function Navigation() {
   const pathname = usePathname()
@@ -29,6 +30,9 @@ export function Navigation() {
               <NavLink href="/compare" current={pathname === "/compare"}>
                 Compare
               </NavLink>
+              <NavLink href="/pdf-preview" current={pathname === "/pdf-preview"}>
+                PDF Preview
+              </NavLink>
               <NavLink href="/about" current={pathname === "/about"}>
                 About
               </NavLink>
@@ -43,6 +47,7 @@ export function Navigation() {
             <Link href="/register" passHref>
               <Button size="sm">Register</Button>
             </Link>
+            <ThemeToggle />
           </div>
         </div>
       </div>
@@ -59,6 +64,9 @@ export function Navigation() {
           <MobileNavLink href="/compare" current={pathname === "/compare"}>
             Compare
           </MobileNavLink>
+          <MobileNavLink href="/pdf-preview" current={pathname === "/pdf-preview"}>
+            PDF Preview
+          </MobileNavLink>
           <MobileNavLink href="/about" current={pathname === "/about"}>
             About
           </MobileNavLink>
@@ -73,6 +81,7 @@ export function Navigation() {
                 Register
               </Button>
             </Link>
+            <ThemeToggle />
           </div>
         </div>
       </div>
