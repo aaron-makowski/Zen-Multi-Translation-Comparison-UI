@@ -15,11 +15,12 @@ export function TranslationCard({ verse, translator, compact = false }: Translat
     <Card className={`transition-all duration-200 hover:shadow-sm ${compact ? "border-0 shadow-none" : ""}`}>
       <CardContent className={compact ? "p-2" : "p-3"}>
         <div className="space-y-1">
-          {verse.lines.map((line, index) => (
-            <p key={index} className={`leading-tight ${compact ? "text-sm" : "text-base"}`}>
-              {line.translations[translator.id]}
-            </p>
-          ))}
+          {verse.lines.map((line, index) => {
+            const text = line.translations[translator.id] ?? "Translation not available.";
+            return (
+              <p key={index} className={`leading-tight ${compact ? "text-sm" : "text-base"}`}>{text}</p>
+            )
+          })}
         </div>
 
         <div className="flex justify-between items-center text-xs text-muted-foreground mt-2">

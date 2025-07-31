@@ -1,6 +1,7 @@
 import Link from "next/link"
 import { notFound } from "next/navigation"
 import { prisma } from "@/lib/db"
+import { CommentSection } from "@/components/comment-section"
 
 export default async function VersePage({
   params,
@@ -49,6 +50,8 @@ export default async function VersePage({
             ))}
           </div>
         </div>
+
+        <CommentSection verseId={params.verseId} />
 
         <div className="flex justify-between">
           <Link
