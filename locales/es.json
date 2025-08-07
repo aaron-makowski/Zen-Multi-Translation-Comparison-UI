@@ -1,0 +1,73 @@
+{
+  "Navigation": {
+    "zenTexts": "Textos Zen",
+    "home": "Inicio",
+    "books": "Libros",
+    "compare": "Comparar",
+    "reddit": "Reddit",
+    "pdfPreview": "Vista previa PDF",
+    "about": "Acerca de",
+    "login": "Iniciar sesión",
+    "register": "Registrarse"
+  },
+  "HomePage": {
+    "title": "Comparación de Traducciones de Textos Zen",
+    "exploreTranslations": "Explorar traducciones",
+    "exploreDescription": "Explora diferentes traducciones de textos clásicos del Zen.",
+    "viewBooks": "Ver libros",
+    "compareTranslations": "Comparar traducciones",
+    "compareDescription": "Compara diferentes traducciones lado a lado.",
+    "aboutProject": "Sobre este proyecto",
+    "aboutDescription": "Esta aplicación te permite explorar y comparar diferentes traducciones de textos clásicos del Zen. Puedes buscar libros, leer versos y comparar cómo distintos traductores han interpretado el mismo texto.",
+    "learnMore": "Aprender más",
+    "formattedExample": "Número formateado: {number}, fecha formateada: {date}"
+  },
+  "LocaleSwitcher": {
+    "label": "Idioma"
+  },
+  "Common": {
+    "returnHome": "Volver al inicio"
+  },
+  "AboutPage": {
+    "title": "Acerca de la Comparación de Traducciones de Textos Zen",
+    "intro": "Este proyecto tiene como objetivo proporcionar una plataforma para explorar y comparar diferentes traducciones de textos clásicos del Zen. Al presentar múltiples traducciones lado a lado, los lectores pueden obtener una comprensión más profunda de estas obras profundas.",
+    "xinxinTitle": "El Xinxin Ming",
+    "xinxinDesc1": "El Xinxin Ming (信心銘), a menudo traducido como \"Fe en la mente\" o \"Confianza en la mente\", es un poema clásico del Zen chino atribuido al tercer patriarca del Zen, Jianzhi Sengcan (鑑智僧璨). Escrito en el siglo VII, este texto es uno de los más antiguos e influyentes en la tradición zen.",
+    "xinxinDesc2": "El poema consta de 146 líneas de cuatro caracteres cada una y expresa la esencia de la enseñanza zen de forma concisa y poética. Enfatiza el no dualismo, la unidad de todas las cosas y la importancia de trascender el pensamiento conceptual.",
+    "comparisonTitle": "Comparación de traducciones",
+    "comparisonDesc": "Los diferentes traductores aportan su propia comprensión, contexto y elecciones lingüísticas a sus traducciones. Al comparar múltiples traducciones, los lectores pueden:",
+    "comparisonItem1": "Obtener una comprensión más matizada del texto original",
+    "comparisonItem2": "Ver diferentes interpretaciones de pasajes desafiantes",
+    "comparisonItem3": "Apreciar la riqueza y profundidad de la obra original",
+    "comparisonItem4": "Desarrollar sus propias ideas basadas en múltiples perspectivas",
+    "futureTitle": "Desarrollo futuro",
+    "futureDesc": "Este proyecto está en constante evolución. Los planes futuros incluyen:",
+    "futureItem1": "Agregar más textos y traducciones zen",
+    "futureItem2": "Implementar cuentas de usuario para guardar favoritos y notas",
+    "futureItem3": "Crear una comunidad para discusión e intercambio de ideas",
+    "futureItem4": "Agregar funciones de comparación palabra por palabra",
+    "futureItem5": "Incorporar pronunciaciones de audio del texto original"
+  },
+  "NotFoundPage": {
+    "title": "No encontrado",
+    "description": "La página que buscas no existe o ha sido movida."
+  },
+  "BooksPage": {
+    "title": "Biblioteca de textos zen",
+    "empty": "La biblioteca está vacía. Intenta sembrar la base de datos.",
+    "seedDatabase": "Sembrar base de datos",
+    "by": "Por: {author}",
+    "unknownAuthor": "Desconocido",
+    "viewText": "Ver texto"
+  },
+  "ComparePage": {
+    "title": "Comparar traducciones",
+    "selectText": "Selecciona un texto para comparar",
+    "xinxinTitle": "Xinxin Ming (Fe en la mente)",
+    "xinxinDesc": "Compara las traducciones de este clásico poema zen",
+    "platformTitle": "Sutra de la Plataforma",
+    "comingSoon": "Próximamente",
+    "heartTitle": "Sutra del Corazón",
+    "diamondTitle": "Sutra del Diamante"
+  }
+}
