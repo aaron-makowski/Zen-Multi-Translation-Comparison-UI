@@ -109,6 +109,35 @@ export const comments = pgTable("comments", {
   updatedAt: timestamp("updated_at").notNull(),
 })
 
+// Tag table
+export const tags = pgTable("tags", {
+  id: text("id").primaryKey(),
+  name: text("name").notNull().unique(),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+  updatedAt: timestamp("updated_at").notNull(),
+})
+
+// VerseTags join table
+export const verseTags = pgTable(
+  "verse_tags",
+  {
+    id: text("id").primaryKey(),
+    verseId: text("verse_id")
+      .notNull()
+      .references(() => verses.id),
+    tagId: text("tag_id")
+      .notNull()
+      .references(() => tags.id),
+    createdAt: timestamp("created_at").defaultNow().notNull(),
+    updatedAt: timestamp("updated_at").notNull(),
+  },
+  (table) => {
+    return {
+      verseTagUnique: uniqueIndex("verse_tag_unique").on(table.verseId, table.tagId),
+    }
+  },
+)
+
 // Session table
 export const sessions = pgTable("sessions", {
   id: text("id").primaryKey(),
@@ -130,6 +159,7 @@ export const versesRelations = relations(verses, ({ one, many }) => ({
   translations: many(translations),
   notes: many(notes),
   comments: many(comments),
+  verseTags: many(verseTags),
 }))
 
 export const translationsRelations = relations(translations, ({ one, many }) => ({
@@ -191,5 +221,20 @@ export const wordMappingsRelations = relations(wordMappings, ({ one }) => ({
   translation: one(translations, {
     fields: [wordMappings.translationId],
     references: [translations.id],
+  }),
+}))
+
+export const tagsRelations = relations(tags, ({ many }) => ({
+  verseTags: many(verseTags),
+}))
+
+export const verseTagsRelations = relations(verseTags, ({ one }) => ({
+  verse: one(verses, {
+    fields: [verseTags.verseId],
+    references: [verses.id],
+  }),
+  tag: one(tags, {
+    fields: [verseTags.tagId],
+    references: [tags.id],
   }),
 }))
