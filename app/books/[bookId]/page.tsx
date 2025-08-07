@@ -5,17 +5,13 @@ import { Card } from "@/components/ui/card"
 import { db } from "@/lib/db"
 import { books } from "@/lib/schema"
 import { eq } from "drizzle-orm"
+import { VerseList } from "@/components/verse-list"
 
 export const revalidate = 60
 
 export default async function BookPage({ params }: { params: { bookId: string } }) {
   const book = await db.query.books.findFirst({
     where: eq(books.id, params.bookId),
-    with: {
-      verses: {
-        orderBy: (verses, { asc }) => [asc(verses.number)],
-      },
-    },
   })
 
   if (!book) {
@@ -51,20 +47,7 @@ export default async function BookPage({ params }: { params: { bookId: string } 
             </div>
 
             <h2 className="text-2xl font-semibold mb-4 border-t pt-4">Verses</h2>
-            <div className="space-y-3 mb-8">
-              {book.verses.map((verse) => (
-                <Card key={verse.id} className="p-4">
-                  <div className="flex justify-between items-center">
-                    <div>
-                      <span className="font-medium">Verse {verse.number}</span>
-                    </div>
-                    <Button asChild size="sm" variant="outline">
-                      <Link href={`/books/${book.id}/verses/${verse.id}`}>View Translations</Link>
-                    </Button>
-                  </div>
-                </Card>
-              ))}
-            </div>
+            <VerseList bookId={book.id} />
           </div>
         </div>
       </div>

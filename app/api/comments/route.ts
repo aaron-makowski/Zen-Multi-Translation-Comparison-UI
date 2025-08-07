@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server"
 import { promises as fs } from "fs"
 import path from "path"
+import { redis } from "../../../lib/redis"
 
 export interface Comment {
   id: string
@@ -12,9 +13,15 @@ export interface Comment {
 const COMMENTS_FILE = path.join(process.cwd(), "data", "comments.json")
 
 async function readData() {
+  if (redis) {
+    const cached = await redis.get<Record<string, Comment[]>>("comments")
+    if (cached) return cached
+  }
   try {
     const data = await fs.readFile(COMMENTS_FILE, "utf8")
-    return JSON.parse(data || "{}")
+    const parsed = JSON.parse(data || "{}")
+    if (redis) await redis.set("comments", parsed, { ex: 60 })
+    return parsed
   } catch {
     return {}
   }
@@ -23,6 +30,9 @@ async function readData() {
 async function writeData(data: Record<string, Comment[]>) {
   await fs.mkdir(path.dirname(COMMENTS_FILE), { recursive: true })
   await fs.writeFile(COMMENTS_FILE, JSON.stringify(data, null, 2))
+  if (redis) {
+    await redis.set("comments", data, { ex: 60 })
+  }
 }
 
 export function voteComment(
