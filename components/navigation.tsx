@@ -1,14 +1,20 @@
-"use client"
+"use client";
 
-import type React from "react"
+import type React from "react";
 
-import Link from "next/link"
-import { usePathname } from "next/navigation"
-import { Button } from "@/components/ui/button"
-import { ThemeToggle } from "@/components/theme-toggle"
+import Link from "next/link";
+import { usePathname } from "next/navigation";
+import { useTranslations, useLocale } from "next-intl";
+import { Button } from "@/components/ui/button";
+import { ThemeToggle } from "@/components/theme-toggle";
+import { LocaleSwitcher } from "@/components/locale-switcher";
 
 export function Navigation() {
-  const pathname = usePathname()
+  const pathname = usePathname();
+  const locale = useLocale();
+  const t = useTranslations('Navigation');
+  const basePath = `/${locale}`;
+  const current = pathname.replace(new RegExp(`^/${locale}`), '') || '/';
 
   return (
     <nav className="bg-white shadow-sm">
@@ -16,40 +22,41 @@ export function Navigation() {
         <div className="flex justify-between h-16">
           <div className="flex">
             <div className="flex-shrink-0 flex items-center">
-              <Link href="/" className="font-bold text-xl">
-                Zen Texts
+              <Link href={basePath} className="font-bold text-xl">
+                {t('title')}
               </Link>
             </div>
             <div className="hidden sm:ml-6 sm:flex sm:space-x-8">
-              <NavLink href="/" current={pathname === "/"}>
-                Home
+              <NavLink href={basePath} current={current === "/"}>
+                {t('home')}
               </NavLink>
-              <NavLink href="/books" current={pathname.startsWith("/books")}>
-                Books
+              <NavLink href={`${basePath}/books`} current={current.startsWith("/books")}>
+                {t('books')}
               </NavLink>
-              <NavLink href="/compare" current={pathname === "/compare"}>
-                Compare
+              <NavLink href={`${basePath}/compare`} current={current === "/compare"}>
+                {t('compare')}
               </NavLink>
-              <NavLink href="/reddit" current={pathname === "/reddit"}>
-                Reddit
+              <NavLink href={`${basePath}/reddit`} current={current === "/reddit"}>
+                {t('reddit')}
               </NavLink>
-              <NavLink href="/pdf-preview" current={pathname === "/pdf-preview"}>
-                PDF Preview
+              <NavLink href={`${basePath}/pdf-preview`} current={current === "/pdf-preview"}>
+                {t('pdfPreview')}
               </NavLink>
-              <NavLink href="/about" current={pathname === "/about"}>
-                About
+              <NavLink href={`${basePath}/about`} current={current === "/about"}>
+                {t('about')}
               </NavLink>
             </div>
           </div>
-          <div className="hidden sm:ml-6 sm:flex sm:items-center">
-            <Link href="/login" passHref>
+          <div className="hidden sm:ml-6 sm:flex sm:items-center space-x-2">
+            <Link href={`${basePath}/login`} passHref>
               <Button variant="outline" size="sm" className="mr-2">
-                Login
+                {t('login')}
               </Button>
             </Link>
-            <Link href="/register" passHref>
-              <Button size="sm">Register</Button>
+            <Link href={`${basePath}/register`} passHref>
+              <Button size="sm">{t('register')}</Button>
             </Link>
+            <LocaleSwitcher />
             <ThemeToggle />
           </div>
         </div>
@@ -58,41 +65,42 @@ export function Navigation() {
       {/* Mobile menu */}
       <div className="sm:hidden">
         <div className="pt-2 pb-3 space-y-1">
-          <MobileNavLink href="/" current={pathname === "/"}>
-            Home
+          <MobileNavLink href={basePath} current={current === "/"}>
+            {t('home')}
           </MobileNavLink>
-          <MobileNavLink href="/books" current={pathname.startsWith("/books")}>
-            Books
+          <MobileNavLink href={`${basePath}/books`} current={current.startsWith("/books")}>
+            {t('books')}
           </MobileNavLink>
-          <MobileNavLink href="/compare" current={pathname === "/compare"}>
-            Compare
+          <MobileNavLink href={`${basePath}/compare`} current={current === "/compare"}>
+            {t('compare')}
           </MobileNavLink>
-          <MobileNavLink href="/reddit" current={pathname === "/reddit"}>
-            Reddit
+          <MobileNavLink href={`${basePath}/reddit`} current={current === "/reddit"}>
+            {t('reddit')}
           </MobileNavLink>
-          <MobileNavLink href="/pdf-preview" current={pathname === "/pdf-preview"}>
-            PDF Preview
+          <MobileNavLink href={`${basePath}/pdf-preview`} current={current === "/pdf-preview"}>
+            {t('pdfPreview')}
           </MobileNavLink>
-          <MobileNavLink href="/about" current={pathname === "/about"}>
-            About
+          <MobileNavLink href={`${basePath}/about`} current={current === "/about"}>
+            {t('about')}
           </MobileNavLink>
-          <div className="flex space-x-2 px-3 py-2">
-            <Link href="/login" passHref className="w-1/2">
+          <div className="flex space-x-2 px-3 py-2 items-center">
+            <Link href={`${basePath}/login`} passHref className="w-1/2">
               <Button variant="outline" size="sm" className="w-full">
-                Login
+                {t('login')}
               </Button>
             </Link>
-            <Link href="/register" passHref className="w-1/2">
+            <Link href={`${basePath}/register`} passHref className="w-1/2">
               <Button size="sm" className="w-full">
-                Register
+                {t('register')}
               </Button>
             </Link>
+            <LocaleSwitcher />
             <ThemeToggle />
           </div>
         </div>
       </div>
     </nav>
-  )
+  );
 }
 
 function NavLink({ href, current, children }: { href: string; current: boolean; children: React.ReactNode }) {
@@ -107,7 +115,7 @@ function NavLink({ href, current, children }: { href: string; current: boolean; 
     >
       {children}
     </Link>
-  )
+  );
 }
 
 function MobileNavLink({ href, current, children }: { href: string; current: boolean; children: React.ReactNode }) {
@@ -122,5 +130,5 @@ function MobileNavLink({ href, current, children }: { href: string; current: boo
     >
       {children}
     </Link>
-  )
+  );
 }

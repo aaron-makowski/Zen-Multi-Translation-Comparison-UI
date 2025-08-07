@@ -1,0 +1,30 @@
+{
+  "Navigation": {
+    "title": "Textos Zen",
+    "home": "Inicio",
+    "books": "Libros",
+    "compare": "Comparar",
+    "reddit": "Reddit",
+    "pdfPreview": "Vista previa PDF",
+    "about": "Acerca de",
+    "login": "Iniciar sesión",
+    "register": "Registrarse"
+  },
+  "Home": {
+    "title": "Comparación de Traducciones de Textos Zen",
+    "exploreTranslations": "Explorar Traducciones",
+    "exploreDesc": "Explora diferentes traducciones de textos clásicos del Zen.",
+    "viewBooks": "Ver Libros",
+    "compareTranslations": "Comparar Traducciones",
+    "compareDesc": "Compara diferentes traducciones lado a lado.",
+    "aboutProject": "Sobre este Proyecto",
+    "aboutDesc": "Esta aplicación te permite explorar y comparar diferentes traducciones de textos clásicos del Zen. Puedes navegar por libros, leer versos y comparar cómo diferentes traductores han interpretado el mismo texto.",
+    "learnMore": "Saber más"
+  },
+  "Comments": {
+    "title": "Comentarios",
+    "placeholder": "Agregar un comentario",
+    "post": "Publicar",
+    "noComments": "Aún no hay comentarios."
+  }
+}

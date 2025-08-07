@@ -1,7 +1,9 @@
-import { Button } from "@/components/ui/button"
-import Link from "next/link"
+import { Button } from "@/components/ui/button";
+import Link from "next/link";
+import {useLocale} from "next-intl";
 
 export default function NotFound() {
+  const locale = useLocale();
   return (
     <div className="flex flex-col items-center justify-center min-h-[70vh] p-4 text-center">
       <h2 className="text-3xl font-bold mb-4">Not Found</h2>
@@ -9,8 +11,8 @@ export default function NotFound() {
         The page you are looking for doesn't exist or has been moved.
       </p>
       <Button asChild>
-        <Link href="/">Return to Home</Link>
+        <Link href={`/${locale}`}>Return to Home</Link>
       </Button>
     </div>
-  )
+  );
 }

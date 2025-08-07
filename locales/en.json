@@ -1,0 +1,30 @@
+{
+  "Navigation": {
+    "title": "Zen Texts",
+    "home": "Home",
+    "books": "Books",
+    "compare": "Compare",
+    "reddit": "Reddit",
+    "pdfPreview": "PDF Preview",
+    "about": "About",
+    "login": "Login",
+    "register": "Register"
+  },
+  "Home": {
+    "title": "Zen Texts Translation Comparison",
+    "exploreTranslations": "Explore Translations",
+    "exploreDesc": "Browse through different translations of classic Zen texts.",
+    "viewBooks": "View Books",
+    "compareTranslations": "Compare Translations",
+    "compareDesc": "Compare different translations side by side.",
+    "aboutProject": "About This Project",
+    "aboutDesc": "This application allows you to explore and compare different translations of classic Zen texts. You can browse through books, read verses, and compare how different translators have interpreted the same text.",
+    "learnMore": "Learn More"
+  },
+  "Comments": {
+    "title": "Comments",
+    "placeholder": "Add a comment",
+    "post": "Post",
+    "noComments": "No comments yet."
+  }
+}
