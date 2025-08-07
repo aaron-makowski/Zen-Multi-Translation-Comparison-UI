@@ -1,17 +1,21 @@
 import { NextResponse } from "next/server"
 import { promises as fs } from "fs"
 import path from "path"
+import { marked } from "marked"
+import sanitizeHtml from "sanitize-html"
 
 export interface Comment {
   id: string
   content: string
   createdAt: string
   votes: number
+  parentId?: string
+  flagged?: boolean
 }
 
 const COMMENTS_FILE = path.join(process.cwd(), "data", "comments.json")
 
-async function readData() {
+export async function readData() {
   try {
     const data = await fs.readFile(COMMENTS_FILE, "utf8")
     return JSON.parse(data || "{}")
@@ -20,7 +24,7 @@ async function readData() {
   }
 }
 
-async function writeData(data: Record<string, Comment[]>) {
+export async function writeData(data: Record<string, Comment[]>) {
   await fs.mkdir(path.dirname(COMMENTS_FILE), { recursive: true })
   await fs.writeFile(COMMENTS_FILE, JSON.stringify(data, null, 2))
 }
@@ -50,16 +54,18 @@ export async function GET(req: Request) {
 }
 
 export async function POST(req: Request) {
-  const { verseId, content } = await req.json()
+  const { verseId, content, parentId } = await req.json()
   if (!verseId || !content) {
     return NextResponse.json({ error: "Missing fields" }, { status: 400 })
   }
   const data = await readData()
+  const sanitized = sanitizeHtml(marked.parse(content))
   const comment: Comment = {
     id: crypto.randomUUID(),
-    content,
+    content: sanitized,
     createdAt: new Date().toISOString(),
     votes: 0,
+    parentId,
   }
   if (!data[verseId]) data[verseId] = []
   data[verseId].push(comment)
