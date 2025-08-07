@@ -12,30 +12,36 @@ export default function ComparePage() {
           <h2 className="text-xl font-semibold mb-4">Select a Text to Compare</h2>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <Button asChild className="h-auto py-4">
-              <Link href="/books/xinxinming">
+              <Link href="/books/xinxin-ming">
                 <div className="text-left">
                   <div className="font-medium">Xinxin Ming (Faith in Mind)</div>
                   <div className="text-sm opacity-80">Compare translations of this classic Zen poem</div>
                 </div>
               </Link>
             </Button>
-            <Button asChild className="h-auto py-4" variant="outline" disabled>
-              <div className="text-left">
-                <div className="font-medium">Platform Sutra</div>
-                <div className="text-sm opacity-80">Coming soon</div>
-              </div>
+            <Button asChild className="h-auto py-4">
+              <Link href="/books/platform-sutra">
+                <div className="text-left">
+                  <div className="font-medium">Platform Sutra</div>
+                  <div className="text-sm opacity-80">Compare translations of Huineng's teachings</div>
+                </div>
+              </Link>
             </Button>
-            <Button asChild className="h-auto py-4" variant="outline" disabled>
-              <div className="text-left">
-                <div className="font-medium">Heart Sutra</div>
-                <div className="text-sm opacity-80">Coming soon</div>
-              </div>
+            <Button asChild className="h-auto py-4">
+              <Link href="/books/heart-sutra">
+                <div className="text-left">
+                  <div className="font-medium">Heart Sutra</div>
+                  <div className="text-sm opacity-80">Explore the Heart of Perfect Wisdom</div>
+                </div>
+              </Link>
             </Button>
-            <Button asChild className="h-auto py-4" variant="outline" disabled>
-              <div className="text-left">
-                <div className="font-medium">Diamond Sutra</div>
-                <div className="text-sm opacity-80">Coming soon</div>
-              </div>
+            <Button asChild className="h-auto py-4">
+              <Link href="/books/diamond-sutra">
+                <div className="text-left">
+                  <div className="font-medium">Diamond Sutra</div>
+                  <div className="text-sm opacity-80">View this classic Buddhist text</div>
+                </div>
+              </Link>
             </Button>
           </div>
         </Card>

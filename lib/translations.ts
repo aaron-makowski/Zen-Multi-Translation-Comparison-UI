@@ -17,6 +17,16 @@ export interface Translator {
   link?: string
 }
 
+export interface Book {
+  id: string
+  title: string
+  description: string
+  author?: string
+  coverImage?: string
+  translators: Translator[]
+  verses: Verse[]
+}
+
 export const translators: Translator[] = [
   {
     id: "waley",
@@ -204,10 +214,13 @@ export const translators: Translator[] = [
 ]
 
 // Export the translations data
-export const translations = {
+export const translations: Record<string, Book> = {
   xinxinming: {
+    id: "xinxin-ming",
     title: "Xinxin Ming",
     description: "Faith in Mind",
+    author: "Jianzhi Sengcan",
+    coverImage: "/xinxin-ming-cover.png",
     translators: translators,
     verses: [
       {
@@ -219,7 +232,8 @@ export const translations = {
             translations: {
               waley: "The Perfect Way is only difficult for those who pick and choose.",
               suzuki: "The Perfect Way knows no difficulties.",
-              goddard: "The Perfect Way knows no difficulties, except that it refuses to make preferences.",
+              goddard:
+                "The Perfect Way knows no difficulties, except that it refuses to make preferences.",
             },
           },
           {
@@ -227,13 +241,42 @@ export const translations = {
             pinyin: "Dàn mò zēng ài, dòng rán míng bái.",
             translations: {
               waley: "Do not like, do not dislike; all will then be clear.",
-              suzuki: "Only when freed from hate and love, it reveals itself fully and without disguise.",
-              goddard: "Only when freed from hate and love, it reveals itself fully and without disguise.",
+              suzuki:
+                "Only when freed from hate and love, it reveals itself fully and without disguise.",
+              goddard:
+                "Only when freed from hate and love, it reveals itself fully and without disguise.",
             },
           },
         ],
       },
     ],
+  },
+  platformSutra: {
+    id: "platform-sutra",
+    title: "Platform Sutra",
+    description: "Teachings of the Sixth Patriarch",
+    author: "Huineng",
+    coverImage: "/platform-sutra-cover.png",
+    translators: [],
+    verses: [],
+  },
+  heartSutra: {
+    id: "heart-sutra",
+    title: "Heart Sutra",
+    description: "The Heart of the Perfection of Wisdom",
+    author: "",
+    coverImage: "/heart-sutra-cover.png",
+    translators: [],
+    verses: [],
+  },
+  diamondSutra: {
+    id: "diamond-sutra",
+    title: "Diamond Sutra",
+    description: "The Diamond That Cuts Through Illusion",
+    author: "",
+    coverImage: "/diamond-sutra-cover.png",
+    translators: [],
+    verses: [],
   },
 }
 
