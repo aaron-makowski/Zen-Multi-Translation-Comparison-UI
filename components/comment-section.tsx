@@ -6,6 +6,7 @@ interface Comment {
   id: string
   content: string
   createdAt: string
+  votes: number
 }
 
 export function CommentSection({ verseId }: { verseId: string }) {
@@ -33,6 +34,15 @@ export function CommentSection({ verseId }: { verseId: string }) {
     load()
   }
 
+  async function vote(id: string, delta: number) {
+    await fetch("/api/comments", {
+      method: "PATCH",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ verseId, commentId: id, delta })
+    })
+    load()
+  }
+
   return (
     <div className="mt-8">
       <h3 className="text-lg font-semibold mb-2">Comments</h3>
@@ -48,7 +58,26 @@ export function CommentSection({ verseId }: { verseId: string }) {
       <div className="space-y-2">
         {comments.map((c) => (
           <div key={c.id} className="p-2 bg-muted rounded">
-            <div className="text-sm">{c.content}</div>
+            <div className="flex items-center justify-between">
+              <div className="text-sm flex-1">{c.content}</div>
+              <div className="flex items-center gap-1 ml-2">
+                <button
+                  aria-label="upvote"
+                  className="text-xs"
+                  onClick={() => vote(c.id, 1)}
+                >
+                  ▲
+                </button>
+                <span className="text-xs w-4 text-center">{c.votes}</span>
+                <button
+                  aria-label="downvote"
+                  className="text-xs"
+                  onClick={() => vote(c.id, -1)}
+                >
+                  ▼
+                </button>
+              </div>
+            </div>
             <div className="text-xs text-muted-foreground">
               {new Date(c.createdAt).toLocaleString()}
             </div>
