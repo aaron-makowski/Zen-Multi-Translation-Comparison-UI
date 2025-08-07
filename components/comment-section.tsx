@@ -1,12 +1,17 @@
 "use client"
 import { useEffect, useState, FormEvent } from "react"
 import { Button } from "@/components/ui/button"
+import { formatKarmaBadge } from "@/lib/karma"
 
 interface Comment {
   id: string
   content: string
   createdAt: string
   votes: number
+  user: {
+    name: string
+    karma: number
+  }
 }
 
 export function CommentSection({ verseId }: { verseId: string }) {
@@ -59,7 +64,13 @@ export function CommentSection({ verseId }: { verseId: string }) {
         {comments.map((c) => (
           <div key={c.id} className="p-2 bg-muted rounded">
             <div className="flex items-center justify-between">
-              <div className="text-sm flex-1">{c.content}</div>
+              <div className="text-sm flex-1">
+                <span className="font-medium">{c.user.name}</span>
+                <span className="ml-1 text-xs text-muted-foreground">
+                  {formatKarmaBadge(c.user.karma)}
+                </span>
+                : {c.content}
+              </div>
               <div className="flex items-center gap-1 ml-2">
                 <button
                   aria-label="upvote"

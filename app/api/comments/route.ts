@@ -7,6 +7,10 @@ export interface Comment {
   content: string
   createdAt: string
   votes: number
+  user: {
+    name: string
+    karma: number
+  }
 }
 
 const COMMENTS_FILE = path.join(process.cwd(), "data", "comments.json")
@@ -60,6 +64,10 @@ export async function POST(req: Request) {
     content,
     createdAt: new Date().toISOString(),
     votes: 0,
+    user: {
+      name: "Guest",
+      karma: 0,
+    },
   }
   if (!data[verseId]) data[verseId] = []
   data[verseId].push(comment)
