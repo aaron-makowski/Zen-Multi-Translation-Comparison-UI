@@ -91,4 +91,9 @@ body {
   body {
     @apply bg-background text-foreground;
   }
+  @media (max-width: 640px) {
+    body {
+      @apply p-4;
+    }
+  }
 }

@@ -5,7 +5,7 @@ import type React from "react"
 import Link from "next/link"
 import { usePathname } from "next/navigation"
 import { Button } from "@/components/ui/button"
-import { ThemeToggle } from "@/components/theme-toggle"
+import { ThemeSwitcher } from "@/components/theme-switcher"
 
 export function Navigation() {
   const pathname = usePathname()
@@ -50,7 +50,7 @@ export function Navigation() {
             <Link href="/register" passHref>
               <Button size="sm">Register</Button>
             </Link>
-            <ThemeToggle />
+            <ThemeSwitcher />
           </div>
         </div>
       </div>
@@ -87,7 +87,7 @@ export function Navigation() {
                 Register
               </Button>
             </Link>
-            <ThemeToggle />
+            <ThemeSwitcher />
           </div>
         </div>
       </div>
