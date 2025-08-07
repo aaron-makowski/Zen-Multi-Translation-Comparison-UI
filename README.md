@@ -32,3 +32,14 @@ Continue building your app on:
 ## Environment Variables
 
 The Reddit integration uses Reddit's public JSON API and does not require authentication. To change the subreddit queried by the API route, define `REDDIT_SUBREDDIT` in your `.env` file. If you later switch to Reddit's authenticated API, you will also need to provide `REDDIT_CLIENT_ID` and `REDDIT_CLIENT_SECRET`.
+
+### Authentication Environment Variables
+
+To enable authentication and password reset, add the following variables to your `.env` file:
+
+- `NEXTAUTH_URL`
+- `NEXTAUTH_SECRET`
+- `GITHUB_ID` and `GITHUB_SECRET`
+- `GOOGLE_CLIENT_ID` and `GOOGLE_CLIENT_SECRET`
+- `EMAIL_SERVER_HOST`, `EMAIL_SERVER_PORT`, `EMAIL_SERVER_USER`, `EMAIL_SERVER_PASSWORD`
+- `EMAIL_FROM`
