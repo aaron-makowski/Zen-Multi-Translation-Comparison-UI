@@ -51,7 +51,7 @@ export default async function VersePage({
           </div>
         </div>
 
-        <CommentSection verseId={params.verseId} />
+        <CommentSection verseId={params.verseId} userId="demo-user" />
 
         <div className="flex justify-between">
           <Link
