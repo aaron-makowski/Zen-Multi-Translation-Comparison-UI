@@ -4,6 +4,7 @@ import path from "path"
 
 export interface Comment {
   id: string
+  userId: string
   content: string
   createdAt: string
   votes: number
@@ -50,13 +51,14 @@ export async function GET(req: Request) {
 }
 
 export async function POST(req: Request) {
-  const { verseId, content } = await req.json()
-  if (!verseId || !content) {
+  const { verseId, content, userId, replyToUserId, mentions } = await req.json()
+  if (!verseId || !content || !userId) {
     return NextResponse.json({ error: "Missing fields" }, { status: 400 })
   }
   const data = await readData()
   const comment: Comment = {
     id: crypto.randomUUID(),
+    userId,
     content,
     createdAt: new Date().toISOString(),
     votes: 0,
@@ -64,6 +66,17 @@ export async function POST(req: Request) {
   if (!data[verseId]) data[verseId] = []
   data[verseId].push(comment)
   await writeData(data)
+  if (replyToUserId || (Array.isArray(mentions) && mentions.length)) {
+    const { createNotification } = await import("../../../lib/notifications")
+    if (replyToUserId) {
+      await createNotification(replyToUserId, "reply", content)
+    }
+    if (Array.isArray(mentions)) {
+      for (const m of mentions) {
+        await createNotification(m, "mention", content)
+      }
+    }
+  }
   return NextResponse.json(comment)
 }
 
