@@ -24,26 +24,26 @@ export default async function VersePage({
     },
   })
 
+  if (!verse) {
+    notFound()
+  }
+
   const [prevVerse, nextVerse] = await Promise.all([
     prisma.verse.findFirst({
       where: {
         bookId: params.bookId,
-        number: { lt: verse?.number || 0 },
+        number: { lt: verse.number },
       },
       orderBy: { number: "desc" },
     }),
     prisma.verse.findFirst({
       where: {
         bookId: params.bookId,
-        number: { gt: verse?.number || 0 },
+        number: { gt: verse.number },
       },
       orderBy: { number: "asc" },
     }),
   ])
-
-  if (!verse) {
-    notFound()
-  }
 
   return (
     <SwipeNavigator
