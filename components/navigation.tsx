@@ -33,7 +33,7 @@ export function Navigation() {
               <NavLink href="/compare" current={pathname === "/compare"}>
                 {t("compare")}
               </NavLink>
-              <NavLink href="/reddit" current={pathname === "/reddit"}>
+              <NavLink href="/reddit" current={pathname.startsWith("/reddit")}>
                 Reddit
               </NavLink>
               <NavLink href="/pdf-preview" current={pathname === "/pdf-preview"}>
@@ -71,7 +71,7 @@ export function Navigation() {
           <MobileNavLink href="/compare" current={pathname === "/compare"}>
             {t("compare")}
           </MobileNavLink>
-          <MobileNavLink href="/reddit" current={pathname === "/reddit"}>
+          <MobileNavLink href="/reddit" current={pathname.startsWith("/reddit")}>
             Reddit
           </MobileNavLink>
           <MobileNavLink href="/pdf-preview" current={pathname === "/pdf-preview"}>
