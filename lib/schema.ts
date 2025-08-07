@@ -1,4 +1,12 @@
-import { pgTable, text, timestamp, integer, boolean, uniqueIndex } from "drizzle-orm/pg-core"
+import {
+  pgTable,
+  text,
+  timestamp,
+  integer,
+  boolean,
+  uniqueIndex,
+  pgEnum,
+} from "drizzle-orm/pg-core"
 import { relations } from "drizzle-orm"
 
 // User table
@@ -109,6 +117,23 @@ export const comments = pgTable("comments", {
   updatedAt: timestamp("updated_at").notNull(),
 })
 
+// Notification table and enum
+export const notificationTypeEnum = pgEnum("notification_type", [
+  "reply",
+  "mention",
+])
+
+export const notifications = pgTable("notifications", {
+  id: text("id").primaryKey(),
+  userId: text("user_id")
+    .notNull()
+    .references(() => users.id),
+  type: notificationTypeEnum("type").notNull(),
+  data: text("data"),
+  read: boolean("read").default(false).notNull(),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+})
+
 // Session table
 export const sessions = pgTable("sessions", {
   id: text("id").primaryKey(),
@@ -144,6 +169,7 @@ export const usersRelations = relations(users, ({ many }) => ({
   favorites: many(favorites),
   notes: many(notes),
   comments: many(comments),
+  notifications: many(notifications),
   sessions: many(sessions),
 }))
 
@@ -177,6 +203,13 @@ export const commentsRelations = relations(comments, ({ one }) => ({
   verse: one(verses, {
     fields: [comments.verseId],
     references: [verses.id],
+  }),
+}))
+
+export const notificationsRelations = relations(notifications, ({ one }) => ({
+  user: one(users, {
+    fields: [notifications.userId],
+    references: [users.id],
   }),
 }))
 

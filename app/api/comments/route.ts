@@ -1,12 +1,15 @@
 import { NextResponse } from "next/server"
 import { promises as fs } from "fs"
 import path from "path"
+import { addNotification } from "../../../lib/notifications"
 
 export interface Comment {
   id: string
   content: string
   createdAt: string
   votes: number
+  userId?: string
+  parentId?: string
 }
 
 const COMMENTS_FILE = path.join(process.cwd(), "data", "comments.json")
@@ -50,7 +53,7 @@ export async function GET(req: Request) {
 }
 
 export async function POST(req: Request) {
-  const { verseId, content } = await req.json()
+  const { verseId, content, userId = "anonymous", parentId } = await req.json()
   if (!verseId || !content) {
     return NextResponse.json({ error: "Missing fields" }, { status: 400 })
   }
@@ -60,10 +63,38 @@ export async function POST(req: Request) {
     content,
     createdAt: new Date().toISOString(),
     votes: 0,
+    userId,
+    parentId,
   }
   if (!data[verseId]) data[verseId] = []
   data[verseId].push(comment)
   await writeData(data)
+
+  // Emit reply notification
+  if (parentId) {
+    const parent = data[verseId].find((c) => c.id === parentId)
+    if (parent && parent.userId && parent.userId !== userId) {
+      await addNotification({
+        userId: parent.userId,
+        type: "reply",
+        data: JSON.stringify({ verseId, commentId: comment.id }),
+      })
+    }
+  }
+
+  // Emit mention notifications
+  const mentionRegex = /@([a-zA-Z0-9_]+)/g
+  const mentions = content.match(mentionRegex) || []
+  for (const mention of mentions) {
+    const mentionUser = mention.slice(1)
+    if (mentionUser && mentionUser !== userId) {
+      await addNotification({
+        userId: mentionUser,
+        type: "mention",
+        data: JSON.stringify({ verseId, commentId: comment.id }),
+      })
+    }
+  }
   return NextResponse.json(comment)
 }
 
