@@ -1,12 +1,14 @@
 import { NextResponse } from "next/server"
 import { promises as fs } from "fs"
 import path from "path"
+import { addKarmaPoints } from "../../../lib/gamification"
 
 export interface Comment {
   id: string
   content: string
   createdAt: string
   votes: number
+  userId: string
 }
 
 const COMMENTS_FILE = path.join(process.cwd(), "data", "comments.json")
@@ -50,8 +52,8 @@ export async function GET(req: Request) {
 }
 
 export async function POST(req: Request) {
-  const { verseId, content } = await req.json()
-  if (!verseId || !content) {
+  const { verseId, content, userId } = await req.json()
+  if (!verseId || !content || !userId) {
     return NextResponse.json({ error: "Missing fields" }, { status: 400 })
   }
   const data = await readData()
@@ -60,10 +62,12 @@ export async function POST(req: Request) {
     content,
     createdAt: new Date().toISOString(),
     votes: 0,
+    userId,
   }
   if (!data[verseId]) data[verseId] = []
   data[verseId].push(comment)
   await writeData(data)
+  await addKarmaPoints(userId, "comment")
   return NextResponse.json(comment)
 }
 

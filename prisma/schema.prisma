@@ -19,7 +19,8 @@ model User {
   isGuest   Boolean  @default(false)
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
-  
+  karma     Int      @default(0)
+
   favorites Favorite[]
   notes     Note[]
   comments  Comment[]
