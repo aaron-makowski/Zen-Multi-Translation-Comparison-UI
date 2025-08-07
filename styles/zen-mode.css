@@ -1,0 +1,16 @@
+/* Minimalist Zen Mode styles */
+body.zen-mode {
+  margin: 0 auto;
+  max-width: 65ch;
+  padding: 2rem;
+  background-color: #f7f7f5;
+  color: #111;
+  font-family: Georgia, serif;
+  line-height: 1.8;
+}
+
+body.zen-mode img,
+body.zen-mode nav,
+body.zen-mode footer {
+  display: none;
+}
