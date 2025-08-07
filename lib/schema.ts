@@ -1,6 +1,9 @@
 import { pgTable, text, timestamp, integer, boolean, uniqueIndex } from "drizzle-orm/pg-core"
 import { relations } from "drizzle-orm"
 
+export const notificationTypes = ["reply", "mention"] as const
+export type NotificationType = (typeof notificationTypes)[number]
+
 // User table
 export const users = pgTable("users", {
   id: text("id").primaryKey(),
@@ -8,6 +11,8 @@ export const users = pgTable("users", {
   username: text("username").notNull().unique(),
   password: text("password").notNull(),
   isGuest: boolean("is_guest").default(false).notNull(),
+  emailNotifications: boolean("email_notifications").default(true).notNull(),
+  pushNotifications: boolean("push_notifications").default(true).notNull(),
   createdAt: timestamp("created_at").defaultNow().notNull(),
   updatedAt: timestamp("updated_at").notNull(),
 })
@@ -109,6 +114,18 @@ export const comments = pgTable("comments", {
   updatedAt: timestamp("updated_at").notNull(),
 })
 
+// Notification table
+export const notifications = pgTable("notifications", {
+  id: text("id").primaryKey(),
+  userId: text("user_id")
+    .notNull()
+    .references(() => users.id),
+  type: text("type").$type<NotificationType>().notNull(),
+  content: text("content"),
+  read: boolean("read").default(false).notNull(),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+})
+
 // Session table
 export const sessions = pgTable("sessions", {
   id: text("id").primaryKey(),
@@ -145,6 +162,7 @@ export const usersRelations = relations(users, ({ many }) => ({
   notes: many(notes),
   comments: many(comments),
   sessions: many(sessions),
+  notifications: many(notifications),
 }))
 
 export const favoritesRelations = relations(favorites, ({ one }) => ({
@@ -183,6 +201,13 @@ export const commentsRelations = relations(comments, ({ one }) => ({
 export const sessionsRelations = relations(sessions, ({ one }) => ({
   user: one(users, {
     fields: [sessions.userId],
+    references: [users.id],
+  }),
+}))
+
+export const notificationsRelations = relations(notifications, ({ one }) => ({
+  user: one(users, {
+    fields: [notifications.userId],
     references: [users.id],
   }),
 }))

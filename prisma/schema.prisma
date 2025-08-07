@@ -17,12 +17,15 @@ model User {
   username  String   @unique
   password  String
   isGuest   Boolean  @default(false)
+  emailNotifications Boolean @default(true)
+  pushNotifications  Boolean @default(true)
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
-  
+
   favorites Favorite[]
   notes     Note[]
   comments  Comment[]
+  notifications Notification[]
 }
 
 model Book {
@@ -107,6 +110,21 @@ model Comment {
   verse     Verse    @relation(fields: [verseId], references: [id])
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+}
+
+model Notification {
+  id        String   @id @default(cuid())
+  type      NotificationType
+  content   String?
+  userId    String
+  user      User     @relation(fields: [userId], references: [id])
+  read      Boolean  @default(false)
+  createdAt DateTime @default(now())
+}
+
+enum NotificationType {
+  reply
+  mention
 }
 
 model Session {
