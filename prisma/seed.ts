@@ -70,6 +70,8 @@ async function main() {
       username: "demo",
       password: "$2a$10$GQH.xZm5DqJu8HgFtuhZEOsj7dQQgWlHhbwwZ1QzPJ8MzJyppyXOq", // hashed 'password123'
       isGuest: false,
+      avatar: "/placeholder.svg?height=64&width=64&text=D",
+      bio: "Demo account for exploring the app",
     },
   })
 
@@ -84,6 +86,8 @@ async function main() {
       username: "guest",
       password: "$2a$10$GQH.xZm5DqJu8HgFtuhZEOsj7dQQgWlHhbwwZ1QzPJ8MzJyppyXOq", // hashed 'password123'
       isGuest: true,
+      avatar: "/placeholder.svg?height=64&width=64&text=G",
+      bio: "Guest account",
     },
   })
 

@@ -10,6 +10,8 @@ export const users = pgTable("users", {
   isGuest: boolean("is_guest").default(false).notNull(),
   createdAt: timestamp("created_at").defaultNow().notNull(),
   updatedAt: timestamp("updated_at").notNull(),
+  avatar: text("avatar"),
+  bio: text("bio"),
 })
 
 // Book table
@@ -81,6 +83,29 @@ export const favorites = pgTable(
   },
 )
 
+// Follow table
+export const follows = pgTable(
+  "follows",
+  {
+    id: text("id").primaryKey(),
+    followerId: text("follower_id")
+      .notNull()
+      .references(() => users.id),
+    followingId: text("following_id")
+      .notNull()
+      .references(() => users.id),
+    createdAt: timestamp("created_at").defaultNow().notNull(),
+  },
+  (table) => {
+    return {
+      followerFollowingUnique: uniqueIndex("follower_following_unique").on(
+        table.followerId,
+        table.followingId
+      ),
+    }
+  }
+)
+
 // Note table
 export const notes = pgTable("notes", {
   id: text("id").primaryKey(),
@@ -145,6 +170,8 @@ export const usersRelations = relations(users, ({ many }) => ({
   notes: many(notes),
   comments: many(comments),
   sessions: many(sessions),
+  followers: many(follows, { relationName: "following" }),
+  following: many(follows, { relationName: "follower" }),
 }))
 
 export const favoritesRelations = relations(favorites, ({ one }) => ({
@@ -155,6 +182,19 @@ export const favoritesRelations = relations(favorites, ({ one }) => ({
   book: one(books, {
     fields: [favorites.bookId],
     references: [books.id],
+  }),
+}))
+
+export const followsRelations = relations(follows, ({ one }) => ({
+  follower: one(users, {
+    relationName: "follower",
+    fields: [follows.followerId],
+    references: [users.id],
+  }),
+  following: one(users, {
+    relationName: "following",
+    fields: [follows.followingId],
+    references: [users.id],
   }),
 }))
 
