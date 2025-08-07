@@ -36,6 +36,9 @@ export function Navigation() {
               <NavLink href="/about" current={pathname === "/about"}>
                 About
               </NavLink>
+              <NavLink href="/reddit" current={pathname === "/reddit"}>
+                Reddit
+              </NavLink>
             </div>
           </div>
           <div className="hidden sm:ml-6 sm:flex sm:items-center">
@@ -69,6 +72,9 @@ export function Navigation() {
           </MobileNavLink>
           <MobileNavLink href="/about" current={pathname === "/about"}>
             About
+          </MobileNavLink>
+          <MobileNavLink href="/reddit" current={pathname === "/reddit"}>
+            Reddit
           </MobileNavLink>
           <div className="flex space-x-2 px-3 py-2">
             <Link href="/login" passHref className="w-1/2">
