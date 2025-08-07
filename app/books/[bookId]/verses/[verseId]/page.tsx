@@ -2,6 +2,7 @@ import Link from "next/link"
 import { notFound } from "next/navigation"
 import { prisma } from "@/lib/db"
 import { CommentSection } from "@/components/comment-section"
+import { BookmarkButton } from "@/components/bookmark-button"
 
 export default async function VersePage({
   params,
@@ -35,6 +36,7 @@ export default async function VersePage({
           </Link>
           <h1 className="text-3xl font-bold">Verse {verse.number}</h1>
           <p className="text-gray-600">{verse.book.title}</p>
+          <BookmarkButton verseId={params.verseId} userId="demo-user" />
         </div>
 
         <div className="bg-white rounded-lg shadow-md p-6 mb-8">
