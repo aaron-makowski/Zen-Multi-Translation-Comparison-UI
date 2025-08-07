@@ -66,10 +66,13 @@ async function main() {
     where: { email: "demo@example.com" },
     update: {},
     create: {
+      id: "demo-user",
       email: "demo@example.com",
       username: "demo",
       password: "$2a$10$GQH.xZm5DqJu8HgFtuhZEOsj7dQQgWlHhbwwZ1QzPJ8MzJyppyXOq", // hashed 'password123'
       isGuest: false,
+      karma: 0,
+      streak: 0,
     },
   })
 
@@ -80,10 +83,13 @@ async function main() {
     where: { email: "guest@example.com" },
     update: {},
     create: {
+      id: "guest-user",
       email: "guest@example.com",
       username: "guest",
       password: "$2a$10$GQH.xZm5DqJu8HgFtuhZEOsj7dQQgWlHhbwwZ1QzPJ8MzJyppyXOq", // hashed 'password123'
       isGuest: true,
+      karma: 0,
+      streak: 0,
     },
   })
 
