@@ -3,11 +3,12 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "build": "next build",
+    "build": "next build && node scripts/generate-sitemap.js",
     "dev": "next dev",
     "lint": "next lint",
     "start": "next start",
-    "test": "vitest run"
+    "test": "vitest run",
+    "sitemap": "node scripts/generate-sitemap.js"
   },
   "dependencies": {
     "@aws-sdk/client-rds-data": "latest",
