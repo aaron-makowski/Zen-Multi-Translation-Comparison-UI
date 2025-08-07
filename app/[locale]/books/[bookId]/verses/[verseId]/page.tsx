@@ -1,4 +1,4 @@
-import Link from "next/link"
+import Link from "next-intl/link"
 import { notFound } from "next/navigation"
 import { prisma } from "@/lib/db"
 import { CommentSection } from "@/components/comment-section"

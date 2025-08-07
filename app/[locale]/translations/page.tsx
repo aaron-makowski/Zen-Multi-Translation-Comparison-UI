@@ -1,14 +1,14 @@
 "use client"
 
-import { useState, useEffect } from "react"
-import { Button } from "@/components/ui/button"
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { translators, verses } from "@/lib/translations"
-import Link from "next/link"
-import { ArrowLeft, ArrowRight, ExternalLink } from "lucide-react"
-import { TranslationCard } from "@/components/translation-card"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { TranslatorSelector } from "@/components/translator-selector"
+import { useState, useEffect } from "react";
+import { Button } from "@/components/ui/button";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { translators, verses } from "@/lib/translations";
+import Link from "next-intl/link";
+import { ArrowLeft, ArrowRight, ExternalLink } from "lucide-react";
+import { TranslationCard } from "@/components/translation-card";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { TranslatorSelector } from "@/components/translator-selector";
 
 export default function TranslationsPage() {
   const [selectedVerse, setSelectedVerse] = useState(1)

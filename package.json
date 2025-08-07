@@ -40,6 +40,7 @@
     "lucide-react": "^0.454.0",
     "mysql2": "latest",
     "next": "14.2.16",
+    "next-intl": "^3.7.1",
     "pg": "latest",
     "postgres": "latest",
     "prisma": "latest",

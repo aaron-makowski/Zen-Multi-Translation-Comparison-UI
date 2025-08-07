@@ -1,8 +1,8 @@
 "use client"
-import { Card, CardContent } from "@/components/ui/card"
-import type { Translator, Verse } from "@/lib/translations"
-import { ExternalLink } from "lucide-react"
-import Link from "next/link"
+import { Card, CardContent } from "@/components/ui/card";
+import type { Translator, Verse } from "@/lib/translations";
+import { ExternalLink } from "lucide-react";
+import Link from "next-intl/link";
 
 interface TranslationCardProps {
   verse: Verse
