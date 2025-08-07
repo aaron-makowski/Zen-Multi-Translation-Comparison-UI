@@ -109,6 +109,17 @@ model Comment {
   updatedAt DateTime @updatedAt
 }
 
+model VerseView {
+  id            String        @id @default(cuid())
+  userId        String?
+  user          User?         @relation(fields: [userId], references: [id])
+  verseId       String
+  verse         Verse         @relation(fields: [verseId], references: [id])
+  translationId String?
+  translation   Translation?  @relation(fields: [translationId], references: [id])
+  createdAt     DateTime      @default(now())
+}
+
 model Session {
   id        String   @id @default(cuid())
   userId    String

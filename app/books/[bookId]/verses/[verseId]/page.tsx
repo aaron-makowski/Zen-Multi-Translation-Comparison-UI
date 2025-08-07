@@ -1,23 +1,23 @@
 import Link from "next/link"
 import { notFound } from "next/navigation"
-import { prisma } from "@/lib/db"
+import { db } from "@/lib/db"
+import { verses } from "@/lib/schema"
+import { eq } from "drizzle-orm"
 import { CommentSection } from "@/components/comment-section"
+import { VerseViewTracker } from "@/components/verse-view-tracker"
+import { TranslationView } from "@/components/translation-view"
 
 export default async function VersePage({
   params,
 }: {
   params: { bookId: string; verseId: string }
 }) {
-  const verse = await prisma.verse.findUnique({
-    where: {
-      id: params.verseId,
-    },
-    include: {
+  const verse = await db.query.verses.findFirst({
+    where: eq(verses.id, params.verseId),
+    with: {
       book: true,
       translations: {
-        orderBy: {
-          translator: "asc",
-        },
+        orderBy: (translations, { asc }) => [asc(translations.translator)],
       },
     },
   })
@@ -28,6 +28,7 @@ export default async function VersePage({
 
   return (
     <main className="flex min-h-screen flex-col items-center p-4 md:p-24">
+      <VerseViewTracker verseId={params.verseId} />
       <div className="max-w-4xl w-full">
         <div className="mb-6">
           <Link href={`/books/${params.bookId}`} className="text-blue-600 hover:underline mb-4 inline-block">
@@ -42,11 +43,11 @@ export default async function VersePage({
 
           <div className="space-y-6">
             {verse.translations.map((translation) => (
-              <div key={translation.id} className="border-b pb-4 last:border-b-0 last:pb-0">
-                <h3 className="font-medium text-lg mb-2">Translation by {translation.translator}</h3>
-                <p className="text-gray-800 whitespace-pre-line">{translation.text}</p>
-                <p className="text-sm text-gray-500 mt-2">Language: {translation.language}</p>
-              </div>
+              <TranslationView
+                key={translation.id}
+                translation={translation}
+                verseId={params.verseId}
+              />
             ))}
           </div>
         </div>
