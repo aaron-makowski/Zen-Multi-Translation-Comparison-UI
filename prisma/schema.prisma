@@ -16,13 +16,17 @@ model User {
   email     String   @unique
   username  String   @unique
   password  String
+  avatar    String?
+  bio       String?
   isGuest   Boolean  @default(false)
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
-  
+
   favorites Favorite[]
   notes     Note[]
   comments  Comment[]
+  followers Follow[] @relation("followers")
+  following Follow[] @relation("following")
 }
 
 model Book {
@@ -107,6 +111,16 @@ model Comment {
   verse     Verse    @relation(fields: [verseId], references: [id])
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+}
+
+model Follow {
+  followerId String
+  followingId String
+  follower   User @relation("following", fields: [followerId], references: [id])
+  following  User @relation("followers", fields: [followingId], references: [id])
+  createdAt  DateTime @default(now())
+
+  @@id([followerId, followingId])
 }
 
 model Session {

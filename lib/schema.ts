@@ -1,4 +1,12 @@
-import { pgTable, text, timestamp, integer, boolean, uniqueIndex } from "drizzle-orm/pg-core"
+import {
+  pgTable,
+  text,
+  timestamp,
+  integer,
+  boolean,
+  uniqueIndex,
+  primaryKey,
+} from "drizzle-orm/pg-core"
 import { relations } from "drizzle-orm"
 
 // User table
@@ -7,6 +15,8 @@ export const users = pgTable("users", {
   email: text("email").notNull().unique(),
   username: text("username").notNull().unique(),
   password: text("password").notNull(),
+  avatar: text("avatar"),
+  bio: text("bio"),
   isGuest: boolean("is_guest").default(false).notNull(),
   createdAt: timestamp("created_at").defaultNow().notNull(),
   updatedAt: timestamp("updated_at").notNull(),
@@ -81,6 +91,23 @@ export const favorites = pgTable(
   },
 )
 
+// User follow join table
+export const userFollows = pgTable(
+  "user_follows",
+  {
+    followerId: text("follower_id")
+      .notNull()
+      .references(() => users.id),
+    followingId: text("following_id")
+      .notNull()
+      .references(() => users.id),
+    createdAt: timestamp("created_at").defaultNow().notNull(),
+  },
+  (table) => ({
+    pk: primaryKey({ columns: [table.followerId, table.followingId] }),
+  }),
+)
+
 // Note table
 export const notes = pgTable("notes", {
   id: text("id").primaryKey(),
@@ -145,6 +172,8 @@ export const usersRelations = relations(users, ({ many }) => ({
   notes: many(notes),
   comments: many(comments),
   sessions: many(sessions),
+  followers: many(userFollows, { relationName: "following" }),
+  following: many(userFollows, { relationName: "follower" }),
 }))
 
 export const favoritesRelations = relations(favorites, ({ one }) => ({
@@ -177,6 +206,19 @@ export const commentsRelations = relations(comments, ({ one }) => ({
   verse: one(verses, {
     fields: [comments.verseId],
     references: [verses.id],
+  }),
+}))
+
+export const userFollowsRelations = relations(userFollows, ({ one }) => ({
+  follower: one(users, {
+    fields: [userFollows.followerId],
+    references: [users.id],
+    relationName: "follower",
+  }),
+  following: one(users, {
+    fields: [userFollows.followingId],
+    references: [users.id],
+    relationName: "following",
   }),
 }))
 
