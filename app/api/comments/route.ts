@@ -1,17 +1,20 @@
 import { NextResponse } from "next/server"
 import { promises as fs } from "fs"
 import path from "path"
+import { renderMarkdown } from "../../../lib/markdown"
 
 export interface Comment {
   id: string
   content: string
   createdAt: string
   votes: number
+  parentId?: string | null
+  flagged?: boolean
 }
 
 const COMMENTS_FILE = path.join(process.cwd(), "data", "comments.json")
 
-async function readData() {
+export async function readData() {
   try {
     const data = await fs.readFile(COMMENTS_FILE, "utf8")
     return JSON.parse(data || "{}")
@@ -20,7 +23,7 @@ async function readData() {
   }
 }
 
-async function writeData(data: Record<string, Comment[]>) {
+export async function writeData(data: Record<string, Comment[]>) {
   await fs.mkdir(path.dirname(COMMENTS_FILE), { recursive: true })
   await fs.writeFile(COMMENTS_FILE, JSON.stringify(data, null, 2))
 }
@@ -42,24 +45,34 @@ export function voteComment(
 export async function GET(req: Request) {
   const { searchParams } = new URL(req.url)
   const verseId = searchParams.get("verseId")
+  const parentId = searchParams.get("parentId")
   const data = await readData()
   if (verseId) {
-    return NextResponse.json(data[verseId] || [])
+    let list = data[verseId] || []
+    if (parentId !== null) {
+      list = list.filter((c) => c.parentId === parentId)
+    } else {
+      list = list.filter((c) => !c.parentId)
+    }
+    return NextResponse.json(list)
   }
   return NextResponse.json(data)
 }
 
 export async function POST(req: Request) {
-  const { verseId, content } = await req.json()
+  const { verseId, content, parentId } = await req.json()
   if (!verseId || !content) {
     return NextResponse.json({ error: "Missing fields" }, { status: 400 })
   }
+  const sanitized = renderMarkdown(content)
   const data = await readData()
   const comment: Comment = {
     id: crypto.randomUUID(),
-    content,
+    content: sanitized,
     createdAt: new Date().toISOString(),
     votes: 0,
+    parentId: parentId ?? null,
+    flagged: false,
   }
   if (!data[verseId]) data[verseId] = []
   data[verseId].push(comment)
