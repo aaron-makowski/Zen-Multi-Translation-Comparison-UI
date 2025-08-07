@@ -28,3 +28,23 @@ Continue building your app on:
 2. Deploy your chats from the v0 interface
 3. Changes are automatically pushed to this repository
 4. Vercel deploys the latest version from this repository
+
+## Environment Variables
+
+Authentication uses [NextAuth](https://next-auth.js.org/) and requires the following environment variables:
+
+```
+NEXTAUTH_URL=
+NEXTAUTH_SECRET=
+GITHUB_ID=
+GITHUB_SECRET=
+GOOGLE_CLIENT_ID=
+GOOGLE_CLIENT_SECRET=
+SMTP_HOST=
+SMTP_PORT=
+SMTP_USER=
+SMTP_PASS=
+EMAIL_FROM=
+```
+
+These values configure OAuth providers and the SMTP server used to send password reset emails.

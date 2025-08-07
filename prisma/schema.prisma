@@ -14,15 +14,19 @@ datasource db {
 model User {
   id        String   @id @default(cuid())
   email     String   @unique
-  username  String   @unique
+  name      String   @map("username") @unique
   password  String
   isGuest   Boolean  @default(false)
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
-  
+
   favorites Favorite[]
   notes     Note[]
   comments  Comment[]
+  accounts  Account[]
+  sessions  Session[]
+
+  @@map("users")
 }
 
 model Book {
@@ -110,8 +114,30 @@ model Comment {
 }
 
 model Session {
-  id        String   @id @default(cuid())
-  userId    String
-  expiresAt DateTime
-  createdAt DateTime @default(now())
+  sessionToken String   @id @default(cuid()) @map("id")
+  userId       String
+  user         User     @relation(fields: [userId], references: [id])
+  expires      DateTime @map("expiresAt")
+  createdAt    DateTime @default(now())
+
+  @@map("sessions")
+}
+
+model Account {
+  id                String   @id @default(cuid())
+  userId            String
+  type              String
+  provider          String
+  providerAccountId String
+  refresh_token     String?  @db.Text
+  access_token      String?  @db.Text
+  expires_at        Int?
+  token_type        String?
+  scope             String?
+  id_token          String?  @db.Text
+  session_state     String?
+  user              User     @relation(fields: [userId], references: [id])
+
+  @@unique([provider, providerAccountId])
+  @@map("accounts")
 }
