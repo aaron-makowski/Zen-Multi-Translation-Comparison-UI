@@ -1,48 +1,17 @@
 import { NextResponse } from "next/server"
-import { promises as fs } from "fs"
-import path from "path"
+import {
+  Comment,
+  readComments,
+  writeComments,
+  voteComment,
+} from "../../../lib/comments"
 
-export interface Comment {
-  id: string
-  content: string
-  createdAt: string
-  votes: number
-}
-
-const COMMENTS_FILE = path.join(process.cwd(), "data", "comments.json")
-
-async function readData() {
-  try {
-    const data = await fs.readFile(COMMENTS_FILE, "utf8")
-    return JSON.parse(data || "{}")
-  } catch {
-    return {}
-  }
-}
-
-async function writeData(data: Record<string, Comment[]>) {
-  await fs.mkdir(path.dirname(COMMENTS_FILE), { recursive: true })
-  await fs.writeFile(COMMENTS_FILE, JSON.stringify(data, null, 2))
-}
-
-export function voteComment(
-  data: Record<string, Comment[]>,
-  verseId: string,
-  commentId: string,
-  delta: number
-) {
-  const list = data[verseId]
-  if (!list) return null
-  const comment = list.find((c) => c.id === commentId)
-  if (!comment) return null
-  comment.votes = (comment.votes ?? 0) + delta
-  return comment
-}
+export { Comment, voteComment }
 
 export async function GET(req: Request) {
   const { searchParams } = new URL(req.url)
   const verseId = searchParams.get("verseId")
-  const data = await readData()
+  const data = await readComments()
   if (verseId) {
     return NextResponse.json(data[verseId] || [])
   }
@@ -54,16 +23,17 @@ export async function POST(req: Request) {
   if (!verseId || !content) {
     return NextResponse.json({ error: "Missing fields" }, { status: 400 })
   }
-  const data = await readData()
+  const data = await readComments()
   const comment: Comment = {
     id: crypto.randomUUID(),
     content,
     createdAt: new Date().toISOString(),
     votes: 0,
+    flags: 0,
   }
   if (!data[verseId]) data[verseId] = []
   data[verseId].push(comment)
-  await writeData(data)
+  await writeComments(data)
   return NextResponse.json(comment)
 }
 
@@ -72,11 +42,11 @@ export async function PATCH(req: Request) {
   if (!verseId || !commentId || typeof delta !== "number") {
     return NextResponse.json({ error: "Missing fields" }, { status: 400 })
   }
-  const data = await readData()
+  const data = await readComments()
   const updated = voteComment(data, verseId, commentId, delta)
   if (!updated) {
     return NextResponse.json({ error: "Not found" }, { status: 404 })
   }
-  await writeData(data)
+  await writeComments(data)
   return NextResponse.json(updated)
 }

@@ -115,3 +115,11 @@ model Session {
   expiresAt DateTime
   createdAt DateTime @default(now())
 }
+
+model AuditLog {
+  id        String   @id @default(cuid())
+  action    String
+  entity    String
+  entityId  String
+  createdAt DateTime @default(now())
+}
