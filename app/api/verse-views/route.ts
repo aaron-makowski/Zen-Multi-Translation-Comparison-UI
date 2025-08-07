@@ -7,11 +7,20 @@ export async function POST(req: Request) {
   if (!verseId) {
     return NextResponse.json({ error: "Missing verseId" }, { status: 400 })
   }
-  await db.insert(verseViews).values({
-    id: crypto.randomUUID(),
-    verseId,
-    translationId,
-    userId,
-  })
-  return NextResponse.json({ success: true })
+  try {
+    await db.insert(verseViews).values({
+      id: crypto.randomUUID(),
+      verseId,
+      translationId,
+      userId,
+    })
+    return NextResponse.json({ success: true })
+  } catch (err) {
+    const message = err instanceof Error ? err.message : "Unknown error"
+    console.error("Failed to record verse view:", err)
+    return NextResponse.json(
+      { error: "Failed to record verse view", details: message },
+      { status: 500 }
+    )
+  }
 }
