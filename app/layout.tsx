@@ -4,6 +4,7 @@ import { Inter } from "next/font/google"
 import "./globals.css"
 import { Navigation } from "@/components/navigation"
 import { ThemeProvider } from "@/components/theme-provider"
+import { PWALoader } from "@/components/pwa-provider"
 
 const inter = Inter({ subsets: ["latin"] })
 
@@ -22,6 +23,7 @@ export default function RootLayout({
     <html lang="en">
       <body className={`${inter.className} bg-gray-50 min-h-screen`}>
         <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
+          <PWALoader />
           <Navigation />
           {children}
         </ThemeProvider>
