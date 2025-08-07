@@ -32,3 +32,9 @@ Continue building your app on:
 ## Environment Variables
 
 The Reddit integration uses Reddit's public JSON API and does not require authentication. To change the subreddit queried by the API route, define `REDDIT_SUBREDDIT` in your `.env` file. If you later switch to Reddit's authenticated API, you will also need to provide `REDDIT_CLIENT_ID` and `REDDIT_CLIENT_SECRET`.
+
+## Community
+
+- [Code of Conduct](docs/CODE_OF_CONDUCT.md)
+- [Contributing](docs/CONTRIBUTING.md)
+- [FAQ](docs/FAQ.md)
