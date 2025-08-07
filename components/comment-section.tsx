@@ -1,12 +1,14 @@
 "use client"
 import { useEffect, useState, FormEvent } from "react"
 import { Button } from "@/components/ui/button"
+import { getBadge } from "@/lib/karma"
 
 interface Comment {
   id: string
   content: string
   createdAt: string
   votes: number
+  username?: string
 }
 
 export function CommentSection({ verseId }: { verseId: string }) {
@@ -28,7 +30,7 @@ export function CommentSection({ verseId }: { verseId: string }) {
     await fetch("/api/comments", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ verseId, content })
+      body: JSON.stringify({ verseId, content, username: "guest" })
     })
     setContent("")
     load()
@@ -78,8 +80,15 @@ export function CommentSection({ verseId }: { verseId: string }) {
                 </button>
               </div>
             </div>
-            <div className="text-xs text-muted-foreground">
-              {new Date(c.createdAt).toLocaleString()}
+            <div className="text-xs text-muted-foreground flex items-center gap-2">
+              <span className="flex items-center gap-1">
+                {c.username || "Anonymous"}
+                {(() => {
+                  const badge = getBadge(c.votes)
+                  return <span className={`${badge.className}`}>{badge.label}</span>
+                })()}
+              </span>
+              <span>{new Date(c.createdAt).toLocaleString()}</span>
             </div>
           </div>
         ))}

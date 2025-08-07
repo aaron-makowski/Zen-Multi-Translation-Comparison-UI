@@ -7,6 +7,7 @@ export interface Comment {
   content: string
   createdAt: string
   votes: number
+  username?: string
 }
 
 const COMMENTS_FILE = path.join(process.cwd(), "data", "comments.json")
@@ -50,7 +51,7 @@ export async function GET(req: Request) {
 }
 
 export async function POST(req: Request) {
-  const { verseId, content } = await req.json()
+  const { verseId, content, username } = await req.json()
   if (!verseId || !content) {
     return NextResponse.json({ error: "Missing fields" }, { status: 400 })
   }
@@ -60,6 +61,7 @@ export async function POST(req: Request) {
     content,
     createdAt: new Date().toISOString(),
     votes: 0,
+    username: username || "Anonymous",
   }
   if (!data[verseId]) data[verseId] = []
   data[verseId].push(comment)
