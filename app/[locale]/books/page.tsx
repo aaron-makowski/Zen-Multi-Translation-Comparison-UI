@@ -1,4 +1,4 @@
-import Link from "next/link"
+import Link from "next-intl/link"
 import { Button } from "@/components/ui/button"
 import { Card } from "@/components/ui/card"
 import { db } from "@/lib/db"

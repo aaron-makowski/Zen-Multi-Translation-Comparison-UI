@@ -1,9 +1,9 @@
-import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { translators, verses } from "@/lib/translations"
-import { ArrowLeft } from "lucide-react"
-import Link from "next/link"
-import { notFound } from "next/navigation"
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { translators, verses } from "@/lib/translations";
+import { ArrowLeft } from "lucide-react";
+import Link from "next-intl/link";
+import { notFound } from "next/navigation";
 
 export default function TranslatorPage({ params }: { params: { id: string } }) {
   const translator = translators.find((t) => t.id === params.id)
