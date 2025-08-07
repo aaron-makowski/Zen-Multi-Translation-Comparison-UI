@@ -16,6 +16,7 @@
     "@libsql/client": "latest",
     "@libsql/client-wasm": "latest",
     "@neondatabase/serverless": "latest",
+    "@next-safe/middleware": "^0.10.0",
     "@op-engineering/op-sqlite": "latest",
     "@opentelemetry/api": "latest",
     "@planetscale/database": "latest",
