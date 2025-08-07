@@ -1,0 +1,19 @@
+/* Minimalist Zen Mode stylesheet */
+body.zen-mode {
+  background-color: #fdfdf9;
+  color: #222;
+  font-family: serif;
+}
+
+body.zen-mode header,
+body.zen-mode nav,
+body.zen-mode footer,
+body.zen-mode aside {
+  display: none;
+}
+
+body.zen-mode main {
+  max-width: 60ch;
+  margin: 0 auto;
+  padding: 2rem;
+}
