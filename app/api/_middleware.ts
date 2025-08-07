@@ -1,3 +1,6 @@
+// NOTE: This rate limiter stores counts in memory and is unsuitable for serverless or
+// multi-instance deployments. It should only be used for development or single-instance
+// production setups. For robust deployments, use a distributed store like Redis.
 import { NextRequest, NextResponse } from 'next/server';
 
 const RATE_LIMIT_WINDOW_MS = 60_000; // 1 minute
