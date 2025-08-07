@@ -1,24 +1,20 @@
 import Link from "next/link"
 import { notFound } from "next/navigation"
-import { prisma } from "@/lib/db"
+import { db } from "@/lib/db"
+import { verses } from "@/lib/schema"
+import { eq } from "drizzle-orm"
 import { CommentSection } from "@/components/comment-section"
+import TranslationList from "@/components/translation-list"
 
 export default async function VersePage({
   params,
 }: {
   params: { bookId: string; verseId: string }
 }) {
-  const verse = await prisma.verse.findUnique({
-    where: {
-      id: params.verseId,
-    },
-    include: {
+  const verse = await db.query.verses.findFirst({
+    where: eq(verses.id, params.verseId),
+    with: {
       book: true,
-      translations: {
-        orderBy: {
-          translator: "asc",
-        },
-      },
     },
   })
 
@@ -39,16 +35,7 @@ export default async function VersePage({
 
         <div className="bg-white rounded-lg shadow-md p-6 mb-8">
           <h2 className="text-xl font-semibold mb-4">Translations</h2>
-
-          <div className="space-y-6">
-            {verse.translations.map((translation) => (
-              <div key={translation.id} className="border-b pb-4 last:border-b-0 last:pb-0">
-                <h3 className="font-medium text-lg mb-2">Translation by {translation.translator}</h3>
-                <p className="text-gray-800 whitespace-pre-line">{translation.text}</p>
-                <p className="text-sm text-gray-500 mt-2">Language: {translation.language}</p>
-              </div>
-            ))}
-          </div>
+          <TranslationList verseId={params.verseId} />
         </div>
 
         <CommentSection verseId={params.verseId} />
