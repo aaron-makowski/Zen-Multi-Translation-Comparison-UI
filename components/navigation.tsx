@@ -31,7 +31,7 @@ export function Navigation() {
                 Compare
               </NavLink>
               <NavLink href="/reddit" current={pathname === "/reddit"}>
-                Reddit
+                r/Zen
               </NavLink>
               <NavLink href="/pdf-preview" current={pathname === "/pdf-preview"}>
                 PDF Preview
@@ -68,7 +68,7 @@ export function Navigation() {
             Compare
           </MobileNavLink>
           <MobileNavLink href="/reddit" current={pathname === "/reddit"}>
-            Reddit
+            r/Zen
           </MobileNavLink>
           <MobileNavLink href="/pdf-preview" current={pathname === "/pdf-preview"}>
             PDF Preview

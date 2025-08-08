@@ -1,12 +1,9 @@
 import { NextResponse } from "next/server"
 
-const SUBREDDIT = process.env.REDDIT_SUBREDDIT || "Zen"
-
-export async function GET(req: Request) {
-  const { searchParams } = new URL(req.url)
-  const subreddit = searchParams.get("subreddit") || SUBREDDIT
+// Fetch latest posts from r/Zen and expose minimal data for the UI
+export async function GET() {
   try {
-    const res = await fetch(`https://www.reddit.com/r/${subreddit}.json`, {
+    const res = await fetch("https://www.reddit.com/r/Zen.json", {
       headers: { "User-Agent": "ZenMultiTranslation/1.0" }
     })
     if (!res.ok) {
@@ -17,8 +14,7 @@ export async function GET(req: Request) {
       id: child.data.id,
       title: child.data.title,
       author: child.data.author,
-      url: `https://www.reddit.com${child.data.permalink}`,
-      upvotes: child.data.ups
+      url: `https://www.reddit.com${child.data.permalink}`
     }))
     return NextResponse.json(posts)
   } catch (error) {
