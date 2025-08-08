@@ -11,18 +11,26 @@ datasource db {
   url = env("DATABASE_URL")
 }
 
+enum Role {
+  USER
+  ADMIN
+}
+
 model User {
   id        String   @id @default(cuid())
   email     String   @unique
   username  String   @unique
   password  String
   isGuest   Boolean  @default(false)
+  role      Role     @default(USER)
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
-  
+
   favorites Favorite[]
   notes     Note[]
   comments  Comment[]
+  flags     Flag[]
+  auditLogs AuditLog[]
 }
 
 model Book {
@@ -107,6 +115,27 @@ model Comment {
   verse     Verse    @relation(fields: [verseId], references: [id])
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+  flags     Flag[]
+}
+
+model Flag {
+  id        String   @id @default(cuid())
+  commentId String
+  comment   Comment @relation(fields: [commentId], references: [id])
+  userId    String
+  user      User    @relation(fields: [userId], references: [id])
+  reason    String?
+  createdAt DateTime @default(now())
+}
+
+model AuditLog {
+  id        String   @id @default(cuid())
+  userId    String?
+  user      User?    @relation(fields: [userId], references: [id])
+  action    String
+  targetType String
+  targetId  String
+  createdAt DateTime @default(now())
 }
 
 model Session {

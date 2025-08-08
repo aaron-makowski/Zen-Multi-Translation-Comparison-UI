@@ -8,6 +8,7 @@ export const users = pgTable("users", {
   username: text("username").notNull().unique(),
   password: text("password").notNull(),
   isGuest: boolean("is_guest").default(false).notNull(),
+  role: text("role").default("user").notNull(),
   createdAt: timestamp("created_at").defaultNow().notNull(),
   updatedAt: timestamp("updated_at").notNull(),
 })
@@ -109,6 +110,29 @@ export const comments = pgTable("comments", {
   updatedAt: timestamp("updated_at").notNull(),
 })
 
+// Flag table
+export const flags = pgTable("flags", {
+  id: text("id").primaryKey(),
+  commentId: text("comment_id")
+    .notNull()
+    .references(() => comments.id),
+  userId: text("user_id")
+    .notNull()
+    .references(() => users.id),
+  reason: text("reason"),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+})
+
+// Audit log table
+export const auditLogs = pgTable("audit_logs", {
+  id: text("id").primaryKey(),
+  userId: text("user_id").references(() => users.id),
+  action: text("action").notNull(),
+  targetType: text("target_type").notNull(),
+  targetId: text("target_id").notNull(),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+})
+
 // Session table
 export const sessions = pgTable("sessions", {
   id: text("id").primaryKey(),
@@ -145,6 +169,8 @@ export const usersRelations = relations(users, ({ many }) => ({
   notes: many(notes),
   comments: many(comments),
   sessions: many(sessions),
+  flags: many(flags),
+  auditLogs: many(auditLogs),
 }))
 
 export const favoritesRelations = relations(favorites, ({ one }) => ({
@@ -178,6 +204,7 @@ export const commentsRelations = relations(comments, ({ one }) => ({
     fields: [comments.verseId],
     references: [verses.id],
   }),
+  flags: many(flags),
 }))
 
 export const sessionsRelations = relations(sessions, ({ one }) => ({
@@ -192,4 +219,13 @@ export const wordMappingsRelations = relations(wordMappings, ({ one }) => ({
     fields: [wordMappings.translationId],
     references: [translations.id],
   }),
+}))
+
+export const flagsRelations = relations(flags, ({ one }) => ({
+  user: one(users, { fields: [flags.userId], references: [users.id] }),
+  comment: one(comments, { fields: [flags.commentId], references: [comments.id] }),
+}))
+
+export const auditLogsRelations = relations(auditLogs, ({ one }) => ({
+  user: one(users, { fields: [auditLogs.userId], references: [users.id] }),
 }))
