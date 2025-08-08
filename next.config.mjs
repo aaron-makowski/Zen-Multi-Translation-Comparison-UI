@@ -1,3 +1,9 @@
+import nextMDX from "@next/mdx"
+
+const withMDX = nextMDX({
+  extension: /\.(md|mdx)$/,
+})
+
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   eslint: {
@@ -9,6 +15,7 @@ const nextConfig = {
   images: {
     unoptimized: true,
   },
+  pageExtensions: ["ts", "tsx", "js", "jsx", "md", "mdx"],
 }
 
-export default nextConfig
+export default withMDX(nextConfig)
