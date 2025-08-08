@@ -114,7 +114,7 @@ model Comment {
 }
 
 model Session {
-  sessionToken String   @id @default(cuid()) @map("id")
+  sessionToken String   @id @map("id")
   userId       String
   user         User     @relation(fields: [userId], references: [id])
   expires      DateTime @map("expiresAt")
