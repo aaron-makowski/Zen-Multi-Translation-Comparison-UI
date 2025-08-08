@@ -1,19 +1,34 @@
 "use client"
 
-import { useState, useEffect } from "react";
-import { Button } from "@/components/ui/button";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { translators, verses } from "@/lib/translations";
-import Link from "next-intl/link";
-import { ArrowLeft, ArrowRight, ExternalLink } from "lucide-react";
-import { TranslationCard } from "@/components/translation-card";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { TranslatorSelector } from "@/components/translator-selector";
+import { useState, useEffect } from "react"
+import { Button } from "@/components/ui/button"
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
+import { translators, verses } from "@/lib/translations"
+import Link from "next-intl/link"
+import { ArrowLeft, ArrowRight, ExternalLink } from "lucide-react"
+import { TranslationCard } from "@/components/translation-card"
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
+import { TranslatorSelector } from "@/components/translator-selector"
+import { Input } from "@/components/ui/input"
+import { filterByKeyword } from "@/lib/verse-utils"
 
 export default function TranslationsPage() {
   const [selectedVerse, setSelectedVerse] = useState(1)
   const [selectedTranslator, setSelectedTranslator] = useState("waley")
   const [visibleTranslators, setVisibleTranslators] = useState<string[]>(translators.map((t) => t.id))
+  const [searchTerm, setSearchTerm] = useState("")
+  const [results, setResults] = useState<
+    { baseVerse: number; translator: string; text: string }[]
+  >([])
+
+  const handleSearch = (value: string) => {
+    setSearchTerm(value)
+    if (value.trim()) {
+      setResults(filterByKeyword(value))
+    } else {
+      setResults([])
+    }
+  }
 
   const verse = verses.find((v) => v.id === selectedVerse) || verses[0]
   const translator = translators.find((t) => t.id === selectedTranslator) || translators[0]
@@ -34,6 +49,25 @@ export default function TranslationsPage() {
         </Link>
         <h1 className="text-2xl font-bold mb-1">Xinxin Ming Translations</h1>
         <p className="text-sm text-muted-foreground">Explore different translations of this foundational Zen text.</p>
+      </div>
+
+      <div className="mb-4">
+        <Input
+          type="text"
+          placeholder="Search translations"
+          value={searchTerm}
+          onChange={(e) => handleSearch(e.target.value)}
+          className="mb-2"
+        />
+        {results.length > 0 && (
+          <div className="max-h-40 overflow-y-auto text-xs space-y-1">
+            {results.map((r, i) => (
+              <div key={i}>
+                <span className="font-medium">Verse {r.baseVerse} ({r.translator}):</span> {r.text}
+              </div>
+            ))}
+          </div>
+        )}
       </div>
 
       <Tabs defaultValue="verse" className="w-full">
