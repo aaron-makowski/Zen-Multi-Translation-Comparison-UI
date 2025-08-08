@@ -12,7 +12,12 @@ import {
 } from "@/components/ui/select"
 
 interface VerseSelectorProps {
-  books: { id: string; title: string; verses: { id: string; number: number }[] }[]
+  books: {
+    id: string
+    title: string
+    pdfPath?: string | null
+    verses: { id: string; number: number }[]
+  }[]
   initialPairs?: { bookId: string; verseId: string }[]
 }
 

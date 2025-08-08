@@ -28,6 +28,7 @@ export async function seedDatabase() {
         description: xinxinmingData.description,
         author: "Jianzhi Sengcan",
         coverImage: "/xinxin-ming-cover.png",
+        pdfPath: null,
         updatedAt: new Date(),
       })
       .returning()

@@ -17,7 +17,7 @@ describe('getAggregatedTranslations', () => {
       {
         id: 'v1',
         number: 1,
-        book: { title: 'Book One' },
+        book: { title: 'Book One', pdfPath: null },
         translations: [
           { translator: 'T1', text: 'text1' },
           { translator: 'T2', text: 'text2' },
@@ -26,7 +26,7 @@ describe('getAggregatedTranslations', () => {
       {
         id: 'v2',
         number: 2,
-        book: { title: 'Book Two' },
+        book: { title: 'Book Two', pdfPath: null },
         translations: [
           { translator: 'T1', text: 'text3' },
         ],
@@ -59,7 +59,7 @@ describe('getAggregatedTranslations', () => {
       {
         id: 'v1',
         number: 1,
-        book: { title: 'Book One' },
+        book: { title: 'Book One', pdfPath: null },
         translations: [{ translator: 'T1', text: 'text1' }],
       },
     ]
