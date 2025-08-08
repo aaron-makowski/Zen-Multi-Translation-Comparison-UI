@@ -1,9 +1,12 @@
 "use client"
 import { useEffect, useState, FormEvent } from "react"
 import { Button } from "@/components/ui/button"
+import { getKarmaBadge } from "@/lib/karma"
 
 interface Comment {
   id: string
+  username?: string
+  karma?: number
   content: string
   createdAt: string
   votes: number
@@ -28,7 +31,7 @@ export function CommentSection({ verseId }: { verseId: string }) {
     await fetch("/api/comments", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ verseId, content })
+      body: JSON.stringify({ verseId, content, username: "anonymous", karma: 0 })
     })
     setContent("")
     load()
@@ -56,33 +59,42 @@ export function CommentSection({ verseId }: { verseId: string }) {
         <Button type="submit" size="sm">Post</Button>
       </form>
       <div className="space-y-2">
-        {comments.map((c) => (
-          <div key={c.id} className="p-2 bg-muted rounded">
-            <div className="flex items-center justify-between">
-              <div className="text-sm flex-1">{c.content}</div>
-              <div className="flex items-center gap-1 ml-2">
-                <button
-                  aria-label="upvote"
-                  className="text-xs"
-                  onClick={() => vote(c.id, 1)}
-                >
-                  ▲
-                </button>
-                <span className="text-xs w-4 text-center">{c.votes}</span>
-                <button
-                  aria-label="downvote"
-                  className="text-xs"
-                  onClick={() => vote(c.id, -1)}
-                >
-                  ▼
-                </button>
+        {comments.map((c) => {
+          const badge = getKarmaBadge(c.karma ?? 0)
+          return (
+            <div key={c.id} className="p-2 bg-muted rounded">
+              <div className="flex items-center justify-between">
+                <div className="text-sm flex-1">
+                  <div className="flex items-center gap-1 mb-1">
+                    <span>{c.username || "anonymous"}</span>
+                    <span className={`text-xs ${badge.color}`}>{badge.label}</span>
+                  </div>
+                  {c.content}
+                </div>
+                <div className="flex items-center gap-1 ml-2">
+                  <button
+                    aria-label="upvote"
+                    className="text-xs"
+                    onClick={() => vote(c.id, 1)}
+                  >
+                    ▲
+                  </button>
+                  <span className="text-xs w-4 text-center">{c.votes}</span>
+                  <button
+                    aria-label="downvote"
+                    className="text-xs"
+                    onClick={() => vote(c.id, -1)}
+                  >
+                    ▼
+                  </button>
+                </div>
+              </div>
+              <div className="text-xs text-muted-foreground">
+                {new Date(c.createdAt).toLocaleString()}
               </div>
             </div>
-            <div className="text-xs text-muted-foreground">
-              {new Date(c.createdAt).toLocaleString()}
-            </div>
-          </div>
-        ))}
+          )
+        })}
         {comments.length === 0 && (
           <p className="text-sm text-muted-foreground">No comments yet.</p>
         )}

@@ -4,6 +4,8 @@ import path from "path"
 
 export interface Comment {
   id: string
+  username: string
+  karma: number
   content: string
   createdAt: string
   votes: number
@@ -50,13 +52,16 @@ export async function GET(req: Request) {
 }
 
 export async function POST(req: Request) {
-  const { verseId, content } = await req.json()
+  const { verseId, content, username = "anonymous", karma = 0 } =
+    await req.json()
   if (!verseId || !content) {
     return NextResponse.json({ error: "Missing fields" }, { status: 400 })
   }
   const data = await readData()
   const comment: Comment = {
     id: crypto.randomUUID(),
+    username,
+    karma,
     content,
     createdAt: new Date().toISOString(),
     votes: 0,
