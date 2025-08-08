@@ -2,25 +2,32 @@ import Link from "next/link"
 import { Button } from "@/components/ui/button"
 import { Card } from "@/components/ui/card"
 import { db } from "@/lib/db"
+import { useTranslations } from "next-intl"
 
 export const revalidate = 60 // Revalidate data every 60 seconds
 
 export default async function BooksPage() {
-  const allBooks = await db.query.books.findMany({
-    orderBy: (books, { asc }) => [asc(books.title)],
-  })
+  const t = useTranslations('Books')
+  let allBooks = []
+  try {
+    allBooks = await db.query.books.findMany({
+      orderBy: (books, { asc }) => [asc(books.title)],
+    })
+  } catch {
+    allBooks = []
+  }
 
   return (
     <main className="flex min-h-screen flex-col items-center p-4 md:p-24">
       <div className="max-w-4xl w-full">
-        <h1 className="text-3xl font-bold mb-6">Zen Texts Library</h1>
+        <h1 className="text-3xl font-bold mb-6">{t('title')}</h1>
 
         {allBooks.length === 0 ? (
           <Card className="p-6 text-center">
-            <p className="mb-4 text-muted-foreground">The library is currently empty. Try seeding the database.</p>
+            <p className="mb-4 text-muted-foreground">{t('empty')}</p>
             <Button asChild>
               <Link href="/api/seed" target="_blank">
-                Seed Database
+                {t('seed')}
               </Link>
             </Button>
           </Card>

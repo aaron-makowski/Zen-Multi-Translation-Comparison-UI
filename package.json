@@ -7,7 +7,8 @@
     "dev": "next dev",
     "lint": "next lint",
     "start": "next start",
-    "test": "vitest run"
+    "test": "vitest run",
+    "test:e2e": "playwright test"
   },
   "dependencies": {
     "@aws-sdk/client-rds-data": "latest",
@@ -61,6 +62,7 @@
     "uuid": "latest"
   },
   "devDependencies": {
+    "@playwright/test": "^1.54.2",
     "@types/node": "^22",
     "@types/react": "^18",
     "@types/react-dom": "^18",

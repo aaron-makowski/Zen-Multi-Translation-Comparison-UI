@@ -21,6 +21,11 @@
     "aboutDesc": "This application allows you to explore and compare different translations of classic Zen texts. You can browse through books, read verses, and compare how different translators have interpreted the same text.",
     "learnMore": "Learn More"
   },
+  "Books": {
+    "title": "Zen Texts Library",
+    "empty": "The library is currently empty. Try seeding the database.",
+    "seed": "Seed Database"
+  },
   "Comments": {
     "title": "Comments",
     "placeholder": "Add a comment",
