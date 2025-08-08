@@ -10,7 +10,19 @@ const inter = Inter({ subsets: ["latin"] })
 export const metadata: Metadata = {
   title: "Zen Texts Translation Comparison",
   description: "Compare different translations of classic Zen texts",
-    generator: 'v0.dev'
+  generator: "v0.dev",
+  openGraph: {
+    title: "Zen Texts Translation Comparison",
+    description: "Compare different translations of classic Zen texts",
+    url: process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000",
+    siteName: "Zen Texts Translation Comparison",
+    type: "website",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Zen Texts Translation Comparison",
+    description: "Compare different translations of classic Zen texts",
+  },
 }
 
 export default function RootLayout({
