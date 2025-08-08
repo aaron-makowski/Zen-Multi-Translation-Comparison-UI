@@ -8,6 +8,8 @@ export const users = pgTable("users", {
   username: text("username").notNull().unique(),
   password: text("password").notNull(),
   isGuest: boolean("is_guest").default(false).notNull(),
+  commentKarma: integer("comment_karma").default(0).notNull(),
+  highlightKarma: integer("highlight_karma").default(0).notNull(),
   createdAt: timestamp("created_at").defaultNow().notNull(),
   updatedAt: timestamp("updated_at").notNull(),
 })
