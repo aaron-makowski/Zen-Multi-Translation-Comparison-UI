@@ -13,11 +13,21 @@ export async function POST(
     return NextResponse.json({ error: "Missing followerId" }, { status: 400 })
   }
 
-  await db.insert(follows).values({
-    id: uuidv4(),
-    followerId,
-    followingId: params.userId,
-  })
+  try {
+    await db.insert(follows).values({
+      id: uuidv4(),
+      followerId,
+      followingId: params.userId,
+    })
+  } catch (error: any) {
+    if (error?.code === "23505") {
+      return NextResponse.json(
+        { error: "Already following this user" },
+        { status: 409 }
+      )
+    }
+    return NextResponse.json({ error: "Server error" }, { status: 500 })
+  }
 
   return NextResponse.json({ success: true })
 }
