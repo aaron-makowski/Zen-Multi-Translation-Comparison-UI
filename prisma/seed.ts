@@ -4,60 +4,56 @@ import { translations } from "../lib/translations"
 const prisma = new PrismaClient()
 
 async function main() {
-  // Create a book for Xinxin Ming
-  const xinxinMing = await prisma.book.upsert({
-    where: { id: "xinxin-ming" },
-    update: {},
-    create: {
-      id: "xinxin-ming",
-      title: "Xinxin Ming",
-      description: "Faith in Mind - A classic Zen poem attributed to the Third Patriarch of Zen, Jianzhi Sengcan",
-      author: "Jianzhi Sengcan",
-      coverImage: "/xinxin-ming-cover.png",
-    },
-  })
-
-  console.log(`Created book: ${xinxinMing.title}`)
-
-  // Create verses and translations
-  for (const [index, translation] of translations.entries()) {
-    const verseNumber = index + 1
-
-    // Create verse
-    const verse = await prisma.verse.upsert({
-      where: {
-        id: `xinxin-ming-verse-${verseNumber}`,
-      },
+  for (const bookData of Object.values(translations)) {
+    const book = await prisma.book.upsert({
+      where: { id: bookData.id },
       update: {},
       create: {
-        id: `xinxin-ming-verse-${verseNumber}`,
-        number: verseNumber,
-        bookId: xinxinMing.id,
+        id: bookData.id,
+        title: bookData.title,
+        description: bookData.description,
+        author: bookData.author,
+        coverImage: bookData.coverImage,
       },
     })
 
-    console.log(`Created verse: ${verse.number}`)
+    console.log(`Created book: ${book.title}`)
 
-    // Create translations for each translator
-    for (const translator of Object.keys(translation)) {
-      const translationText = translation[translator]
-
-      await prisma.translation.upsert({
-        where: {
-          id: `xinxin-ming-verse-${verseNumber}-${translator}`,
-        },
-        update: {
-          text: translationText,
-        },
+    for (const verse of bookData.verses) {
+      const verseRecord = await prisma.verse.upsert({
+        where: { id: `${bookData.id}-verse-${verse.id}` },
+        update: { number: verse.id },
         create: {
-          id: `xinxin-ming-verse-${verseNumber}-${translator}`,
-          text: translationText,
-          translator: translator,
-          verseId: verse.id,
+          id: `${bookData.id}-verse-${verse.id}`,
+          number: verse.id,
+          bookId: book.id,
         },
       })
 
-      console.log(`Created translation by: ${translator}`)
+      console.log(`Created verse: ${verseRecord.number}`)
+
+      for (const translator of bookData.translators) {
+        const translationText = verse.lines
+          .map((line) => line.translations[translator.id] || "")
+          .join("\n")
+
+        await prisma.translation.upsert({
+          where: {
+            id: `${bookData.id}-verse-${verse.id}-${translator.id}`,
+          },
+          update: {
+            text: translationText,
+          },
+          create: {
+            id: `${bookData.id}-verse-${verse.id}-${translator.id}`,
+            text: translationText,
+            translator: translator.name,
+            verseId: verseRecord.id,
+          },
+        })
+
+        console.log(`Created translation by: ${translator.name}`)
+      }
     }
   }
 
