@@ -16,7 +16,7 @@ export default function AboutPage() {
 
           <h2 className="text-2xl font-semibold mt-6 mb-3">The Xinxin Ming</h2>
           <p className="mb-4">
-            The Xinxin Ming (信心銘), often translated as "Faith in Mind" or "Trust in Mind," is a classic Chinese Zen
+            The Xinxin Ming (信心銘), often translated as &quot;Faith in Mind&quot; or &quot;Trust in Mind,&quot; is a classic Chinese Zen
             poem attributed to the Third Patriarch of Zen, Jianzhi Sengcan (鑑智僧璨). Written in the 7th century, this
             text is one of the earliest and most influential texts in the Zen tradition.
           </p>

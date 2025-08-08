@@ -1,3 +1,4 @@
+import React from "react"
 import Link from "next/link"
 import { Button } from "@/components/ui/button"
 import { Card } from "@/components/ui/card"
@@ -23,7 +24,7 @@ export default function ComparePage() {
               <Link href="/books/platform-sutra">
                 <div className="text-left">
                   <div className="font-medium">Platform Sutra</div>
-                  <div className="text-sm opacity-80">Compare translations of Huineng's teachings</div>
+                  <div className="text-sm opacity-80">Compare translations of Huineng&apos;s teachings</div>
                 </div>
               </Link>
             </Button>
