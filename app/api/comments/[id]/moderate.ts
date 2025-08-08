@@ -1,6 +1,23 @@
 import { NextResponse } from "next/server"
 import { readData, writeData, Comment } from "../route"
 
+function collectDescendants(list: Comment[], id: string, acc: Set<string>) {
+  for (const c of list) {
+    if (c.parentId === id) {
+      acc.add(c.id)
+      collectDescendants(list, c.id, acc)
+    }
+  }
+}
+
+export function removeWithDescendants(list: Comment[], id: string) {
+  const target = list.find((c) => c.id === id)
+  if (!target) return { removed: null, list }
+  const ids = new Set<string>([id])
+  collectDescendants(list, id, ids)
+  return { removed: target, list: list.filter((c) => !ids.has(c.id)) }
+}
+
 export async function POST(
   req: Request,
   { params }: { params: { id: string } }
@@ -22,8 +39,8 @@ export async function POST(
     const idx = list.findIndex((c) => c.id === params.id)
     if (idx !== -1) {
       if (action === "remove") {
-        const removed = list.splice(idx, 1)[0]
-        data[verseId] = list.filter((c) => c.parentId !== params.id)
+        const { removed, list: updated } = removeWithDescendants(list, params.id)
+        data[verseId] = updated
         found = removed
       } else {
         list[idx].flagged = true
