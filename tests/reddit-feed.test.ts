@@ -16,9 +16,13 @@ describe('reddit feed API', () => {
   })
 
   it('returns simplified posts from reddit', async () => {
-    vi.stubGlobal('fetch', vi.fn(async () => ({
-      json: async () => mockJson
-    })) as any)
+    vi.stubGlobal(
+      'fetch',
+      vi.fn(async () => ({
+        ok: true,
+        json: async () => mockJson
+      })) as any
+    )
 
     const res = await GET(new Request('http://localhost/api/reddit-feed'))
     const posts = await res.json()
@@ -28,5 +32,19 @@ describe('reddit feed API', () => {
       { title: 'First', url: 'https://www.reddit.com/r/zen/1' },
       { title: 'Second', url: 'https://www.reddit.com/r/zen/2' }
     ])
+  })
+
+  it('handles fetch errors gracefully', async () => {
+    vi.stubGlobal(
+      'fetch',
+      vi.fn(async () => {
+        throw new Error('network error')
+      }) as any
+    )
+
+    const res = await GET(new Request('http://localhost/api/reddit-feed'))
+    expect(res.status).toBe(500)
+    const body = await res.json()
+    expect(body).toEqual({ error: 'Failed to fetch Reddit feed' })
   })
 })
