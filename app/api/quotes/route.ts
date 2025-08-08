@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server"
-import quotes from "@/data/quotes.json"
+import quotes from "../../../data/quotes.json"
 
 const SUBREDDIT = process.env.QUOTES_SUBREDDIT || "quotes"
 
