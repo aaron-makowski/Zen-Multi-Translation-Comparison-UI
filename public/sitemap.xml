@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+  <url><loc>http://localhost:3000/en/</loc></url>
+  <url><loc>http://localhost:3000/en/about</loc></url>
+  <url><loc>http://localhost:3000/en/compare</loc></url>
+  <url><loc>http://localhost:3000/en/books</loc></url>
+  <url><loc>http://localhost:3000/en/translations</loc></url>
+  <url><loc>http://localhost:3000/es/</loc></url>
+  <url><loc>http://localhost:3000/es/about</loc></url>
+  <url><loc>http://localhost:3000/es/compare</loc></url>
+  <url><loc>http://localhost:3000/es/books</loc></url>
+  <url><loc>http://localhost:3000/es/translations</loc></url>
+</urlset>
