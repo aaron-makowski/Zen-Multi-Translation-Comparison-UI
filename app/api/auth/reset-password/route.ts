@@ -14,6 +14,7 @@ export async function POST(req: Request) {
   if (!user) {
     return NextResponse.json({ ok: true })
   }
+  // Continue even if the user signed up with OAuth and has no local password
   const token = randomUUID()
   const expires = new Date(Date.now() + 60 * 60 * 1000)
   await prisma.verificationToken.create({
