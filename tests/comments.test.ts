@@ -4,7 +4,9 @@ import { voteComment, Comment } from '../app/api/comments/route'
 describe('voteComment', () => {
   it('increments vote count', () => {
     const data: Record<string, Comment[]> = {
-      verse1: [{ id: 'a', content: 'hi', createdAt: '', votes: 0 }]
+      verse1: [
+        { id: 'a', content: 'hi', createdAt: '', updatedAt: '', votes: 0 }
+      ]
     }
     const updated = voteComment(data, 'verse1', 'a', 1)
     expect(updated?.votes).toBe(1)

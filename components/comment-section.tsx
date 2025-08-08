@@ -6,12 +6,14 @@ interface Comment {
   id: string
   content: string
   createdAt: string
+  updatedAt: string
   votes: number
 }
 
 export function CommentSection({ verseId }: { verseId: string }) {
   const [comments, setComments] = useState<Comment[]>([])
   const [content, setContent] = useState("")
+  const userId = "demo-user"
 
   async function load() {
     const res = await fetch(`/api/comments?verseId=${verseId}`)
@@ -28,7 +30,7 @@ export function CommentSection({ verseId }: { verseId: string }) {
     await fetch("/api/comments", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ verseId, content })
+      body: JSON.stringify({ verseId, content, userId })
     })
     setContent("")
     load()
