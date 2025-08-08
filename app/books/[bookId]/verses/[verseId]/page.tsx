@@ -1,30 +1,34 @@
 import Link from "next/link"
 import { notFound } from "next/navigation"
-import { prisma } from "@/lib/db"
+import { db } from "@/lib/db"
 import { CommentSection } from "@/components/comment-section"
+import { verses, translations } from "@/lib/schema"
+import { eq, asc } from "drizzle-orm"
+import { TranslationsList } from "@/components/translations-list"
+
+const PAGE_SIZE = 10
 
 export default async function VersePage({
   params,
 }: {
   params: { bookId: string; verseId: string }
 }) {
-  const verse = await prisma.verse.findUnique({
-    where: {
-      id: params.verseId,
-    },
-    include: {
+  const verse = await db.query.verses.findFirst({
+    where: eq(verses.id, params.verseId),
+    with: {
       book: true,
-      translations: {
-        orderBy: {
-          translator: "asc",
-        },
-      },
     },
   })
 
   if (!verse) {
     notFound()
   }
+
+  const initialTranslations = await db.query.translations.findMany({
+    where: eq(translations.verseId, params.verseId),
+    orderBy: (translations, { asc }) => [asc(translations.translator)],
+    limit: PAGE_SIZE,
+  })
 
   return (
     <main className="flex min-h-screen flex-col items-center p-4 md:p-24">
@@ -39,16 +43,7 @@ export default async function VersePage({
 
         <div className="bg-white rounded-lg shadow-md p-6 mb-8">
           <h2 className="text-xl font-semibold mb-4">Translations</h2>
-
-          <div className="space-y-6">
-            {verse.translations.map((translation) => (
-              <div key={translation.id} className="border-b pb-4 last:border-b-0 last:pb-0">
-                <h3 className="font-medium text-lg mb-2">Translation by {translation.translator}</h3>
-                <p className="text-gray-800 whitespace-pre-line">{translation.text}</p>
-                <p className="text-sm text-gray-500 mt-2">Language: {translation.language}</p>
-              </div>
-            ))}
-          </div>
+          <TranslationsList verseId={params.verseId} initialTranslations={initialTranslations} pageSize={PAGE_SIZE} />
         </div>
 
         <CommentSection verseId={params.verseId} />

@@ -3,24 +3,28 @@ import { notFound } from "next/navigation"
 import { Button } from "@/components/ui/button"
 import { Card } from "@/components/ui/card"
 import { db } from "@/lib/db"
-import { books } from "@/lib/schema"
-import { eq } from "drizzle-orm"
+import { books, verses } from "@/lib/schema"
+import { eq, asc } from "drizzle-orm"
+import { VersesList } from "@/components/verses-list"
 
 export const revalidate = 60
+
+const PAGE_SIZE = 20
 
 export default async function BookPage({ params }: { params: { bookId: string } }) {
   const book = await db.query.books.findFirst({
     where: eq(books.id, params.bookId),
-    with: {
-      verses: {
-        orderBy: (verses, { asc }) => [asc(verses.number)],
-      },
-    },
   })
 
   if (!book) {
     notFound()
   }
+
+  const initialVerses = await db.query.verses.findMany({
+    where: eq(verses.bookId, params.bookId),
+    orderBy: (verses, { asc }) => [asc(verses.number)],
+    limit: PAGE_SIZE,
+  })
 
   return (
     <main className="flex min-h-screen flex-col items-center p-4 md:p-24">
@@ -51,20 +55,7 @@ export default async function BookPage({ params }: { params: { bookId: string } 
             </div>
 
             <h2 className="text-2xl font-semibold mb-4 border-t pt-4">Verses</h2>
-            <div className="space-y-3 mb-8">
-              {book.verses.map((verse) => (
-                <Card key={verse.id} className="p-4">
-                  <div className="flex justify-between items-center">
-                    <div>
-                      <span className="font-medium">Verse {verse.number}</span>
-                    </div>
-                    <Button asChild size="sm" variant="outline">
-                      <Link href={`/books/${book.id}/verses/${verse.id}`}>View Translations</Link>
-                    </Button>
-                  </div>
-                </Card>
-              ))}
-            </div>
+            <VersesList bookId={book.id} initialVerses={initialVerses} pageSize={PAGE_SIZE} />
           </div>
         </div>
       </div>
