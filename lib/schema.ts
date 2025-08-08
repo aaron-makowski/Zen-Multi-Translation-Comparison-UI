@@ -95,6 +95,22 @@ export const notes = pgTable("notes", {
   updatedAt: timestamp("updated_at").notNull(),
 })
 
+// Highlight table
+export const highlights = pgTable("highlights", {
+  id: text("id").primaryKey(),
+  userId: text("user_id")
+    .notNull()
+    .references(() => users.id),
+  verseId: text("verse_id")
+    .notNull()
+    .references(() => verses.id),
+  start: integer("start").notNull(),
+  end: integer("end").notNull(),
+  isPublic: boolean("is_public").default(true).notNull(),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+  updatedAt: timestamp("updated_at").notNull(),
+})
+
 // Comment table
 export const comments = pgTable("comments", {
   id: text("id").primaryKey(),
@@ -130,6 +146,7 @@ export const versesRelations = relations(verses, ({ one, many }) => ({
   translations: many(translations),
   notes: many(notes),
   comments: many(comments),
+  highlights: many(highlights),
 }))
 
 export const translationsRelations = relations(translations, ({ one, many }) => ({
@@ -144,6 +161,7 @@ export const usersRelations = relations(users, ({ many }) => ({
   favorites: many(favorites),
   notes: many(notes),
   comments: many(comments),
+  highlights: many(highlights),
   sessions: many(sessions),
 }))
 
@@ -176,6 +194,17 @@ export const commentsRelations = relations(comments, ({ one }) => ({
   }),
   verse: one(verses, {
     fields: [comments.verseId],
+    references: [verses.id],
+  }),
+}))
+
+export const highlightsRelations = relations(highlights, ({ one }) => ({
+  user: one(users, {
+    fields: [highlights.userId],
+    references: [users.id],
+  }),
+  verse: one(verses, {
+    fields: [highlights.verseId],
     references: [verses.id],
   }),
 }))
