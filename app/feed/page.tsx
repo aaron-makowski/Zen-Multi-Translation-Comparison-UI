@@ -1,4 +1,5 @@
 import { formatKarmaBadge } from "@/lib/karma"
+import { headers } from "next/headers"
 
 export const dynamic = "force-dynamic"
 
@@ -7,10 +8,15 @@ function flattenComments(data: Record<string, any[]>): any[] {
 }
 
 export default async function FeedPage() {
+  const headersList = headers()
+  const protocol = headersList.get("x-forwarded-proto") ?? "http"
+  const host = headersList.get("host") ?? "localhost:3000"
+  const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || `${protocol}://${host}`
+
   const [commentsRes, highlightsRes, featuredRes] = await Promise.all([
-    fetch("/api/comments", { cache: "no-store" }),
-    fetch("/api/highlights", { cache: "no-store" }),
-    fetch("/api/featured", { cache: "no-store" }),
+    fetch(`${baseUrl}/api/comments`, { cache: "no-store" }),
+    fetch(`${baseUrl}/api/highlights`, { cache: "no-store" }),
+    fetch(`${baseUrl}/api/featured`, { cache: "no-store" }),
   ])
 
   const commentsData = await commentsRes.json()
