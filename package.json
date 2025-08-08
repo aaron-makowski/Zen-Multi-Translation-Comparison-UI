@@ -7,7 +7,7 @@
     "dev": "next dev",
     "lint": "next lint",
     "start": "next start",
-    "test": "vitest run"
+    "test": "vitest --run"
   },
   "dependencies": {
     "@aws-sdk/client-rds-data": "latest",

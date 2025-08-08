@@ -35,11 +35,14 @@ export async function GET() {
     }
 
     try {
-      const posts: RedditPost[] = children.map((c: any) => ({
-        id: c.data.id,
-        title: c.data.title,
-        url: c.data.url,
-      }));
+      const posts: RedditPost[] = [];
+      for (const c of children) {
+        const { id, title, url } = c?.data || {};
+        if (!id || !title || !url) {
+          throw new Error("Missing fields");
+        }
+        posts.push({ id, title, url });
+      }
       return NextResponse.json(posts);
     } catch {
       return NextResponse.json(
