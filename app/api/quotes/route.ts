@@ -49,13 +49,13 @@ async function fetchFromStatic(): Promise<Quote | null> {
   }
 }
 
-async function getLocalQuote(): Promise<Quote> {
+async function getLocalQuote(): Promise<Quote | null> {
   try {
     const raw = await fs.readFile(QUOTES_FILE, "utf8")
     const quotes: Quote[] = JSON.parse(raw)
     return quotes[Math.floor(Math.random() * quotes.length)]
   } catch {
-    return { text: "Be present. The rest will follow." }
+    return null
   }
 }
 

@@ -8,26 +8,39 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from 
 import { Checkbox } from "@/components/ui/checkbox"
 import { Label } from "@/components/ui/label"
 import { ScrollArea } from "@/components/ui/scroll-area"
-import { translators } from "@/lib/translations"
+interface Translator {
+  id: string
+  name: string
+  year: string
+  description?: string
+  link?: string
+}
 
 interface TranslatorSelectorProps {
+  bookId: string
+  translators: Translator[]
   selectedTranslators: string[]
   onChange: (translators: string[]) => void
 }
 
-export function TranslatorSelector({ selectedTranslators, onChange }: TranslatorSelectorProps) {
+export function TranslatorSelector({
+  bookId,
+  translators,
+  selectedTranslators,
+  onChange,
+}: TranslatorSelectorProps) {
   const [open, setOpen] = useState(false)
   const [localSelected, setLocalSelected] = useState<string[]>(selectedTranslators)
 
   useEffect(() => {
     // Load from localStorage on mount
-    const saved = localStorage.getItem("selectedTranslators")
+    const saved = localStorage.getItem(`selectedTranslators:${bookId}`)
     if (saved) {
       const parsed = JSON.parse(saved)
       setLocalSelected(parsed)
       onChange(parsed)
     }
-  }, [onChange])
+  }, [bookId, onChange])
 
   const toggleTranslator = (id: string) => {
     const updated = localSelected.includes(id) ? localSelected.filter((t) => t !== id) : [...localSelected, id]
@@ -39,13 +52,13 @@ export function TranslatorSelector({ selectedTranslators, onChange }: Translator
     const updated = selectedTranslators.filter((t) => t !== id)
     onChange(updated)
     // Save to localStorage
-    localStorage.setItem("selectedTranslators", JSON.stringify(updated))
+    localStorage.setItem(`selectedTranslators:${bookId}`, JSON.stringify(updated))
   }
 
   const saveSelection = () => {
     onChange(localSelected)
     // Save to localStorage
-    localStorage.setItem("selectedTranslators", JSON.stringify(localSelected))
+    localStorage.setItem(`selectedTranslators:${bookId}`, JSON.stringify(localSelected))
     setOpen(false)
   }
 
