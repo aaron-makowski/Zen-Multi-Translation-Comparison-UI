@@ -2,7 +2,8 @@ import { describe, it, expect, vi, beforeEach } from 'vitest'
 import { GET } from '../app/api/quotes/route'
 import { promises as fs } from 'fs'
 
-const defaultQuote = { text: 'Be present.', author: 'Unknown' }
+const defaultQuote = { text: 'Be present. The rest will follow.' }
+const finalFallback = { text: 'Be present.', author: 'Unknown' }
 
 describe('GET /api/quotes', () => {
   beforeEach(() => {
@@ -45,7 +46,7 @@ describe('GET /api/quotes', () => {
 
     const res = await GET()
     const json = await res.json()
-    expect(json).toEqual(defaultQuote)
+    expect(json).toEqual(finalFallback)
   })
 
   it('uses static fallback when reddit response is malformed', async () => {
