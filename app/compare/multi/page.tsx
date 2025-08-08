@@ -1,6 +1,5 @@
 import { VerseSelector } from "./verse-selector"
 import { getAggregatedTranslations } from "@/lib/multi-verse"
-import { prisma } from "@/lib/db"
 import { Card } from "@/components/ui/card"
 
 export default async function MultiComparePage({
@@ -8,10 +7,9 @@ export default async function MultiComparePage({
 }: {
   searchParams: { pairs?: string }
 }) {
-  const books = await prisma.book.findMany({
-    orderBy: { title: "asc" },
-    include: { verses: { select: { id: true, number: true } } },
-  })
+  const baseUrl = process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000"
+  const res = await fetch(`${baseUrl}/api/books`)
+  const books = await res.json()
 
   const rawPairs = searchParams.pairs?.split(",") ?? []
   const pairs: { bookId: string; verseId: string }[] = []
