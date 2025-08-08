@@ -3,6 +3,8 @@ import { Button } from "@/components/ui/button"
 import { Card } from "@/components/ui/card"
 import { BookmarkButton } from "@/components/bookmark-button"
 import { db } from "@/lib/db"
+import { favorites } from "@/lib/schema"
+import { eq } from "drizzle-orm"
 
 export const revalidate = 60 // Revalidate data every 60 seconds
 
@@ -14,14 +16,22 @@ export default async function BooksPage({
   const sort = searchParams?.sort === "desc" ? "desc" : "asc"
   const q = searchParams?.q ? String(searchParams.q) : ""
 
-  const allBooks = await db.query.books.findMany({
-    where: q
-      ? (books, { ilike }) => ilike(books.title, `%${q}%`)
-      : undefined,
-    orderBy: (books, { asc, desc }) => [
-      sort === "desc" ? desc(books.title) : asc(books.title),
-    ],
-  })
+  const [allBooks, favs] = await Promise.all([
+    db.query.books.findMany({
+      where: q
+        ? (books, { ilike }) => ilike(books.title, `%${q}%`)
+        : undefined,
+      orderBy: (books, { asc, desc }) => [
+        sort === "desc" ? desc(books.title) : asc(books.title),
+      ],
+    }),
+    db.query.favorites.findMany({
+      columns: { bookId: true },
+      where: eq(favorites.userId, "demo-user"),
+    }),
+  ])
+
+  const favoriteIds = new Set(favs.map((f) => f.bookId))
 
   return (
     <main className="flex min-h-screen flex-col items-center p-4 md:p-24">
@@ -76,7 +86,10 @@ export default async function BooksPage({
                 <div className="p-4 flex flex-col flex-grow">
                   <div className="flex items-start justify-between mb-2">
                     <h2 className="text-xl font-semibold">{book.title}</h2>
-                    <BookmarkButton bookId={book.id} />
+                    <BookmarkButton
+                      bookId={book.id}
+                      initial={favoriteIds.has(book.id)}
+                    />
                   </div>
                   <p className="text-sm text-gray-600 mb-1">
                     By: {book.author || "Unknown"}
