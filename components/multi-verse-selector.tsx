@@ -30,6 +30,10 @@ export function MultiVerseSelector({ books, initialSelected }: MultiVerseSelecto
   const [selected, setSelected] = useState<string[]>(initialSelected)
 
   useEffect(() => {
+    setSelected(initialSelected)
+  }, [initialSelected])
+
+  useEffect(() => {
     const currentBook = books.find((b) => b.id === bookId)
     if (currentBook) {
       if (!currentBook.verses.find((v) => v.id === verseId)) {
