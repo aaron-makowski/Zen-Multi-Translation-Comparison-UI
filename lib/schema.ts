@@ -117,7 +117,7 @@ export const verseViews = pgTable("verse_views", {
     .notNull()
     .references(() => verses.id),
   translationId: text("translation_id").references(() => translations.id),
-  createdAt: timestamp("created_at").defaultNow().notNull(),
+  viewedAt: timestamp("viewed_at").defaultNow().notNull(),
 })
 
 // Session table
