@@ -32,3 +32,13 @@ Continue building your app on:
 ## Environment Variables
 
 The Reddit integration uses Reddit's public JSON API and does not require authentication. To change the subreddit queried by the API route, define `REDDIT_SUBREDDIT` in your `.env` file. If you later switch to Reddit's authenticated API, you will also need to provide `REDDIT_CLIENT_ID` and `REDDIT_CLIENT_SECRET`.
+
+## PDF cache
+
+Monitor the `public/pdfs/` folder for new files and ingest them automatically by running:
+
+```bash
+pnpm tsx scripts/watch-pdf-cache.ts
+```
+
+Whenever a new `.pdf` is added, the watcher runs the ingestion script (`scripts/ingest-pdf.ts`) and reports whether it succeeded or failed.
