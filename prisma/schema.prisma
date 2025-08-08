@@ -19,10 +19,11 @@ model User {
   isGuest   Boolean  @default(false)
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
-  
+
   favorites Favorite[]
   notes     Note[]
   comments  Comment[]
+  verseViews VerseView[]
 }
 
 model Book {
@@ -45,10 +46,11 @@ model Verse {
   book      Book     @relation(fields: [bookId], references: [id])
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
-  
+
   translations Translation[]
   notes        Note[]
   comments     Comment[]
+  views        VerseView[]
 }
 
 model Translation {
@@ -60,8 +62,9 @@ model Translation {
   verse        Verse    @relation(fields: [verseId], references: [id])
   createdAt    DateTime @default(now())
   updatedAt    DateTime @updatedAt
-  
+
   wordMappings WordMapping[]
+  views        VerseView[]
 }
 
 model WordMapping {
@@ -107,6 +110,20 @@ model Comment {
   verse     Verse    @relation(fields: [verseId], references: [id])
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+}
+
+model VerseView {
+  id           String   @id @default(cuid())
+  verseId      String
+  verse        Verse    @relation(fields: [verseId], references: [id])
+  translationId String?
+  translation  Translation? @relation(fields: [translationId], references: [id])
+  userId       String?
+  user         User?    @relation(fields: [userId], references: [id])
+  eventType    String
+  createdAt    DateTime @default(now())
+
+  @@map("verse_views")
 }
 
 model Session {
