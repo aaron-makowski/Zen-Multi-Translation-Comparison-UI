@@ -209,6 +209,7 @@ export const translations = {
     title: "Xinxin Ming",
     description: "Faith in Mind",
     translators: translators,
+    pdfPath: "public/xinxinming.pdf",
     verses: [
       {
         id: 1,
