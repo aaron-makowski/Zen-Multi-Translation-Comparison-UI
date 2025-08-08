@@ -92,3 +92,11 @@ body {
     @apply bg-background text-foreground;
   }
 }
+
+@layer base {
+  @media (max-width: 640px) {
+    body {
+      @apply px-4 text-sm;
+    }
+  }
+}
