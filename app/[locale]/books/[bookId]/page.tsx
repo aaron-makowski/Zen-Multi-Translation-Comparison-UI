@@ -8,6 +8,10 @@ import { eq } from "drizzle-orm"
 
 export const revalidate = 60
 
+export function generateStaticParams() {
+  return [{ bookId: "xinxinming" }]
+}
+
 export default async function BookPage({ params }: { params: { bookId: string } }) {
   const book = await db.query.books.findFirst({
     where: eq(books.id, params.bookId),
