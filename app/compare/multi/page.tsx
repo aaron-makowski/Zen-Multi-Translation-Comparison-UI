@@ -1,5 +1,5 @@
 import { VerseSelector } from "./verse-selector"
-import { getAggregatedTranslations } from "@/lib/multi-verse"
+import { prisma } from "@/lib/db"
 import { Card } from "@/components/ui/card"
 
 export default async function MultiComparePage({
@@ -25,7 +25,61 @@ export default async function MultiComparePage({
     pairs.push({ bookId: parts[0], verseId: parts[1] })
   }
 
-  const data = pairs.length > 0 ? await getAggregatedTranslations(pairs) : null
+  let data: {
+    translations: {
+      [bookTitle: string]: {
+        [translator: string]: {
+          verseId: string
+          verseNumber: number
+          text: string
+        }[]
+      }
+    }
+    missing: string[]
+  } | null = null
+
+  if (pairs.length > 0) {
+    const verseIds = pairs.map((p) => p.verseId)
+    const verses = await prisma.verse.findMany({
+      where: { id: { in: verseIds } },
+      include: {
+        book: true,
+        translations: { orderBy: { translator: "asc" } },
+      },
+    })
+
+    const translations: {
+      [bookTitle: string]: {
+        [translator: string]: {
+          verseId: string
+          verseNumber: number
+          text: string
+        }[]
+      }
+    } = {}
+
+    for (const verse of verses) {
+      const bookTitle = verse.book.title
+      if (!translations[bookTitle]) {
+        translations[bookTitle] = {}
+      }
+      for (const t of verse.translations) {
+        if (!translations[bookTitle][t.translator]) {
+          translations[bookTitle][t.translator] = []
+        }
+        translations[bookTitle][t.translator].push({
+          verseId: verse.id,
+          verseNumber: verse.number,
+          text: t.text,
+        })
+      }
+    }
+
+    const foundIds = new Set(verses.map((v) => v.id))
+    const missing = verseIds.filter((id) => !foundIds.has(id))
+
+    data = { translations, missing }
+  }
 
   return (
     <main className="flex min-h-screen flex-col items-center p-4 md:p-24">
