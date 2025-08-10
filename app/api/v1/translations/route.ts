@@ -1,22 +1,14 @@
 import { NextResponse } from "next/server"
-import { unstable_cache } from "next/cache"
-import { loadCachedTranslations } from "@/lib/verse-cache"
-
-const getBook = unstable_cache(
-  async () => {
-    const data = await loadCachedTranslations()
-    return data.xinxinming
-  },
-  ["translations"],
-  { revalidate: 3600, tags: ["translations"] }
-)
-
-export const revalidate = 3600
+import { translations } from "@/lib/translations"
 
 export async function GET(req: Request) {
   const { searchParams } = new URL(req.url)
   const verseId = searchParams.get("verseId")
-  const book = await getBook()
+  const bookId = searchParams.get("book") || "xinxinming"
+  const book = (translations as Record<string, any>)[bookId]
+  if (!book) {
+    return NextResponse.json({ error: "Book not found" }, { status: 404 })
+  }
   if (verseId) {
     const verse = book.verses.find((v: any) => v.id === Number(verseId))
     if (!verse) {
