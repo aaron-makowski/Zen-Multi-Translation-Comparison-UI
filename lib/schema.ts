@@ -21,6 +21,7 @@ export const books = pgTable("books", {
   description: text("description").notNull(),
   author: text("author"),
   coverImage: text("cover_image"),
+  pdfPath: text("pdf_path"),
   createdAt: timestamp("created_at").defaultNow().notNull(),
   updatedAt: timestamp("updated_at").notNull(),
 })
