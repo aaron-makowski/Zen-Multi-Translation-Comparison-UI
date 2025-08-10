@@ -1,12 +1,28 @@
 import { NextResponse } from "next/server"
-import { translations } from "@/lib/translations"
+import { prisma } from "@/lib/db"
 
 export async function GET() {
-  const books = Object.entries(translations).map(([id, book]) => ({
-    id,
-    title: book.title,
-    description: book.description,
-    translators: book.translators,
+  const books = await prisma.book.findMany({
+    orderBy: { title: "asc" },
+    include: {
+      verses: {
+        orderBy: { number: "asc" },
+        include: { translations: { select: { translator: true } } },
+      },
+    },
+  })
+
+  const data = books.map((b) => ({
+    id: b.id,
+    title: b.title,
+    translators: Array.from(
+      new Set(
+        b.verses.flatMap((v) => v.translations.map((t) => t.translator))
+      )
+    ),
+    verses: b.verses.map((v) => ({ id: v.id, number: v.number })),
   }))
-  return NextResponse.json(books)
+
+  return NextResponse.json(data)
+}
 }
