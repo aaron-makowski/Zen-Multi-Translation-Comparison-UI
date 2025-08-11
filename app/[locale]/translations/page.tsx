@@ -17,6 +17,8 @@ export default function TranslationsPage() {
 
   const verse = verses.find((v) => v.id === selectedVerse) || verses[0]
   const translator = translators.find((t) => t.id === selectedTranslator) || translators[0]
+  const baseTranslatorId = visibleTranslators[0]
+  const baseLines = verse.lines.map((line) => line.translations[baseTranslatorId] ?? "")
 
   // Initialize with all translators if localStorage is empty
   useEffect(() => {
@@ -100,7 +102,13 @@ export default function TranslationsPage() {
             {translators
               .filter((t) => visibleTranslators.includes(t.id))
               .map((translator) => (
-                <TranslationCard key={translator.id} verse={verse} translator={translator} compact={true} />
+                <TranslationCard
+                  key={translator.id}
+                  verse={verse}
+                  translator={translator}
+                  compact={true}
+                  baseLines={baseLines}
+                />
               ))}
           </div>
 
