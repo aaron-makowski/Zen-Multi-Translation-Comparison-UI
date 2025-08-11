@@ -94,7 +94,12 @@ export default function TranslationsPage() {
             ))}
           </div>
 
-          <TranslatorSelector selectedTranslators={visibleTranslators} onChange={setVisibleTranslators} />
+          <TranslatorSelector
+            bookId="xinxinming"
+            translators={translators}
+            selectedTranslators={visibleTranslators}
+            onChange={setVisibleTranslators}
+          />
 
           <div className="grid grid-cols-1 gap-2">
             {translators

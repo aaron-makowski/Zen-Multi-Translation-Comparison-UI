@@ -1,9 +1,20 @@
 "use client"
-import { Card, CardContent } from "@/components/ui/card";
-import type { Translator, Verse } from "@/lib/translations";
-import { ExternalLink } from "lucide-react";
-import Link from "next-intl/link";
-import { Tooltip, TooltipContent, TooltipTrigger, TooltipProvider } from "@/components/ui/tooltip";
+import { Card, CardContent } from "@/components/ui/card"
+import { ExternalLink } from "lucide-react"
+import Link from "next-intl/link"
+
+interface Translator {
+  id: string
+  name: string
+  year: string
+  description?: string
+  link?: string
+}
+
+interface Verse {
+  id: number
+  lines: { translations: Record<string, string> }[]
+}
 
 interface TranslationCardProps {
   verse: Verse
@@ -17,7 +28,7 @@ export function TranslationCard({ verse, translator, compact = false }: Translat
       <CardContent className={compact ? "p-2" : "p-3"}>
         <div className="space-y-1">
           {verse.lines.map((line, index) => {
-            const text = line.translations[translator.id] ?? "Translation not available.";
+            const text = line.translations[translator.id] ?? "Translation not available."
             return (
               <p key={index} className={`leading-tight ${compact ? "text-sm" : "text-base"}`}>{text}</p>
             )
@@ -25,33 +36,21 @@ export function TranslationCard({ verse, translator, compact = false }: Translat
         </div>
 
         <div className="flex justify-between items-center text-xs text-muted-foreground mt-2">
-          <TooltipProvider>
-            <div className="flex items-center gap-1">
-              <Tooltip>
-                <TooltipTrigger asChild>
-                  <span className="font-medium cursor-help">{translator.name}</span>
-                </TooltipTrigger>
-                <TooltipContent>
-                  {translator.translatorBio && <p className="max-w-xs">{translator.translatorBio}</p>}
-                  {translator.license && (
-                    <p className="mt-1 text-xs">License: {translator.license}</p>
-                  )}
-                </TooltipContent>
-              </Tooltip>
-              <span>({translator.publicationYear})</span>
-              {translator.link && (
-                <Link
-                  href={translator.link}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="inline-flex items-center hover:text-foreground"
-                >
-                  <ExternalLink size={10} className="ml-1" />
-                  <span className="sr-only">Learn more about {translator.name}</span>
-                </Link>
-              )}
-            </div>
-          </TooltipProvider>
+          <div className="flex items-center gap-1">
+            <span className="font-medium">{translator.name}</span>
+            <span>({translator.year})</span>
+            {translator.link && (
+              <Link
+                href={translator.link}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center hover:text-foreground"
+              >
+                <ExternalLink size={10} className="ml-1" />
+                <span className="sr-only">Learn more about {translator.name}</span>
+              </Link>
+            )}
+          </div>
 
           {!compact && (
             <div className="flex items-center gap-2">

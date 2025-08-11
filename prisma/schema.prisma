@@ -17,6 +17,8 @@ model User {
   username  String   @unique
   password  String
   isGuest   Boolean  @default(false)
+  commentKarma   Int @default(0)
+  highlightKarma Int @default(0)
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
   
@@ -31,6 +33,7 @@ model Book {
   description String
   author      String?
   coverImage  String?
+  pdfPath     String?
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
   
