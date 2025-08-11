@@ -1,5 +1,5 @@
 import { PrismaClient } from "@prisma/client"
-import { translations } from "../lib/translations"
+import { translations, translators } from "../lib/translations"
 
 const prisma = new PrismaClient()
 
@@ -18,6 +18,26 @@ async function main() {
   })
 
   console.log(`Created book: ${xinxinMing.title}`)
+
+  // Create translators
+  for (const t of translators) {
+    await prisma.translator.upsert({
+      where: { id: t.id },
+      update: {
+        name: t.name,
+        translatorBio: t.translatorBio,
+        publicationYear: t.publicationYear,
+        license: t.license,
+      },
+      create: {
+        id: t.id,
+        name: t.name,
+        translatorBio: t.translatorBio,
+        publicationYear: t.publicationYear,
+        license: t.license,
+      },
+    })
+  }
 
   // Create verses and translations
   for (const [index, translation] of translations.entries()) {

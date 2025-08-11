@@ -73,7 +73,8 @@ export function TranslatorSelector({ selectedTranslators, onChange }: Translator
                       onCheckedChange={() => toggleTranslator(translator.id)}
                     />
                     <Label htmlFor={`select-${translator.id}`} className="text-sm cursor-pointer">
-                      {translator.name} ({translator.year}) - {translator.description}
+                      {translator.name} ({translator.publicationYear}) - {translator.translatorBio}
+                      {translator.license && ` - ${translator.license}`}
                     </Label>
                   </div>
                 ))}

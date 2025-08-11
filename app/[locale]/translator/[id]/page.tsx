@@ -22,9 +22,12 @@ export default function TranslatorPage({ params }: { params: { id: string } }) {
           <ArrowLeft size={16} className="mr-1" /> Back to Translations
         </Link>
         <h1 className="text-3xl font-bold mb-2">
-          {translator.name} ({translator.year})
+          {translator.name} ({translator.publicationYear})
         </h1>
-        <p className="text-zinc-600 dark:text-zinc-400">{translator.description}</p>
+        <p className="text-zinc-600 dark:text-zinc-400">{translator.translatorBio}</p>
+        {translator.license && (
+          <p className="text-sm text-zinc-500 dark:text-zinc-400">License: {translator.license}</p>
+        )}
       </div>
 
       <div className="space-y-6">
