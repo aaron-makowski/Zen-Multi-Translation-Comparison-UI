@@ -55,7 +55,7 @@ async function getLocalQuote(): Promise<Quote> {
     const quotes: Quote[] = JSON.parse(raw)
     return quotes[Math.floor(Math.random() * quotes.length)]
   } catch {
-    return { text: "Be present. The rest will follow." }
+    return { text: "Be present.", author: "Unknown" }
   }
 }
 
