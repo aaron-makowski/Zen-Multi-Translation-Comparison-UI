@@ -1,17 +1,18 @@
 import { db } from "./db"
 import { books, verses, translations as translationsTable } from "./schema"
-import { translations as translationsData } from "./translations"
+import { translations as booksData } from "./translations"
 import { v4 as uuidv4 } from "uuid"
 
 export async function seedDatabase() {
   console.log("Seeding database...")
 
-  for (const [bookId, bookData] of Object.entries(translationsData)) {
+  for (const book of Object.values(booksData)) {
     const existingBook = await db.query.books.findFirst({
-      where: (b, { eq }) => eq(b.id, bookId),
+      where: (b, { eq }) => eq(b.id, book.id),
     })
 
     if (existingBook) {
+      console.log(`${book.title} already seeded.`)
       continue
     }
 
@@ -19,50 +20,37 @@ export async function seedDatabase() {
       const [newBook] = await tx
         .insert(books)
         .values({
-          id: bookId,
-          title: bookData.title,
-          description: bookData.description,
-          author: bookData.author,
-          coverImage: bookData.coverImage,
+          id: book.id,
+          title: book.title,
+          description: book.description,
+          author: book.author || null,
+          coverImage: book.coverImage || null,
           updatedAt: new Date(),
         })
         .returning()
 
-      for (const verse of bookData.verses) {
-        const verseId = `${bookId}-verse-${verse.id}`
+      for (const verse of book.verses) {
         const [newVerse] = await tx
           .insert(verses)
           .values({
-            id: verseId,
+            id: uuidv4(),
             number: verse.id,
             bookId: newBook.id,
             updatedAt: new Date(),
           })
           .returning()
 
-        const translationsToInsert = [] as {
-          id: string
-          text: string
-          translator: string
-          verseId: string
-          updatedAt: Date
-        }[]
-
-        for (const translator of bookData.translators) {
-          const text = verse.lines
-            .map((line) => line.translations[translator.id])
-            .filter(Boolean)
-            .join(" ")
-            .trim()
-          if (!text) continue
-          translationsToInsert.push({
-            id: uuidv4(),
-            text,
-            translator: translator.name,
-            verseId: newVerse.id,
-            updatedAt: new Date(),
-          })
-        }
+        const translationsToInsert = book.translators.map((translator) => ({
+          id: uuidv4(),
+          text:
+            verse.lines
+              .map((line) => line.translations[translator.id] || "")
+              .join(" ")
+              .trim() || "Translation not available.",
+          translator: translator.id,
+          verseId: newVerse.id,
+          updatedAt: new Date(),
+        }))
 
         if (translationsToInsert.length > 0) {
           await tx.insert(translationsTable).values(translationsToInsert)
@@ -70,8 +58,8 @@ export async function seedDatabase() {
       }
     })
 
-    console.log(`Seeded book: ${bookData.title}`)
+    console.log(`Seeded ${book.title}`)
   }
 
-  console.log("Database seeded successfully!")
+  console.log("Database seeding complete!")
 }

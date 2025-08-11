@@ -23,9 +23,7 @@ export default function ComparePage() {
               <Link href="/books/platform-sutra">
                 <div className="text-left">
                   <div className="font-medium">Platform Sutra</div>
-                  <div className="text-sm opacity-80">
-                    Compare translations of the Sixth Patriarch's teaching
-                  </div>
+                  <div className="text-sm opacity-80">Translations of the Sixth Patriarch's teaching</div>
                 </div>
               </Link>
             </Button>
@@ -33,9 +31,7 @@ export default function ComparePage() {
               <Link href="/books/heart-sutra">
                 <div className="text-left">
                   <div className="font-medium">Heart Sutra</div>
-                  <div className="text-sm opacity-80">
-                    Compare translations of this famous Mahayana text
-                  </div>
+                  <div className="text-sm opacity-80">The essence of Prajñāpāramitā</div>
                 </div>
               </Link>
             </Button>
@@ -43,9 +39,7 @@ export default function ComparePage() {
               <Link href="/books/diamond-sutra">
                 <div className="text-left">
                   <div className="font-medium">Diamond Sutra</div>
-                  <div className="text-sm opacity-80">
-                    Compare translations of the Diamond Sutra
-                  </div>
+                  <div className="text-sm opacity-80">A key Mahayana text on emptiness</div>
                 </div>
               </Link>
             </Button>

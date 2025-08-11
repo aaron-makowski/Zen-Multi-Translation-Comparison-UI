@@ -1,56 +1,57 @@
 import { PrismaClient } from "@prisma/client"
-import { translations as translationsData } from "../lib/translations"
+import { translations } from "../lib/translations"
 
 const prisma = new PrismaClient()
 
 async function main() {
-  for (const [bookId, book] of Object.entries(translationsData)) {
-    const createdBook = await prisma.book.upsert({
-      where: { id: bookId },
+  for (const book of Object.values(translations)) {
+    const dbBook = await prisma.book.upsert({
+      where: { id: book.id },
       update: {},
       create: {
-        id: bookId,
+        id: book.id,
         title: book.title,
         description: book.description,
-        author: book.author,
-        coverImage: book.coverImage,
+        author: book.author || "",
+        coverImage: book.coverImage || "",
       },
     })
 
-    console.log(`Created book: ${createdBook.title}`)
+    console.log(`Created book: ${dbBook.title}`)
 
     for (const verse of book.verses) {
-      const verseId = `${bookId}-verse-${verse.id}`
-      const createdVerse = await prisma.verse.upsert({
+      const verseId = `${book.id}-verse-${verse.id}`
+      const dbVerse = await prisma.verse.upsert({
         where: { id: verseId },
         update: {},
         create: {
           id: verseId,
           number: verse.id,
-          bookId: createdBook.id,
+          bookId: dbBook.id,
         },
       })
 
-      console.log(`Created verse: ${createdVerse.number}`)
+      console.log(`Created verse: ${dbVerse.number}`)
 
       for (const translator of book.translators) {
-        const text = verse.lines
-          .map((line) => line.translations[translator.id])
-          .filter(Boolean)
-          .join(" ")
-          .trim()
-        if (!text) continue
+        const translationText =
+          verse.lines
+            .map((line) => line.translations[translator.id] || "")
+            .join(" ")
+            .trim() || "Translation not available."
+
         await prisma.translation.upsert({
           where: { id: `${verseId}-${translator.id}` },
-          update: { text },
+          update: { text: translationText },
           create: {
             id: `${verseId}-${translator.id}`,
-            text,
-            translator: translator.name,
-            verseId: createdVerse.id,
+            text: translationText,
+            translator: translator.id,
+            verseId: dbVerse.id,
           },
         })
-        console.log(`Created translation by: ${translator.name}`)
+
+        console.log(`Created translation by: ${translator.id}`)
       }
     }
   }

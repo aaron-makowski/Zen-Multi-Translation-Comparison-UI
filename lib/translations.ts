@@ -17,7 +17,16 @@ export interface Translator {
   link?: string
 }
 
-// Translators for the Xinxin Ming
+export interface Book {
+  id: string
+  title: string
+  description: string
+  author?: string
+  coverImage?: string
+  translators: Translator[]
+  verses: Verse[]
+}
+
 export const translators: Translator[] = [
   {
     id: "waley",
@@ -204,45 +213,15 @@ export const translators: Translator[] = [
   // Add more translators as needed
 ]
 
-// Minimal translator lists for other texts
-const platformSutraTranslators: Translator[] = [
-  {
-    id: "mcrae",
-    name: "John McRae",
-    year: "2000",
-    description: "The Platform Sutra of the Sixth Patriarch",
-    link: "https://en.wikipedia.org/wiki/John_McRae_(scholar)",
-  },
-]
-
-const heartSutraTranslators: Translator[] = [
-  {
-    id: "xuanzang",
-    name: "Xuanzang",
-    year: "649",
-    description: "Heart Sutra translation",
-    link: "https://en.wikipedia.org/wiki/Xuanzang",
-  },
-]
-
-const diamondSutraTranslators: Translator[] = [
-  {
-    id: "kumarajiva",
-    name: "Kumarajiva",
-    year: "401",
-    description: "Diamond Sutra translation",
-    link: "https://en.wikipedia.org/wiki/Kumarajiva",
-  },
-]
-
 // Export the translations data
-export const translations = {
+export const translations: Record<string, Book> = {
   xinxinming: {
+    id: "xinxinming",
     title: "Xinxin Ming",
     description: "Faith in Mind",
     author: "Jianzhi Sengcan",
     coverImage: "/xinxin-ming-cover.png",
-    translators: translators,
+    translators,
     verses: [
       {
         id: 1,
@@ -253,7 +232,8 @@ export const translations = {
             translations: {
               waley: "The Perfect Way is only difficult for those who pick and choose.",
               suzuki: "The Perfect Way knows no difficulties.",
-              goddard: "The Perfect Way knows no difficulties, except that it refuses to make preferences.",
+              goddard:
+                "The Perfect Way knows no difficulties, except that it refuses to make preferences.",
             },
           },
           {
@@ -261,85 +241,106 @@ export const translations = {
             pinyin: "Dàn mò zēng ài, dòng rán míng bái.",
             translations: {
               waley: "Do not like, do not dislike; all will then be clear.",
-              suzuki: "Only when freed from hate and love, it reveals itself fully and without disguise.",
-              goddard: "Only when freed from hate and love, it reveals itself fully and without disguise.",
+              suzuki:
+                "Only when freed from hate and love, it reveals itself fully and without disguise.",
+              goddard:
+                "Only when freed from hate and love, it reveals itself fully and without disguise.",
             },
           },
         ],
       },
     ],
   },
-  "platform-sutra": {
+  'platform-sutra': {
+    id: "platform-sutra",
     title: "Platform Sutra",
-    description: "Teachings of the Sixth Patriarch",
+    description: "Sutra of the Sixth Patriarch",
     author: "Huineng",
     coverImage: "/platform-sutra-cover.png",
-    translators: platformSutraTranslators,
+    translators,
     verses: [
       {
         id: 1,
         lines: [
           {
-            chinese: "菩提本無樹，明鏡亦非臺。",
+            chinese: "菩提本無樹，",
+            pinyin: "Pútí běn wú shù,",
             translations: {
-              mcrae:
-                "Bodhi is fundamentally without any tree; the bright mirror is also not a stand.",
+              red_pine: "Bodhi is originally no tree,",
+              conze: "Bodhi originally has no tree,",
             },
           },
           {
-            chinese: "本來無一物，何處惹塵埃。",
+            chinese: "明鏡亦非臺。",
+            pinyin: "Míng jìng yì fēi tái.",
             translations: {
-              mcrae:
-                "Originally there is not a single thing—where could any dust be attracted?",
+              red_pine: "the bright mirror has no stand,",
+              conze: "the bright mirror is no stand,",
+            },
+          },
+          {
+            chinese: "本來無一物，",
+            pinyin: "Běnlái wú yī wù,",
+            translations: {
+              red_pine: "Buddha nature is always clean and pure,",
+              conze: "Originally there is not a single thing,",
+            },
+          },
+          {
+            chinese: "何處惹塵埃。",
+            pinyin: "Hé chù rě chén āi.",
+            translations: {
+              red_pine: "where would dust alight?",
+              conze: "Where can dust alight?",
             },
           },
         ],
       },
     ],
   },
-  "heart-sutra": {
+  'heart-sutra': {
+    id: "heart-sutra",
     title: "Heart Sutra",
-    description: "Prajnaparamita Heart Sutra",
-    author: "Unknown",
+    description: "Prajñāpāramitā Heart Sutra",
+    author: "",
     coverImage: "/heart-sutra-cover.png",
-    translators: heartSutraTranslators,
+    translators,
     verses: [
       {
         id: 1,
         lines: [
           {
-            chinese: "觀自在菩薩，行深般若波羅蜜多時，",
+            chinese:
+              "觀自在菩薩，行深般若波羅蜜多時，照見五蘊皆空，度一切苦厄。",
             translations: {
-              xuanzang:
-                "Avalokiteśvara Bodhisattva, when practicing deeply the Prajñāpāramitā,",
-            },
-          },
-          {
-            chinese: "照見五蘊皆空，度一切苦厄。",
-            translations: {
-              xuanzang:
-                "Clearly saw that all five aggregates are empty, thereby transcending all suffering.",
+              red_pine:
+                "Avalokiteshvara Bodhisattva, practicing deep prajna paramita, clearly saw that all five skandhas are empty, thus relieving all suffering and distress.",
+              conze:
+                "When Bodhisattva Avalokiteshvara was practicing the profound Prajnaparamita, he perceived that all five skandhas are empty, thereby transcending all suffering.",
             },
           },
         ],
       },
     ],
   },
-  "diamond-sutra": {
+  'diamond-sutra': {
+    id: "diamond-sutra",
     title: "Diamond Sutra",
-    description: "Vajracchedika Prajnaparamita Sutra",
-    author: "Unknown",
+    description: "The Diamond that Cuts through Illusion",
+    author: "",
     coverImage: "/diamond-sutra-cover.png",
-    translators: diamondSutraTranslators,
+    translators,
     verses: [
       {
         id: 1,
         lines: [
           {
-            chinese: "如是我聞。一時佛在舍衛國。",
+            chinese: "如是我聞。一時佛在舍衛國祇樹給孤獨園。",
             translations: {
-              kumarajiva:
-                "Thus have I heard. At one time the Buddha was staying in Śrāvastī.",
+              red_pine:
+                "Thus have I heard. Once the Buddha dwelt in Anathapindika's park in Jetavana at Sravasti.",
+              conze:
+                "Thus I have heard. Once upon a time the Lord dwelt at Shravasti in the Jetavana monastery of Anathapindika.",
             },
           },
         ],
