@@ -33,6 +33,9 @@ export function VerseSelector({ books, initialPairs = [{ bookId: books[0]?.id ??
 
   const addPair = () => setPairs([...pairs, { bookId: books[0]?.id ?? "", verseId: "" }])
 
+  const removePair = (index: number) =>
+    setPairs((prev) => prev.filter((_, i) => i !== index))
+
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
     const query = pairs
@@ -45,7 +48,7 @@ export function VerseSelector({ books, initialPairs = [{ bookId: books[0]?.id ??
   return (
     <form onSubmit={handleSubmit} className="space-y-4">
       {pairs.map((pair, idx) => (
-        <div key={idx} className="flex gap-2">
+        <div key={idx} className="flex gap-2 items-center">
           <Select value={pair.bookId} onValueChange={(v) => updatePair(idx, "bookId", v)}>
             <SelectTrigger className="w-40">
               <SelectValue placeholder="Book" />
@@ -71,6 +74,15 @@ export function VerseSelector({ books, initialPairs = [{ bookId: books[0]?.id ??
                 ))}
             </SelectContent>
           </Select>
+          <Button
+            type="button"
+            variant="ghost"
+            onClick={() => removePair(idx)}
+            className="h-9 px-2"
+            aria-label={`Remove verse ${idx + 1}`}
+          >
+            Remove
+          </Button>
         </div>
       ))}
       <div className="flex gap-2">
