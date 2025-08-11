@@ -17,6 +17,7 @@ export interface Translator {
   link?: string
 }
 
+// Translators for the Xinxin Ming
 export const translators: Translator[] = [
   {
     id: "waley",
@@ -203,11 +204,44 @@ export const translators: Translator[] = [
   // Add more translators as needed
 ]
 
+// Minimal translator lists for other texts
+const platformSutraTranslators: Translator[] = [
+  {
+    id: "mcrae",
+    name: "John McRae",
+    year: "2000",
+    description: "The Platform Sutra of the Sixth Patriarch",
+    link: "https://en.wikipedia.org/wiki/John_McRae_(scholar)",
+  },
+]
+
+const heartSutraTranslators: Translator[] = [
+  {
+    id: "xuanzang",
+    name: "Xuanzang",
+    year: "649",
+    description: "Heart Sutra translation",
+    link: "https://en.wikipedia.org/wiki/Xuanzang",
+  },
+]
+
+const diamondSutraTranslators: Translator[] = [
+  {
+    id: "kumarajiva",
+    name: "Kumarajiva",
+    year: "401",
+    description: "Diamond Sutra translation",
+    link: "https://en.wikipedia.org/wiki/Kumarajiva",
+  },
+]
+
 // Export the translations data
 export const translations = {
   xinxinming: {
     title: "Xinxin Ming",
     description: "Faith in Mind",
+    author: "Jianzhi Sengcan",
+    coverImage: "/xinxin-ming-cover.png",
     translators: translators,
     verses: [
       {
@@ -229,6 +263,83 @@ export const translations = {
               waley: "Do not like, do not dislike; all will then be clear.",
               suzuki: "Only when freed from hate and love, it reveals itself fully and without disguise.",
               goddard: "Only when freed from hate and love, it reveals itself fully and without disguise.",
+            },
+          },
+        ],
+      },
+    ],
+  },
+  "platform-sutra": {
+    title: "Platform Sutra",
+    description: "Teachings of the Sixth Patriarch",
+    author: "Huineng",
+    coverImage: "/platform-sutra-cover.png",
+    translators: platformSutraTranslators,
+    verses: [
+      {
+        id: 1,
+        lines: [
+          {
+            chinese: "菩提本無樹，明鏡亦非臺。",
+            translations: {
+              mcrae:
+                "Bodhi is fundamentally without any tree; the bright mirror is also not a stand.",
+            },
+          },
+          {
+            chinese: "本來無一物，何處惹塵埃。",
+            translations: {
+              mcrae:
+                "Originally there is not a single thing—where could any dust be attracted?",
+            },
+          },
+        ],
+      },
+    ],
+  },
+  "heart-sutra": {
+    title: "Heart Sutra",
+    description: "Prajnaparamita Heart Sutra",
+    author: "Unknown",
+    coverImage: "/heart-sutra-cover.png",
+    translators: heartSutraTranslators,
+    verses: [
+      {
+        id: 1,
+        lines: [
+          {
+            chinese: "觀自在菩薩，行深般若波羅蜜多時，",
+            translations: {
+              xuanzang:
+                "Avalokiteśvara Bodhisattva, when practicing deeply the Prajñāpāramitā,",
+            },
+          },
+          {
+            chinese: "照見五蘊皆空，度一切苦厄。",
+            translations: {
+              xuanzang:
+                "Clearly saw that all five aggregates are empty, thereby transcending all suffering.",
+            },
+          },
+        ],
+      },
+    ],
+  },
+  "diamond-sutra": {
+    title: "Diamond Sutra",
+    description: "Vajracchedika Prajnaparamita Sutra",
+    author: "Unknown",
+    coverImage: "/diamond-sutra-cover.png",
+    translators: diamondSutraTranslators,
+    verses: [
+      {
+        id: 1,
+        lines: [
+          {
+            chinese: "如是我聞。一時佛在舍衛國。",
+            translations: {
+              kumarajiva:
+                "Thus have I heard. At one time the Buddha was staying in Śrāvastī.",
             },
           },
         ],
