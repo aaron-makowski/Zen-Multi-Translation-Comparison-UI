@@ -54,6 +54,7 @@
     "sqlite3": "latest",
     "tailwind-merge": "^2.5.5",
     "tailwindcss-animate": "^1.0.7",
+    "diff-match-patch": "^1.0.5",
     "uuid": "latest"
   },
   "devDependencies": {
