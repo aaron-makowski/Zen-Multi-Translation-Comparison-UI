@@ -1,20 +1,41 @@
-import { chain, chainMatch, csp, isPageRequest, strictDynamic } from "@next-safe/middleware";
-import { NextResponse } from "next/server";
-import type { NextMiddleware, NextRequest } from "next/server";
+import createMiddleware from "next-intl/middleware"
+import { NextRequest, NextResponse } from "next/server"
 
-// Basic CSRF protection requiring same-origin for state-changing requests
-const csrf: NextMiddleware = (req: NextRequest) => {
-  if (["POST", "PUT", "PATCH", "DELETE"].includes(req.method)) {
-    const origin = req.headers.get("origin");
-    const host = req.headers.get("host");
-    if (origin && host && !origin.endsWith(host)) {
-      return new NextResponse("Forbidden", { status: 403 });
+const intlMiddleware = createMiddleware({
+  locales: ["en", "es"],
+  defaultLocale: "en"
+})
+
+function unauthorized() {
+  return new NextResponse("Unauthorized", {
+    status: 401,
+    headers: { "WWW-Authenticate": "Basic realm=\"Secure Area\"" }
+  })
+}
+
+export default function middleware(req: NextRequest) {
+  const { pathname } = req.nextUrl
+  if (pathname.startsWith("/admin") || pathname.startsWith("/api/admin")) {
+    const basic = req.headers.get("authorization")
+    if (!basic) return unauthorized()
+    const decode = (str: string) =>
+      typeof atob === "function"
+        ? atob(str)
+        : Buffer.from(str, "base64").toString()
+    const [user, pass] = decode(basic.split(" ")[1] || "").split(":")
+    if (
+      user !== process.env.ADMIN_USER ||
+      pass !== process.env.ADMIN_PASS
+    ) {
+      return unauthorized()
     }
   }
-  return NextResponse.next();
-};
+  if (pathname.startsWith("/api")) {
+    return NextResponse.next()
+  }
+  return intlMiddleware(req)
+}
 
-export default chain(
-  csrf,
-  chainMatch(isPageRequest)(csp(), strictDynamic())
-);
+export const config = {
+  matcher: ["/((?!api|_next|.*\\..*).*)", "/api/admin/:path*"]
+}
