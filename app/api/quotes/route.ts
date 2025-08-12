@@ -53,6 +53,7 @@ async function getLocalQuote(): Promise<Quote | null> {
   try {
     const raw = await fs.readFile(QUOTES_FILE, "utf8")
     const quotes: Quote[] = JSON.parse(raw)
+    if (!quotes.length) return null
     return quotes[Math.floor(Math.random() * quotes.length)]
   } catch {
     return null

@@ -1,66 +1,65 @@
 import { db } from "./db"
-import { books, verses, translations } from "./schema"
-import { translations as translationsData } from "./translations"
+import { books, verses, translations as translationsTable } from "./schema"
+import { translations as booksData } from "./translations"
 import { v4 as uuidv4 } from "uuid"
-import { logger, logError } from "./logger"
 
 export async function seedDatabase() {
-  logger.info("Seeding database...")
-  try {
-    const xinxinmingData = translationsData.xinxinming
+  console.log("Seeding database...")
 
-    // Check if book already exists
+  for (const book of Object.values(booksData)) {
     const existingBook = await db.query.books.findFirst({
-      where: (books, { eq }) => eq(books.title, xinxinmingData.title),
+      where: (b, { eq }) => eq(b.id, book.id),
     })
 
     if (existingBook) {
-      logger.info("Database already seeded.")
-      return
+      console.log(`${book.title} already seeded.`)
+      continue
     }
 
-    // Using a transaction to ensure all or nothing is inserted
     await db.transaction(async (tx) => {
       const [newBook] = await tx
         .insert(books)
         .values({
-          id: uuidv4(),
-          title: xinxinmingData.title,
-          description: xinxinmingData.description,
-          author: "Jianzhi Sengcan",
-          coverImage: "/xinxin-ming-cover.png",
+          id: book.id,
+          title: book.title,
+          description: book.description,
+          author: book.author || null,
+          coverImage: book.coverImage || null,
           updatedAt: new Date(),
         })
         .returning()
 
-      for (const verse of xinxinmingData.verses) {
+      for (const verse of book.verses) {
         const [newVerse] = await tx
           .insert(verses)
           .values({
             id: uuidv4(),
-            number: verse.number,
+            number: verse.id,
             bookId: newBook.id,
             updatedAt: new Date(),
           })
           .returning()
 
-        const translationsToInsert = xinxinmingData.translators.map((translator) => ({
+        const translationsToInsert = book.translators.map((translator) => ({
           id: uuidv4(),
-          text: verse.translations[translator.name] || "Translation not available.",
-          translator: translator.name,
+          text:
+            verse.lines
+              .map((line) => line.translations[translator.id] || "")
+              .join(" ")
+              .trim() || "Translation not available.",
+          translator: translator.id,
           verseId: newVerse.id,
           updatedAt: new Date(),
         }))
 
         if (translationsToInsert.length > 0) {
-          await tx.insert(translations).values(translationsToInsert)
+          await tx.insert(translationsTable).values(translationsToInsert)
         }
       }
     })
 
-    logger.info("Database seeded successfully!")
-  } catch (error) {
-    logError(error, "Error seeding database")
-    throw error
+    console.log(`Seeded ${book.title}`)
   }
+
+  console.log("Database seeding complete!")
 }
