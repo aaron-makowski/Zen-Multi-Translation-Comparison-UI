@@ -1,3 +1,5 @@
+import createNextIntlPlugin from 'next-intl/plugin';
+
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   eslint: {
@@ -9,6 +11,11 @@ const nextConfig = {
   images: {
     unoptimized: true,
   },
-}
+};
 
-export default nextConfig
+const withNextIntl = createNextIntlPlugin({
+  locales: ['en', 'es'],
+  defaultLocale: 'en'
+});
+
+export default withNextIntl(nextConfig);

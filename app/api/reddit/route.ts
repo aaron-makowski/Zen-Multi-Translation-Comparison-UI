@@ -1,13 +1,13 @@
 import { NextResponse } from "next/server"
 
-// Fetch latest posts from r/Zen and expose minimal data for the UI
 export async function GET() {
   try {
-    const res = await fetch("https://www.reddit.com/r/Zen.json", {
-      headers: { "User-Agent": "ZenMultiTranslation/1.0" }
-    })
+    const res = await fetch("https://www.reddit.com/r/Zen.json")
     if (!res.ok) {
-      return NextResponse.json({ error: "Failed to fetch posts" }, { status: res.status })
+      return NextResponse.json(
+        { error: "Failed to fetch posts" },
+        { status: res.status }
+      )
     }
     const json = await res.json()
     const posts = (json.data?.children || []).map((child: any) => ({
@@ -17,8 +17,10 @@ export async function GET() {
       url: `https://www.reddit.com${child.data.permalink}`
     }))
     return NextResponse.json(posts)
-  } catch (error) {
-    console.error("Reddit fetch failed", error)
-    return NextResponse.json({ error: "Failed to fetch posts" }, { status: 500 })
+  } catch {
+    return NextResponse.json(
+      { error: "Failed to fetch posts" },
+      { status: 500 }
+    )
   }
 }
