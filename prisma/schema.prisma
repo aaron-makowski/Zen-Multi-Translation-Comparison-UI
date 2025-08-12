@@ -13,16 +13,15 @@ datasource db {
 
 model User {
   id        String   @id @default(cuid())
-  name         String?
-  email        String   @unique
-  emailVerified DateTime?
-  image        String?
-  username     String   @unique
-  password     String?
-  isGuest      Boolean  @default(false)
-  createdAt    DateTime @default(now())
-  updatedAt    DateTime @updatedAt
-
+  email     String   @unique
+  username  String   @unique
+  password  String
+  isGuest   Boolean  @default(false)
+  commentKarma   Int @default(0)
+  highlightKarma Int @default(0)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  
   favorites Favorite[]
   notes     Note[]
   comments  Comment[]
@@ -36,6 +35,7 @@ model Book {
   description String
   author      String?
   coverImage  String?
+  pdfPath     String?
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
   
@@ -65,8 +65,18 @@ model Translation {
   verse        Verse    @relation(fields: [verseId], references: [id])
   createdAt    DateTime @default(now())
   updatedAt    DateTime @updatedAt
-  
+
   wordMappings WordMapping[]
+}
+
+model Translator {
+  id             String   @id @default(cuid())
+  name           String
+  translatorBio  String?
+  publicationYear Int?
+  license        String?
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
 }
 
 model WordMapping {

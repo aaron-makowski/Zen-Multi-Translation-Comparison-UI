@@ -33,21 +33,12 @@ Continue building your app on:
 
 The Reddit integration uses Reddit's public JSON API and does not require authentication. To change the subreddit queried by the API route, define `REDDIT_SUBREDDIT` in your `.env` file. If you later switch to Reddit's authenticated API, you will also need to provide `REDDIT_CLIENT_ID` and `REDDIT_CLIENT_SECRET`.
 
-### Authentication
+## PDF cache
 
-NextAuth is used for user sign-up and login. Configure the following variables in your `.env` file:
+Monitor the `public/pdfs/` folder for new files and ingest them automatically by running:
 
-- `NEXTAUTH_URL` – the base URL of your application
-- `NEXTAUTH_SECRET` – secret used to sign NextAuth tokens
-- `GOOGLE_CLIENT_ID` and `GOOGLE_CLIENT_SECRET`
-- `GITHUB_ID` and `GITHUB_SECRET`
+```bash
+pnpm tsx scripts/watch-pdf-cache.ts
+```
 
-### Email
-
-Password reset emails are sent via SMTP. Provide these settings:
-
-- `EMAIL_SERVER_HOST`
-- `EMAIL_SERVER_PORT`
-- `EMAIL_SERVER_USER`
-- `EMAIL_SERVER_PASSWORD`
-- `EMAIL_FROM` – the address emails are sent from
+Whenever a new `.pdf` is added, the watcher runs the ingestion script (`scripts/ingest-pdf.ts`) and reports whether it succeeded or failed.
