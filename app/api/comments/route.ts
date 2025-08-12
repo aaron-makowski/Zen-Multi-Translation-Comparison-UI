@@ -1,8 +1,8 @@
 import { NextResponse } from "next/server"
 import { promises as fs } from "fs"
 import path from "path"
-import { randomUUID } from "crypto"
-import { eq } from "drizzle-orm"
+import { marked } from "marked"
+import sanitizeHtml from "sanitize-html"
 
 export interface Comment {
   id: string
@@ -12,11 +12,14 @@ export interface Comment {
   createdAt: string
   updatedAt: string
   votes: number
+  parentId?: string
+  flagged?: boolean
+  removed?: boolean
 }
 
 const COMMENTS_FILE = path.join(process.cwd(), "data", "comments.json")
 
-async function readData() {
+export async function readData() {
   try {
     const data = await fs.readFile(COMMENTS_FILE, "utf8")
     return JSON.parse(data || "{}")
@@ -25,7 +28,7 @@ async function readData() {
   }
 }
 
-async function writeData(data: Record<string, Comment[]>) {
+export async function writeData(data: Record<string, Comment[]>) {
   await fs.mkdir(path.dirname(COMMENTS_FILE), { recursive: true })
   await fs.writeFile(COMMENTS_FILE, JSON.stringify(data, null, 2))
 }
@@ -47,28 +50,35 @@ export function voteComment(
 export async function GET(req: Request) {
   const { searchParams } = new URL(req.url)
   const verseId = searchParams.get("verseId")
+  const parentId = searchParams.get("parentId")
   const data = await readData()
   if (verseId) {
-    return NextResponse.json(data[verseId] || [])
+    let list = data[verseId] || []
+    if (parentId) {
+      list = list.filter((c) => c.parentId === parentId)
+    }
+    return NextResponse.json(list)
   }
   return NextResponse.json(data)
 }
 
 export async function POST(req: Request) {
-  const { verseId, content, userId, parentId } = await req.json()
-  if (!verseId || !content || !userId) {
+  const { verseId, content, parentId } = await req.json()
+  if (!verseId || !content) {
     return NextResponse.json({ error: "Missing fields" }, { status: 400 })
   }
+  const rawHtml = marked.parse(content)
+  const safeContent = sanitizeHtml(rawHtml)
   const data = await readData()
   const createdAt = new Date().toISOString()
   const comment: Comment = {
-    id: randomUUID(),
-    userId,
-    parentId,
-    content,
-    createdAt,
-    updatedAt: createdAt,
+    id: crypto.randomUUID(),
+    content: safeContent,
+    createdAt: new Date().toISOString(),
     votes: 0,
+    parentId,
+    flagged: false,
+    removed: false,
   }
   if (!data[verseId]) data[verseId] = []
   data[verseId].push(comment)
