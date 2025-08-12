@@ -1,68 +1,81 @@
-import { users } from './schema'
-import { eq, sql } from 'drizzle-orm'
+import { users } from "./schema"
+import { eq, sql } from "drizzle-orm"
 
-export const KARMA_VALUES = {
-  comment: 1,
-  highlight: 1,
-} as const
-
-type KarmaAction = keyof typeof KARMA_VALUES
-
-export async function addKarmaPoints(userId: string, action: KarmaAction) {
-  const { db } = await import('./db')
-  const points = KARMA_VALUES[action]
-  await db
-    .update(users)
-    .set({ karma: sql`${users.karma} + ${points}` })
-    .where(eq(users.id, userId))
+export interface Badge {
+  name: string
+  requirement: number
 }
 
-export const BADGES = [
-  { name: 'Novice', threshold: 0 },
-  { name: 'Contributor', threshold: 10 },
-  { name: 'Scholar', threshold: 50 },
-  { name: 'Master', threshold: 100 },
+export const commentBadges: Badge[] = [
+  { name: "First Comment", requirement: 1 },
+  { name: "Conversationalist", requirement: 10 },
+  { name: "Commentator", requirement: 50 },
 ]
 
-export function getBadge(karma: number) {
-  let current = BADGES[0]
-  for (const b of BADGES) {
-    if (karma >= b.threshold) current = b
-    else break
+export const highlightBadges: Badge[] = [
+  { name: "First Highlight", requirement: 1 },
+  { name: "Highlighter", requirement: 10 },
+  { name: "Illuminator", requirement: 50 },
+]
+
+export async function addKarma(
+  userId: string | undefined,
+  type: "comment" | "highlight",
+  points = 1,
+) {
+  if (!userId) {
+    throw new Error("userId is required")
   }
-  return current.name
+  const { db } = await import("./db")
+  const update =
+    type === "comment"
+      ? { commentKarma: sql`${users.commentKarma} + ${points}` }
+      : { highlightKarma: sql`${users.highlightKarma} + ${points}` }
+  const res = await db
+    .update(users)
+    .set(update)
+    .where(eq(users.id, userId))
+    .returning({ id: users.id })
+  if (res.length === 0) {
+    throw new Error(`User with id ${userId} not found`)
+  }
+  return res[0]
 }
 
-export function getNextBadge(karma: number) {
-  for (const b of BADGES) {
-    if (karma < b.threshold) return b
+export function getBadges(user: {
+  commentKarma: number
+  highlightKarma: number
+}) {
+  return {
+    comments: commentBadges
+      .filter((b) => user.commentKarma >= b.requirement)
+      .map((b) => b.name),
+    highlights: highlightBadges
+      .filter((b) => user.highlightKarma >= b.requirement)
+      .map((b) => b.name),
   }
-  return null
 }
 
-export function progressToNextBadge(karma: number) {
-  const next = getNextBadge(karma)
+export function progressToNextBadge(value: number, badges: Badge[]) {
+  const next = badges.find((b) => value < b.requirement)
   if (!next) return 100
-  const currentIndex = BADGES.findIndex((b) => b.threshold === next.threshold) - 1
-  const current = BADGES[Math.max(currentIndex, 0)]
-  const range = next.threshold - current.threshold
-  return ((karma - current.threshold) / range) * 100
+  const index = badges.indexOf(next)
+  const prevRequirement = index > 0 ? badges[index - 1].requirement : 0
+  return ((value - prevRequirement) / (next.requirement - prevRequirement)) * 100
 }
 
-export function calculateStreak(dates: Date[]) {
-  const uniqueDays = Array.from(
-    new Set(dates.map((d) => d.toISOString().slice(0, 10)))
-  )
+export function calculateStreak(dates: Date[]): number {
+  if (!dates.length) return 0
+  const sorted = dates
     .map((d) => new Date(d))
     .sort((a, b) => b.getTime() - a.getTime())
-
-  let streak = 0
-  const today = new Date()
-  for (const day of uniqueDays) {
-    const expected = new Date()
-    expected.setDate(today.getDate() - streak)
-    if (day.toDateString() === expected.toDateString()) streak++
-    else if (day < expected) break
+  let streak = 1
+  for (let i = 1; i < sorted.length; i++) {
+    const diff =
+      (sorted[i - 1].setHours(0, 0, 0, 0) - sorted[i].setHours(0, 0, 0, 0)) /
+      86400000
+    if (diff === 1) streak++
+    else if (diff > 1) break
   }
   return streak
 }

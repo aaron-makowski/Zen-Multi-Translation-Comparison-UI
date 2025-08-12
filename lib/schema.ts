@@ -8,6 +8,8 @@ export const users = pgTable("users", {
   username: text("username").notNull().unique(),
   password: text("password").notNull(),
   isGuest: boolean("is_guest").default(false).notNull(),
+  commentKarma: integer("comment_karma").default(0).notNull(),
+  highlightKarma: integer("highlight_karma").default(0).notNull(),
   createdAt: timestamp("created_at").defaultNow().notNull(),
   updatedAt: timestamp("updated_at").notNull(),
   karma: integer("karma").default(0).notNull(),
@@ -20,6 +22,7 @@ export const books = pgTable("books", {
   description: text("description").notNull(),
   author: text("author"),
   coverImage: text("cover_image"),
+  pdfPath: text("pdf_path"),
   createdAt: timestamp("created_at").defaultNow().notNull(),
   updatedAt: timestamp("updated_at").notNull(),
 })
@@ -96,6 +99,22 @@ export const notes = pgTable("notes", {
   updatedAt: timestamp("updated_at").notNull(),
 })
 
+// Highlight table
+export const highlights = pgTable("highlights", {
+  id: text("id").primaryKey(),
+  userId: text("user_id")
+    .notNull()
+    .references(() => users.id),
+  verseId: text("verse_id")
+    .notNull()
+    .references(() => verses.id),
+  start: integer("start").notNull(),
+  end: integer("end").notNull(),
+  isPublic: boolean("is_public").default(true).notNull(),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+  updatedAt: timestamp("updated_at").notNull(),
+})
+
 // Comment table
 export const comments = pgTable("comments", {
   id: text("id").primaryKey(),
@@ -106,6 +125,23 @@ export const comments = pgTable("comments", {
   verseId: text("verse_id")
     .notNull()
     .references(() => verses.id),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+  updatedAt: timestamp("updated_at").notNull(),
+})
+
+// Highlight table
+export const highlights = pgTable("highlights", {
+  id: text("id").primaryKey(),
+  userId: text("user_id")
+    .notNull()
+    .references(() => users.id),
+  verseId: text("verse_id")
+    .notNull()
+    .references(() => verses.id),
+  start: integer("start").notNull(),
+  end: integer("end").notNull(),
+  note: text("note"),
+  isPublic: boolean("is_public").default(false).notNull(),
   createdAt: timestamp("created_at").defaultNow().notNull(),
   updatedAt: timestamp("updated_at").notNull(),
 })
@@ -131,6 +167,7 @@ export const versesRelations = relations(verses, ({ one, many }) => ({
   translations: many(translations),
   notes: many(notes),
   comments: many(comments),
+  highlights: many(highlights),
 }))
 
 export const translationsRelations = relations(translations, ({ one, many }) => ({
@@ -145,7 +182,9 @@ export const usersRelations = relations(users, ({ many }) => ({
   favorites: many(favorites),
   notes: many(notes),
   comments: many(comments),
+  highlights: many(highlights),
   sessions: many(sessions),
+  highlights: many(highlights),
 }))
 
 export const favoritesRelations = relations(favorites, ({ one }) => ({
@@ -177,6 +216,17 @@ export const commentsRelations = relations(comments, ({ one }) => ({
   }),
   verse: one(verses, {
     fields: [comments.verseId],
+    references: [verses.id],
+  }),
+}))
+
+export const highlightsRelations = relations(highlights, ({ one }) => ({
+  user: one(users, {
+    fields: [highlights.userId],
+    references: [users.id],
+  }),
+  verse: one(verses, {
+    fields: [highlights.verseId],
     references: [verses.id],
   }),
 }))

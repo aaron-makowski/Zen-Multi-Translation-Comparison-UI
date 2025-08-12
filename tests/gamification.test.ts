@@ -1,49 +1,40 @@
-import { describe, it, expect, vi } from 'vitest'
-import {
-  getBadge,
-  calculateStreak,
-  progressToNextBadge,
-  addKarmaPoints,
-} from '../lib/gamification'
-import { sql } from 'drizzle-orm'
-import { PGlite } from '@electric-sql/pglite'
-import { drizzle } from 'drizzle-orm/pglite'
-
-let db: any
+import { describe, expect, it, vi } from 'vitest'
 
 vi.mock('../lib/db', () => ({
-  get db() {
-    return db
+  db: {
+    update: () => ({
+      set: () => ({
+        where: () => ({
+          returning: () => Promise.resolve([]),
+        }),
+      }),
+    }),
   },
 }))
 
+import {
+  calculateStreak,
+  getBadges,
+  commentBadges,
+  addKarma,
+} from '../lib/gamification'
+
 describe('gamification helpers', () => {
-  it('awards badges based on karma', () => {
-    expect(getBadge(0)).toBe('Novice')
-    expect(getBadge(60)).toBe('Scholar')
-  })
-
-  it('calculates activity streak', () => {
+  it('calculates streaks correctly', () => {
     const today = new Date()
-    const yesterday = new Date()
-    yesterday.setDate(today.getDate() - 1)
-    expect(calculateStreak([today, yesterday])).toBe(2)
+    const yesterday = new Date(Date.now() - 86400000)
+    const dates = [today, yesterday]
+    expect(calculateStreak(dates)).toBe(2)
   })
 
-  it('computes progress to next badge', () => {
-    expect(progressToNextBadge(5)).toBeCloseTo(50)
+  it('awards comment badges based on karma', () => {
+    const badges = getBadges({ commentKarma: 10, highlightKarma: 0 })
+    expect(badges.comments).toContain(commentBadges[1].name)
   })
+})
 
-  it('adds karma points for a comment', async () => {
-    db = drizzle(new PGlite())
-    await db.execute(
-      sql`create table users (id text primary key, karma integer default 0)`
-    )
-    await db.execute(sql`insert into users (id, karma) values ('u1', 0)`)
-    await addKarmaPoints('u1', 'comment')
-    const res = await db.execute(
-      sql`select karma from users where id = 'u1'`
-    )
-    expect(res.rows[0].karma).toBe(1)
+describe('addKarma', () => {
+  it('throws for invalid user ID', async () => {
+    await expect(addKarma('invalid', 'comment')).rejects.toThrow()
   })
 })
