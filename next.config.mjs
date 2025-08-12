@@ -1,8 +1,4 @@
-import mdx from '@next/mdx'
-
-const withMDX = mdx({
-  extension: /\.mdx?$/,
-})
+import createNextIntlPlugin from 'next-intl/plugin';
 
 /** @type {import('next').NextConfig} */
 const nextConfig = {
@@ -15,7 +11,11 @@ const nextConfig = {
   images: {
     unoptimized: true,
   },
-  pageExtensions: ['ts', 'tsx', 'md', 'mdx'],
-}
+};
 
-export default withMDX(nextConfig)
+const withNextIntl = createNextIntlPlugin({
+  locales: ['en', 'es'],
+  defaultLocale: 'en'
+});
+
+export default withNextIntl(nextConfig);
