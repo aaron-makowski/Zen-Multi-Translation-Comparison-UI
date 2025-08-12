@@ -2,8 +2,8 @@ import { describe, it, expect, vi, beforeEach } from 'vitest'
 import { GET } from '../app/api/quotes/route'
 import { promises as fs } from 'fs'
 
-const localDefaultQuote = { text: 'Be present. The rest will follow.' }
-const finalDefaultQuote = { text: 'Be present.', author: 'Unknown' }
+const localFallback = { text: 'Be present. The rest will follow.' }
+const finalFallback = { text: 'Be present.', author: 'Unknown' }
 
 describe('GET /api/quotes', () => {
   beforeEach(() => {
@@ -31,13 +31,13 @@ describe('GET /api/quotes', () => {
     expect(json).toEqual(staticQuote)
   })
 
-  it('returns default quote when both sources fail', async () => {
+  it('returns local fallback when both sources fail', async () => {
     vi.spyOn(globalThis, 'fetch').mockRejectedValue(new Error('network'))
     vi.spyOn(fs, 'readFile').mockRejectedValue(new Error('fs'))
 
     const res = await GET()
     const json = await res.json()
-    expect(json).toEqual(localDefaultQuote)
+    expect(json).toEqual(localFallback)
   })
 
   it('returns default quote when quotes.json is empty', async () => {
@@ -46,7 +46,7 @@ describe('GET /api/quotes', () => {
 
     const res = await GET()
     const json = await res.json()
-    expect(json).toEqual(finalDefaultQuote)
+    expect(json).toEqual(finalFallback)
   })
 
   it('uses static fallback when reddit response is malformed', async () => {
