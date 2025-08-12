@@ -11,6 +11,7 @@ export interface Comment {
   votes: number
   parentId?: string
   flagged?: boolean
+  removed?: boolean
 }
 
 const COMMENTS_FILE = path.join(process.cwd(), "data", "comments.json")
@@ -46,9 +47,14 @@ export function voteComment(
 export async function GET(req: Request) {
   const { searchParams } = new URL(req.url)
   const verseId = searchParams.get("verseId")
+  const parentId = searchParams.get("parentId")
   const data = await readData()
   if (verseId) {
-    return NextResponse.json(data[verseId] || [])
+    let list = data[verseId] || []
+    if (parentId) {
+      list = list.filter((c) => c.parentId === parentId)
+    }
+    return NextResponse.json(list)
   }
   return NextResponse.json(data)
 }
@@ -58,14 +64,18 @@ export async function POST(req: Request) {
   if (!verseId || !content) {
     return NextResponse.json({ error: "Missing fields" }, { status: 400 })
   }
+  const rawHtml = marked.parse(content)
+  const safeContent = sanitizeHtml(rawHtml)
   const data = await readData()
   const sanitized = sanitizeHtml(marked.parse(content))
   const comment: Comment = {
     id: crypto.randomUUID(),
-    content: sanitized,
+    content: safeContent,
     createdAt: new Date().toISOString(),
     votes: 0,
     parentId,
+    flagged: false,
+    removed: false,
   }
   if (!data[verseId]) data[verseId] = []
   data[verseId].push(comment)

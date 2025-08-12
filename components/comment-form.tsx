@@ -1,8 +1,7 @@
 "use client"
-
 import { useState, FormEvent } from "react"
-import ReactMarkdown from "react-markdown"
 import { Button } from "@/components/ui/button"
+import { marked } from "marked"
 
 export function CommentForm({
   verseId,
@@ -14,6 +13,7 @@ export function CommentForm({
   onSubmitted?: () => void
 }) {
   const [content, setContent] = useState("")
+  const [preview, setPreview] = useState("")
 
   async function submit(e: FormEvent) {
     e.preventDefault()
@@ -24,23 +24,32 @@ export function CommentForm({
       body: JSON.stringify({ verseId, content, parentId }),
     })
     setContent("")
+    setPreview("")
     onSubmitted?.()
   }
 
   return (
-    <form onSubmit={submit} className="space-y-2">
+    <form onSubmit={submit} className="flex flex-col gap-2 mb-4">
       <textarea
         value={content}
-        onChange={(e) => setContent(e.target.value)}
-        placeholder="Write a comment in markdown"
-        className="w-full border rounded p-2 text-sm"
+        onChange={(e) => {
+          setContent(e.target.value)
+          setPreview(marked.parse(e.target.value))
+        }}
+        placeholder="Write a comment in Markdown"
+        className="border rounded p-2 text-sm"
       />
-      <div className="p-2 border rounded text-sm bg-muted">
-        <ReactMarkdown>{content || "Preview"}</ReactMarkdown>
+      {content && (
+        <div
+          className="p-2 border rounded text-sm bg-muted"
+          dangerouslySetInnerHTML={{ __html: preview }}
+        />
+      )}
+      <div>
+        <Button type="submit" size="sm">
+          Post
+        </Button>
       </div>
-      <Button type="submit" size="sm">
-        Post
-      </Button>
     </form>
   )
 }

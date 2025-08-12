@@ -9,6 +9,7 @@ interface Comment {
   votes: number
   parentId?: string
   flagged?: boolean
+  removed?: boolean
 }
 
 export function CommentSection({ verseId }: { verseId: string }) {
@@ -35,9 +36,7 @@ export function CommentSection({ verseId }: { verseId: string }) {
   return (
     <div className="mt-8">
       <h3 className="text-lg font-semibold mb-2">Comments</h3>
-      <div className="mb-4">
-        <CommentForm verseId={verseId} onSubmitted={load} />
-      </div>
+      <CommentForm verseId={verseId} onSubmitted={load} />
       <div className="space-y-2">
         {comments.map((c) => (
           <div key={c.id} className="p-2 bg-muted rounded">
