@@ -4,55 +4,54 @@ import { translations } from "../lib/translations"
 const prisma = new PrismaClient()
 
 async function main() {
-  for (const bookData of Object.values(translations)) {
-    const book = await prisma.book.upsert({
-      where: { id: bookData.id },
+  for (const book of Object.values(translations)) {
+    const dbBook = await prisma.book.upsert({
+      where: { id: book.id },
       update: {},
       create: {
-        id: bookData.id,
-        title: bookData.title,
-        description: bookData.description,
-        author: bookData.author,
-        coverImage: bookData.coverImage,
+        id: book.id,
+        title: book.title,
+        description: book.description,
+        author: book.author || "",
+        coverImage: book.coverImage || "",
       },
     })
 
-    console.log(`Created book: ${book.title}`)
+    console.log(`Created book: ${dbBook.title}`)
 
-    for (const verse of bookData.verses) {
-      const verseRecord = await prisma.verse.upsert({
-        where: { id: `${bookData.id}-verse-${verse.id}` },
-        update: { number: verse.id },
+    for (const verse of book.verses) {
+      const verseId = `${book.id}-verse-${verse.id}`
+      const dbVerse = await prisma.verse.upsert({
+        where: { id: verseId },
+        update: {},
         create: {
-          id: `${bookData.id}-verse-${verse.id}`,
+          id: verseId,
           number: verse.id,
-          bookId: book.id,
+          bookId: dbBook.id,
         },
       })
 
-      console.log(`Created verse: ${verseRecord.number}`)
+      console.log(`Created verse: ${dbVerse.number}`)
 
-      for (const translator of bookData.translators) {
-        const translationText = verse.lines
-          .map((line) => line.translations[translator.id] || "")
-          .join("\n")
+      for (const translator of book.translators) {
+        const translationText =
+          verse.lines
+            .map((line) => line.translations[translator.id] || "")
+            .join(" ")
+            .trim() || "Translation not available."
 
         await prisma.translation.upsert({
-          where: {
-            id: `${bookData.id}-verse-${verse.id}-${translator.id}`,
-          },
-          update: {
-            text: translationText,
-          },
+          where: { id: `${verseId}-${translator.id}` },
+          update: { text: translationText },
           create: {
-            id: `${bookData.id}-verse-${verse.id}-${translator.id}`,
+            id: `${verseId}-${translator.id}`,
             text: translationText,
-            translator: translator.name,
-            verseId: verseRecord.id,
+            translator: translator.id,
+            verseId: dbVerse.id,
           },
         })
 
-        console.log(`Created translation by: ${translator.name}`)
+        console.log(`Created translation by: ${translator.id}`)
       }
     }
   }
