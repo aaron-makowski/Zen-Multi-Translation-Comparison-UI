@@ -7,7 +7,8 @@
     "dev": "next dev",
     "lint": "next lint",
     "start": "next start",
-    "test": "vitest run"
+    "test": "vitest run",
+    "watch-pdf-cache": "tsx scripts/watch-pdf-cache.ts"
   },
   "dependencies": {
     "@aws-sdk/client-rds-data": "latest",
@@ -38,29 +39,37 @@
     "knex": "latest",
     "kysely": "latest",
     "lucide-react": "^0.454.0",
+    "marked": "^16.1.2",
     "mysql2": "latest",
     "next": "14.2.16",
-    "next-pwa": "^5.6.0",
+    "next-intl": "^3.7.1",
+    "pdf-parse": "^1.1.1",
     "pg": "latest",
     "postgres": "latest",
     "prisma": "latest",
     "react": "^18",
     "react-dom": "^18",
+    "sanitize-html": "^2.17.0",
     "sql.js": "latest",
     "sqlite3": "latest",
     "tailwind-merge": "^2.5.5",
     "tailwindcss-animate": "^1.0.7",
+    "diff-match-patch": "^1.0.5",
     "uuid": "latest"
   },
   "devDependencies": {
+    "@testing-library/react": "^16.3.0",
     "@types/node": "^22",
     "@types/react": "^18",
     "@types/react-dom": "^18",
     "autoprefixer": "^10.0.1",
+    "chokidar": "^4.0.3",
     "eslint": "^8",
     "eslint-config-next": "14.1.0",
+    "jsdom": "^26.1.0",
     "postcss": "^8.5",
     "tailwindcss": "^3.3.0",
+    "tsx": "^4.20.3",
     "typescript": "^5",
     "vitest": "^3.2.4"
   }

@@ -1,5 +1,4 @@
-import nextPwa from "next-pwa"
-import defaultRuntimeCaching from "next-pwa/cache.js"
+import createNextIntlPlugin from 'next-intl/plugin';
 
 /** @type {import('next').NextConfig} */
 const nextConfig = {
@@ -12,31 +11,11 @@ const nextConfig = {
   images: {
     unoptimized: true,
   },
-}
+};
 
-const runtimeCaching = [
-  ...defaultRuntimeCaching,
-  {
-    urlPattern: /\/books\/.*\/verses\/.*$/,
-    handler: "NetworkFirst",
-    options: {
-      cacheName: "verse-data",
-      expiration: {
-        maxEntries: 200,
-        maxAgeSeconds: 7 * 24 * 60 * 60,
-      },
-      cacheableResponse: {
-        statuses: [0, 200],
-      },
-    },
-  },
-]
+const withNextIntl = createNextIntlPlugin({
+  locales: ['en', 'es'],
+  defaultLocale: 'en'
+});
 
-export default nextPwa({
-  dest: "public",
-  disable: process.env.NODE_ENV === "development",
-  register: true,
-  skipWaiting: true,
-  runtimeCaching,
-})(nextConfig)
-
+export default withNextIntl(nextConfig);
