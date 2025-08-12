@@ -1,10 +1,6 @@
 "use client"
 
-import { useState, useRef } from "react"
-import { Button } from "@/components/ui/button"
-import { Textarea } from "@/components/ui/textarea"
-import { Switch } from "@/components/ui/switch"
-import { Label } from "@/components/ui/label"
+import { useState } from "react"
 
 interface VerseViewerProps {
   verseId: string
@@ -12,41 +8,33 @@ interface VerseViewerProps {
   userId: string
 }
 
+interface Selection {
+  start: number
+  end: number
+  text: string
+}
+
 export function VerseViewer({ verseId, text, userId }: VerseViewerProps) {
-  const verseRef = useRef<HTMLParagraphElement>(null)
-  const [selection, setSelection] = useState<{ start: number; end: number; text: string } | null>(null)
+  const [selection, setSelection] = useState<Selection | null>(null)
   const [note, setNote] = useState("")
-  const [isPublic, setIsPublic] = useState(false)
 
-  function handleMouseUp() {
+  const handleMouseUp = () => {
     const sel = window.getSelection()
-    if (sel && sel.rangeCount > 0 && verseRef.current) {
-      const range = sel.getRangeAt(0)
-      if (!range.collapsed && verseRef.current.contains(range.commonAncestorContainer)) {
-        // Measure text length from the start of the verse element to the
-        // selection boundaries. This accounts for selections that span across
-        // multiple nodes or include rich markup. It relies on the DOM's
-        // text representation, so offsets may be off if the displayed text
-        // differs from the `text` prop (e.g. hidden elements or Unicode
-        // normalization).
-        const preRange = document.createRange()
-        preRange.selectNodeContents(verseRef.current)
-        preRange.setEnd(range.startContainer, range.startOffset)
-        const start = preRange.toString().length
-
-        const postRange = document.createRange()
-        postRange.selectNodeContents(verseRef.current)
-        postRange.setEnd(range.endContainer, range.endOffset)
-        const end = postRange.toString().length
-
-        setSelection({ start, end, text: sel.toString() })
-      } else {
-        setSelection(null)
-      }
+    if (!sel || sel.rangeCount === 0) {
+      setSelection(null)
+      return
     }
+    const range = sel.getRangeAt(0)
+    if (range.collapsed) {
+      setSelection(null)
+      return
+    }
+    const start = range.startOffset
+    const end = range.endOffset
+    setSelection({ start, end, text: sel.toString() })
   }
 
-  async function saveHighlight() {
+  const saveHighlight = async (isPublic: boolean, withNote?: boolean) => {
     if (!selection) return
     await fetch("/api/highlights", {
       method: "POST",
@@ -56,40 +44,64 @@ export function VerseViewer({ verseId, text, userId }: VerseViewerProps) {
         userId,
         start: selection.start,
         end: selection.end,
-        content: note,
+        note: withNote ? note : undefined,
         isPublic,
       }),
     })
     setSelection(null)
     setNote("")
-    setIsPublic(false)
+  }
+
+  const saveNote = async () => {
+    if (!selection) return
+    await fetch("/api/notes", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ verseId, content: selection.text, userId }),
+    })
+    setSelection(null)
   }
 
   return (
-    <div>
-      <p
-        ref={verseRef}
-        onMouseUp={handleMouseUp}
-        className="cursor-text select-text"
-      >
-        {text}
-      </p>
+    <div onMouseUp={handleMouseUp} className="select-text">
+      <p>{text}</p>
       {selection && (
-        <div className="mt-2 space-y-2">
-          <Textarea
-            placeholder="Add a note (optional)"
+        <div className="mt-2 flex gap-2 items-center bg-background border p-2 rounded shadow">
+          <button 
+            onClick={() => saveHighlight(true)}
+            className="text-sm bg-blue-500 text-white px-2 py-1 rounded"
+          >
+            Highlight Public
+          </button>
+          <button 
+            onClick={() => saveHighlight(false)}
+            className="text-sm bg-gray-500 text-white px-2 py-1 rounded"
+          >
+            Highlight Private
+          </button>
+          <input
+            type="text"
+            placeholder="Add note"
             value={note}
             onChange={(e) => setNote(e.target.value)}
+            className="border p-1 text-sm rounded"
           />
-          <div className="flex items-center gap-2">
-            <Switch id="highlight-public" checked={isPublic} onCheckedChange={setIsPublic} />
-            <Label htmlFor="highlight-public">Public</Label>
-          </div>
-          <Button size="sm" onClick={saveHighlight}>
-            Save Highlight
-          </Button>
+          <button 
+            onClick={() => saveHighlight(false, true)}
+            className="text-sm bg-green-500 text-white px-2 py-1 rounded"
+          >
+            Save with Note
+          </button>
+          <button 
+            onClick={saveNote}
+            className="text-sm bg-purple-500 text-white px-2 py-1 rounded"
+          >
+            Save as Note
+          </button>
         </div>
       )}
     </div>
   )
 }
+
+export default VerseViewer

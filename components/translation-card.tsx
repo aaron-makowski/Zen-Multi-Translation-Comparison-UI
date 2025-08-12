@@ -1,8 +1,20 @@
 "use client"
 import { Card, CardContent } from "@/components/ui/card"
-import type { Translator, Verse } from "@/lib/translations"
 import { ExternalLink } from "lucide-react"
-import Link from "next/link"
+import Link from "next-intl/link"
+
+interface Translator {
+  id: string
+  name: string
+  year: string
+  description?: string
+  link?: string
+}
+
+interface Verse {
+  id: number
+  lines: { translations: Record<string, string> }[]
+}
 
 interface TranslationCardProps {
   verse: Verse
@@ -16,7 +28,7 @@ export function TranslationCard({ verse, translator, compact = false }: Translat
       <CardContent className={compact ? "p-2" : "p-3"}>
         <div className="space-y-1">
           {verse.lines.map((line, index) => {
-            const text = line.translations[translator.id] ?? "Translation not available.";
+            const text = line.translations[translator.id] ?? "Translation not available."
             return (
               <p key={index} className={`leading-tight ${compact ? "text-sm" : "text-base"}`}>{text}</p>
             )
