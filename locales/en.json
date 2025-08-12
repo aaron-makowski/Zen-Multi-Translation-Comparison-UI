@@ -1,73 +1,32 @@
 {
   "Navigation": {
-    "zenTexts": "Zen Texts",
+    "title": "Zen Texts",
     "home": "Home",
     "books": "Books",
     "compare": "Compare",
-    "reddit": "Reddit",
     "pdfPreview": "PDF Preview",
     "about": "About",
     "login": "Login",
     "register": "Register"
   },
-  "HomePage": {
+  "Home": {
     "title": "Zen Texts Translation Comparison",
-    "exploreTranslations": "Explore Translations",
-    "exploreDescription": "Browse through different translations of classic Zen texts.",
-    "viewBooks": "View Books",
-    "compareTranslations": "Compare Translations",
-    "compareDescription": "Compare different translations side by side.",
-    "aboutProject": "About This Project",
-    "aboutDescription": "This application allows you to explore and compare different translations of classic Zen texts. You can browse through books, read verses, and compare how different translators have interpreted the same text.",
-    "learnMore": "Learn More",
-    "formattedExample": "Formatted number: {number}, formatted date: {date}"
-  },
-  "LocaleSwitcher": {
-    "label": "Language"
-  },
-  "Common": {
-    "returnHome": "Return to Home"
-  },
-  "AboutPage": {
-    "title": "About Zen Texts Translation Comparison",
-    "intro": "This project aims to provide a platform for exploring and comparing different translations of classic Zen texts. By presenting multiple translations side by side, readers can gain a deeper understanding of these profound works.",
-    "xinxinTitle": "The Xinxin Ming",
-    "xinxinDesc1": "The Xinxin Ming (信心銘), often translated as \"Faith in Mind\" or \"Trust in Mind,\" is a classic Chinese Zen poem attributed to the Third Patriarch of Zen, Jianzhi Sengcan (鑑智僧璨). Written in the 7th century, this text is one of the earliest and most influential texts in the Zen tradition.",
-    "xinxinDesc2": "The poem consists of 146 lines of four characters each, and it expresses the essence of Zen teaching in a concise and poetic form. It emphasizes non-dualism, the unity of all things, and the importance of transcending conceptual thinking.",
-    "comparisonTitle": "Translation Comparison",
-    "comparisonDesc": "Different translators bring their own understanding, background, and linguistic choices to their translations. By comparing multiple translations, readers can:",
-    "comparisonItem1": "Gain a more nuanced understanding of the original text",
-    "comparisonItem2": "See different interpretations of challenging passages",
-    "comparisonItem3": "Appreciate the richness and depth of the original work",
-    "comparisonItem4": "Develop their own insights based on multiple perspectives",
-    "futureTitle": "Future Development",
-    "futureDesc": "This project is continuously evolving. Future plans include:",
-    "futureItem1": "Adding more Zen texts and translations",
-    "futureItem2": "Implementing user accounts for saving favorites and notes",
-    "futureItem3": "Creating a community for discussion and sharing insights",
-    "futureItem4": "Adding word-by-word comparison features",
-    "futureItem5": "Incorporating audio pronunciations of the original text"
-  },
-  "NotFoundPage": {
-    "title": "Not Found",
-    "description": "The page you are looking for doesn't exist or has been moved."
-  },
-  "BooksPage": {
-    "title": "Zen Texts Library",
-    "empty": "The library is currently empty. Try seeding the database.",
-    "seedDatabase": "Seed Database",
-    "by": "By: {author}",
-    "unknownAuthor": "Unknown",
-    "viewText": "View Text"
-  },
-  "ComparePage": {
-    "title": "Compare Translations",
-    "selectText": "Select a Text to Compare",
-    "xinxinTitle": "Xinxin Ming (Faith in Mind)",
-    "xinxinDesc": "Compare translations of this classic Zen poem",
-    "platformTitle": "Platform Sutra",
-    "comingSoon": "Coming soon",
-    "heartTitle": "Heart Sutra",
-    "diamondTitle": "Diamond Sutra"
+    "explore": {
+      "title": "Explore Translations",
+      "desc": "Browse through different translations of classic Zen texts.",
+      "button": "View Books"
+    },
+    "compare": {
+      "title": "Compare Translations",
+      "desc": "Compare different translations side by side.",
+      "button": "Compare Translations"
+    },
+    "about": {
+      "title": "About This Project",
+      "desc": "This application allows you to explore and compare different translations of classic Zen texts. You can browse through books, read verses, and compare how different translators have interpreted the same text.",
+      "button": "Learn More"
+    },
+    "dateLabel": "Today's date: {date}",
+    "numberLabel": "Sample number: {number}"
   }
 }

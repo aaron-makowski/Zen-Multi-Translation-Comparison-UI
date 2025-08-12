@@ -1,5 +1,4 @@
 import Link from "next-intl/link"
-import { useTranslations } from "next-intl"
 import { Button } from "@/components/ui/button"
 import { Card } from "@/components/ui/card"
 import { db } from "@/lib/db"

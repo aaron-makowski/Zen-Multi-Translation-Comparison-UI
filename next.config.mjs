@@ -1,9 +1,4 @@
-import createNextIntlPlugin from "next-intl/plugin"
-
-const withNextIntl = createNextIntlPlugin({
-  locales: ["en", "es"],
-  defaultLocale: "en",
-})
+import createNextIntlPlugin from 'next-intl/plugin';
 
 /** @type {import('next').NextConfig} */
 const nextConfig = {
@@ -16,6 +11,11 @@ const nextConfig = {
   images: {
     unoptimized: true,
   },
-}
+};
 
-export default withNextIntl(nextConfig)
+const withNextIntl = createNextIntlPlugin({
+  locales: ['en', 'es'],
+  defaultLocale: 'en'
+});
+
+export default withNextIntl(nextConfig);

@@ -1,19 +1,17 @@
-"use client"
+"use client";
 
-import type React from "react"
+import type React from "react";
 
-import Link from "next-intl/link"
-import { usePathname } from "next/navigation"
-import { useLocale, useTranslations } from "next-intl"
-import { Button } from "@/components/ui/button"
-import { ThemeToggle } from "@/components/theme-toggle"
-import { LocaleSwitcher } from "@/components/locale-switcher"
+import Link from "next-intl/link";
+import { useTranslations } from "next-intl";
+import { usePathname } from "next-intl/client";
+import { Button } from "@/components/ui/button";
+import { ThemeToggle } from "@/components/theme-toggle";
+import { LocaleSwitcher } from "@/components/locale-switcher";
 
 export function Navigation() {
-  const pathname = usePathname()
-  const locale = useLocale()
-  const t = useTranslations("Navigation")
-  const path = pathname.replace(`/${locale}`, "") || "/"
+  const pathname = usePathname();
+  const t = useTranslations("Navigation");
 
   return (
     <nav className="bg-white shadow-sm">
@@ -22,31 +20,31 @@ export function Navigation() {
           <div className="flex">
             <div className="flex-shrink-0 flex items-center">
               <Link href="/" className="font-bold text-xl">
-                {t("zenTexts")}
+                {t("title")}
               </Link>
             </div>
             <div className="hidden sm:ml-6 sm:flex sm:space-x-8">
-              <NavLink href="/" current={path === "/"}>
+              <NavLink href="/" current={pathname === "/"}>
                 {t("home")}
               </NavLink>
-              <NavLink href="/books" current={path.startsWith("/books")}> 
+              <NavLink href="/books" current={pathname.startsWith("/books")}>
                 {t("books")}
               </NavLink>
-              <NavLink href="/compare" current={path === "/compare"}>
+              <NavLink href="/compare" current={pathname === "/compare"}>
                 {t("compare")}
               </NavLink>
-              <NavLink href="/reddit" current={path === "/reddit"}>
-                {t("reddit")}
+              <NavLink href="/reddit" current={pathname.startsWith("/reddit")}>
+                Reddit
               </NavLink>
-              <NavLink href="/pdf-preview" current={path === "/pdf-preview"}>
+              <NavLink href="/pdf-preview" current={pathname === "/pdf-preview"}>
                 {t("pdfPreview")}
               </NavLink>
-              <NavLink href="/about" current={path === "/about"}>
+              <NavLink href="/about" current={pathname === "/about"}>
                 {t("about")}
               </NavLink>
             </div>
           </div>
-          <div className="hidden sm:ml-6 sm:flex sm:items-center">
+          <div className="hidden sm:ml-6 sm:flex sm:items-center space-x-2">
             <Link href="/login" passHref>
               <Button variant="outline" size="sm" className="mr-2">
                 {t("login")}
@@ -64,22 +62,22 @@ export function Navigation() {
       {/* Mobile menu */}
       <div className="sm:hidden">
         <div className="pt-2 pb-3 space-y-1">
-          <MobileNavLink href="/" current={path === "/"}>
+          <MobileNavLink href="/" current={pathname === "/"}>
             {t("home")}
           </MobileNavLink>
-          <MobileNavLink href="/books" current={path.startsWith("/books")}> 
+          <MobileNavLink href="/books" current={pathname.startsWith("/books")}>
             {t("books")}
           </MobileNavLink>
-          <MobileNavLink href="/compare" current={path === "/compare"}>
+          <MobileNavLink href="/compare" current={pathname === "/compare"}>
             {t("compare")}
           </MobileNavLink>
-          <MobileNavLink href="/reddit" current={path === "/reddit"}>
-            {t("reddit")}
+          <MobileNavLink href="/reddit" current={pathname.startsWith("/reddit")}>
+            Reddit
           </MobileNavLink>
-          <MobileNavLink href="/pdf-preview" current={path === "/pdf-preview"}>
+          <MobileNavLink href="/pdf-preview" current={pathname === "/pdf-preview"}>
             {t("pdfPreview")}
           </MobileNavLink>
-          <MobileNavLink href="/about" current={path === "/about"}>
+          <MobileNavLink href="/about" current={pathname === "/about"}>
             {t("about")}
           </MobileNavLink>
           <div className="flex space-x-2 px-3 py-2">
@@ -99,7 +97,7 @@ export function Navigation() {
         </div>
       </div>
     </nav>
-  )
+  );
 }
 
 function NavLink({ href, current, children }: { href: string; current: boolean; children: React.ReactNode }) {
@@ -114,7 +112,7 @@ function NavLink({ href, current, children }: { href: string; current: boolean; 
     >
       {children}
     </Link>
-  )
+  );
 }
 
 function MobileNavLink({ href, current, children }: { href: string; current: boolean; children: React.ReactNode }) {
@@ -129,5 +127,5 @@ function MobileNavLink({ href, current, children }: { href: string; current: boo
     >
       {children}
     </Link>
-  )
+  );
 }

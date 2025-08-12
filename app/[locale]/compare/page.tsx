@@ -1,5 +1,4 @@
 import Link from "next-intl/link"
-import { useTranslations } from "next-intl"
 import { Button } from "@/components/ui/button"
 import { Card } from "@/components/ui/card"
 
@@ -22,23 +21,29 @@ export default function ComparePage() {
                 </div>
               </Link>
             </Button>
-            <Button asChild className="h-auto py-4" variant="outline" disabled>
-              <div className="text-left">
-                <div className="font-medium">{t("platformTitle")}</div>
-                <div className="text-sm opacity-80">{t("comingSoon")}</div>
-              </div>
+            <Button asChild className="h-auto py-4">
+              <Link href="/books/platform-sutra">
+                <div className="text-left">
+                  <div className="font-medium">Platform Sutra</div>
+                  <div className="text-sm opacity-80">Translations of the Sixth Patriarch's teaching</div>
+                </div>
+              </Link>
             </Button>
-            <Button asChild className="h-auto py-4" variant="outline" disabled>
-              <div className="text-left">
-                <div className="font-medium">{t("heartTitle")}</div>
-                <div className="text-sm opacity-80">{t("comingSoon")}</div>
-              </div>
+            <Button asChild className="h-auto py-4">
+              <Link href="/books/heart-sutra">
+                <div className="text-left">
+                  <div className="font-medium">Heart Sutra</div>
+                  <div className="text-sm opacity-80">The essence of Prajñāpāramitā</div>
+                </div>
+              </Link>
             </Button>
-            <Button asChild className="h-auto py-4" variant="outline" disabled>
-              <div className="text-left">
-                <div className="font-medium">{t("diamondTitle")}</div>
-                <div className="text-sm opacity-80">{t("comingSoon")}</div>
-              </div>
+            <Button asChild className="h-auto py-4">
+              <Link href="/books/diamond-sutra">
+                <div className="text-left">
+                  <div className="font-medium">Diamond Sutra</div>
+                  <div className="text-sm opacity-80">A key Mahayana text on emptiness</div>
+                </div>
+              </Link>
             </Button>
           </div>
         </Card>
