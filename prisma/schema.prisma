@@ -63,8 +63,18 @@ model Translation {
   verse        Verse    @relation(fields: [verseId], references: [id])
   createdAt    DateTime @default(now())
   updatedAt    DateTime @updatedAt
-  
+
   wordMappings WordMapping[]
+}
+
+model Translator {
+  id             String   @id @default(cuid())
+  name           String
+  translatorBio  String?
+  publicationYear Int?
+  license        String?
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
 }
 
 model WordMapping {
