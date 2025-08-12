@@ -31,7 +31,7 @@ describe('GET /api/quotes', () => {
     expect(json).toEqual(staticQuote)
   })
 
-  it('returns default quote when both sources fail', async () => {
+  it('returns local fallback when both sources fail', async () => {
     vi.spyOn(globalThis, 'fetch').mockRejectedValue(new Error('network'))
     vi.spyOn(fs, 'readFile').mockRejectedValue(new Error('fs'))
 
