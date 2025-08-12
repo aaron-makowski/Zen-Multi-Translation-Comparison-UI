@@ -19,6 +19,7 @@ export async function seedDatabase() {
         description: "Faith in Mind - A classic Zen poem attributed to the Third Patriarch of Zen, Jianzhi Sengcan",
         author: "Jianzhi Sengcan",
         coverImage: "/xinxin-ming-cover.png",
+        pdfPath: null,
       },
     })
 

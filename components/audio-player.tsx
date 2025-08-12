@@ -1,32 +1,42 @@
 "use client"
 
-import React, { useRef } from "react"
-import { Button } from "@/components/ui/button"
+import { useEffect, useRef, useState } from "react"
 
-export interface AudioPlayerProps {
-  /** URL of an audio file to play. If omitted, `text` will be spoken. */
-  src?: string
-  /** Text to speak using the Web Speech API when no `src` is provided. */
+interface AudioPlayerProps {
   text?: string
+  src?: string
 }
 
-export function AudioPlayer({ src, text }: AudioPlayerProps) {
-  const audioRef = useRef<HTMLAudioElement | null>(null)
+export function AudioPlayer({ text, src }: AudioPlayerProps) {
+  const audioRef = useRef<HTMLAudioElement>(null)
+  const [speaking, setSpeaking] = useState(false)
 
-  const handlePlay = () => {
-    if (src) {
-      audioRef.current?.play()
-    } else if (text && typeof window !== "undefined" && "speechSynthesis" in window) {
-      const utterance = new SpeechSynthesisUtterance(text)
-      window.speechSynthesis.speak(utterance)
-    }
+  function speak() {
+    if (!text || typeof window === "undefined") return
+    const utterance = new SpeechSynthesisUtterance(text)
+    utterance.onend = () => setSpeaking(false)
+    setSpeaking(true)
+    window.speechSynthesis.speak(utterance)
   }
 
+  useEffect(() => {
+    return () => {
+      if (typeof window !== "undefined") window.speechSynthesis.cancel()
+    }
+  }, [])
+
   return (
-    <div className="flex items-center space-x-2">
-      {src && <audio ref={audioRef} src={src} hidden />}
-      <Button onClick={handlePlay}>{src ? "Play audio" : "Speak text"}</Button>
+    <div className="flex items-center gap-2">
+      {src && <audio ref={audioRef} controls src={src} className="h-8" />}
+      {text && (
+        <button
+          onClick={speak}
+          disabled={speaking}
+          className="text-sm px-2 py-1 border rounded"
+        >
+          {speaking ? "Speaking..." : "Speak"}
+        </button>
+      )}
     </div>
   )
 }
-
