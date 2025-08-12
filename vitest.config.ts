@@ -7,4 +7,13 @@ export default defineConfig({
       '@': path.resolve(__dirname, '.'),
     },
   },
+  test: {
+    include: ['tests/**/*.test.{ts,tsx}'],
+    environment: 'node'
+  },
+  resolve: {
+    alias: {
+      '@': path.resolve(__dirname)
+    }
+  }
 })
