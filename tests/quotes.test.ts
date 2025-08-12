@@ -3,7 +3,7 @@ import { GET } from '../app/api/quotes/route'
 import { promises as fs } from 'fs'
 
 const localFallback = { text: 'Be present. The rest will follow.' }
-const ultimateFallback = { text: 'Be present.', author: 'Unknown' }
+const finalFallback = { text: 'Be present.', author: 'Unknown' }
 
 describe('GET /api/quotes', () => {
   beforeEach(() => {
@@ -31,7 +31,7 @@ describe('GET /api/quotes', () => {
     expect(json).toEqual(staticQuote)
   })
 
-  it('returns default quote when both sources fail', async () => {
+  it('returns local fallback when both sources fail', async () => {
     vi.spyOn(globalThis, 'fetch').mockRejectedValue(new Error('network'))
     vi.spyOn(fs, 'readFile').mockRejectedValue(new Error('fs'))
 
@@ -46,7 +46,7 @@ describe('GET /api/quotes', () => {
 
     const res = await GET()
     const json = await res.json()
-    expect(json).toEqual(ultimateFallback)
+    expect(json).toEqual(finalFallback)
   })
 
   it('uses static fallback when reddit response is malformed', async () => {
