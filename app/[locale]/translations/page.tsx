@@ -96,7 +96,12 @@ export default function TranslationsPage() {
             ))}
           </div>
 
-          <TranslatorSelector selectedTranslators={visibleTranslators} onChange={setVisibleTranslators} />
+          <TranslatorSelector
+            bookId="xinxinming"
+            translators={translators}
+            selectedTranslators={visibleTranslators}
+            onChange={setVisibleTranslators}
+          />
 
           <div className="grid grid-cols-1 gap-2">
             {translators
@@ -135,7 +140,8 @@ export default function TranslationsPage() {
               <SelectContent>
                 {translators.map((t) => (
                   <SelectItem key={t.id} value={t.id}>
-                    {t.name} ({t.year}) - {t.description}
+                    {t.name} ({t.publicationYear}) - {t.translatorBio}
+                    {t.license && ` - ${t.license}`}
                   </SelectItem>
                 ))}
               </SelectContent>
@@ -145,9 +151,12 @@ export default function TranslationsPage() {
           <div className="text-sm mb-3 flex justify-between items-center">
             <div>
               <h3 className="font-medium text-base">
-                {translator.name} ({translator.year})
+                {translator.name} ({translator.publicationYear})
               </h3>
-              <p className="text-xs text-muted-foreground">{translator.description}</p>
+              <p className="text-xs text-muted-foreground">{translator.translatorBio}</p>
+              {translator.license && (
+                <p className="text-xs text-muted-foreground">License: {translator.license}</p>
+              )}
             </div>
             {translator.link && (
               <Link
