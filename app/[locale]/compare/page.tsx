@@ -1,8 +1,15 @@
 import Link from "next-intl/link"
 import { Button } from "@/components/ui/button"
 import { Card } from "@/components/ui/card"
+import { db } from "@/lib/db"
 
-export default function ComparePage() {
+export const revalidate = 60
+
+export default async function ComparePage() {
+  const allBooks = await db.query.books.findMany({
+    orderBy: (b, { asc }) => [asc(b.title)],
+  })
+
   return (
     <main className="flex min-h-screen flex-col items-center p-4 md:p-24">
       <div className="max-w-4xl w-full">

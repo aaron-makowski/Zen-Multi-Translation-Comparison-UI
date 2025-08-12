@@ -241,6 +241,36 @@ export const translators: Translator[] = [
   // Add more translators as needed
 ]
 
+const platformSutraTranslators: Translator[] = [
+  {
+    id: "mcrae",
+    name: "John R. McRae",
+    year: "2000",
+    description: "Platform Sutra translator",
+    link: "https://en.wikipedia.org/wiki/Platform_Sutra",
+  },
+]
+
+const heartSutraTranslators: Translator[] = [
+  {
+    id: "hs_red_pine",
+    name: "Red Pine",
+    year: "2004",
+    description: "Heart Sutra translator",
+    link: "https://en.wikipedia.org/wiki/Red_Pine_(author)",
+  },
+]
+
+const diamondSutraTranslators: Translator[] = [
+  {
+    id: "ds_conze",
+    name: "Edward Conze",
+    year: "1957",
+    description: "Diamond Sutra translator",
+    link: "https://en.wikipedia.org/wiki/Edward_Conze",
+  },
+]
+
 // Export the translations data
 export const translations: Record<string, Book> = {
   xinxinming: {
@@ -375,7 +405,78 @@ export const translations: Record<string, Book> = {
       },
     ],
   },
+  "platform-sutra": {
+    id: "platform-sutra",
+    title: "Platform Sutra",
+    description: "Teachings of the Sixth Patriarch",
+    author: "Huineng",
+    coverImage: "/platform-sutra-cover.png",
+    translators: platformSutraTranslators,
+    verses: [
+      {
+        id: 1,
+        lines: [
+          {
+            chinese: "菩提本無樹，明鏡亦非台。",
+            translations: {
+              mcrae: "Bodhi originally has no tree; the bright mirror also has no stand.",
+            },
+          },
+          {
+            chinese: "本來無一物，何處惹塵埃。",
+            translations: {
+              mcrae: "Originally there is not a single thing—where can dust collect?",
+            },
+          },
+        ],
+      },
+    ],
+  },
+  "heart-sutra": {
+    id: "heart-sutra",
+    title: "Heart Sutra",
+    description: "The Heart of the Perfection of Wisdom",
+    author: "Attributed to Avalokiteśvara",
+    coverImage: "/heart-sutra-cover.png",
+    translators: heartSutraTranslators,
+    verses: [
+      {
+        id: 1,
+        lines: [
+          {
+            chinese:
+              "觀自在菩薩，行深般若波羅蜜多時，照見五蘊皆空，度一切苦厄。",
+            translations: {
+              hs_red_pine:
+                "Avalokiteshvara Bodhisattva, practicing deep prajnaparamita, clearly saw that all five skandhas are empty and was saved from all suffering.",
+            },
+          },
+        ],
+      },
+    ],
+  },
+  "diamond-sutra": {
+    id: "diamond-sutra",
+    title: "Diamond Sutra",
+    description: "Vajracchedika Prajnaparamita Sutra",
+    author: "Attributed to the Buddha",
+    coverImage: "/diamond-sutra-cover.png",
+    translators: diamondSutraTranslators,
+    verses: [
+      {
+        id: 1,
+        lines: [
+          {
+            chinese: "如是我聞。",
+            translations: {
+              ds_conze: "Thus have I heard.",
+            },
+          },
+        ],
+      },
+    ],
+  },
 }
 
 // Also export verses for backward compatibility
-export const verses = translations.xinxinming.verses
+export const verses = translations["xinxin-ming"].verses
