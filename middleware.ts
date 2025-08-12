@@ -1,40 +1,41 @@
-/**
- * Global middleware applying security headers and CSRF protection.
- *
- * `@next-safe/middleware` sets common headers like CSP and others to harden
- * against XSS and related attacks. A custom CSRF layer issues a token cookie
- * and requires clients to echo it in an `x-csrf-token` header for mutating
- * requests, implementing a double-submit strategy.
- */
-import { chain, nextSafe, type ChainableMiddleware } from "@next-safe/middleware";
-import type { NextRequest } from "next/server";
-import { NextResponse } from "next/server";
+import createMiddleware from "next-intl/middleware"
+import { NextRequest, NextResponse } from "next/server"
 
-const csrf: ChainableMiddleware = (req, _evt, ctx) => {
-  const res = (ctx.res.get() as NextResponse) ?? NextResponse.next();
-  let token = req.cookies.get("csrf-token")?.value;
-  if (!token) {
-    token = crypto.randomUUID();
-    res.cookies.set("csrf-token", token, {
-      httpOnly: true,
-      sameSite: "strict",
-      secure: process.env.NODE_ENV === "production",
-      path: "/",
-    });
-  }
+const intlMiddleware = createMiddleware({
+  locales: ["en", "es"],
+  defaultLocale: "en"
+})
 
-  if (["POST", "PUT", "PATCH", "DELETE"].includes(req.method)) {
-    const header = req.headers.get("x-csrf-token");
-    if (!header || header !== token) {
-      return NextResponse.json({ error: "Invalid CSRF token" }, { status: 403 });
+function unauthorized() {
+  return new NextResponse("Unauthorized", {
+    status: 401,
+    headers: { "WWW-Authenticate": "Basic realm=\"Secure Area\"" }
+  })
+}
+
+export default function middleware(req: NextRequest) {
+  const { pathname } = req.nextUrl
+  if (pathname.startsWith("/admin") || pathname.startsWith("/api/admin")) {
+    const basic = req.headers.get("authorization")
+    if (!basic) return unauthorized()
+    const decode = (str: string) =>
+      typeof atob === "function"
+        ? atob(str)
+        : Buffer.from(str, "base64").toString()
+    const [user, pass] = decode(basic.split(" ")[1] || "").split(":")
+    if (
+      user !== process.env.ADMIN_USER ||
+      pass !== process.env.ADMIN_PASS
+    ) {
+      return unauthorized()
     }
   }
-
-  ctx.res.set(res);
-};
-
-export default chain(nextSafe(), csrf);
+  if (pathname.startsWith("/api")) {
+    return NextResponse.next()
+  }
+  return intlMiddleware(req)
+}
 
 export const config = {
-  matcher: "/((?!_next/static|_next/image|favicon.ico).*)",
-};
+  matcher: ["/((?!api|_next|.*\\..*).*)", "/api/admin/:path*"]
+}
