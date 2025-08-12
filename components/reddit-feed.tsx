@@ -7,18 +7,17 @@ interface RedditPost {
   title: string
   author: string
   url: string
-  upvotes: number
 }
 
-export function RedditFeed({ subreddit = "Zen" }: { subreddit?: string }) {
+export function RedditFeed() {
   const [posts, setPosts] = useState<RedditPost[]>([])
 
   useEffect(() => {
-    fetch(`/api/reddit?subreddit=${subreddit}`)
+    fetch("/api/reddit")
       .then((res) => (res.ok ? res.json() : []))
       .then((data) => setPosts(data))
       .catch(() => setPosts([]))
-  }, [subreddit])
+  }, [])
 
   return (
     <div className="space-y-4">
@@ -32,9 +31,7 @@ export function RedditFeed({ subreddit = "Zen" }: { subreddit?: string }) {
           >
             {post.title}
           </a>
-          <div className="text-sm text-muted-foreground">
-            by {post.author} • {post.upvotes} upvotes
-          </div>
+          <div className="text-sm text-muted-foreground">by {post.author}</div>
         </div>
       ))}
       {posts.length === 0 && (

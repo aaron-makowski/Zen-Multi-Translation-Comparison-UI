@@ -1,35 +1,26 @@
 import { NextResponse } from "next/server"
-import { db } from "@/lib/db"
-import { translations } from "@/lib/schema"
+import { translations } from "@/lib/translations"
 
 export async function GET(req: Request) {
   const { searchParams } = new URL(req.url)
   const verseId = searchParams.get("verseId")
+  const bookId = searchParams.get("book") || "xinxinming"
+  const book = (translations as Record<string, any>)[bookId]
+  if (!book) {
+    return NextResponse.json({ error: "Book not found" }, { status: 404 })
+  }
   if (verseId) {
-    const list = await db.query.translations.findMany({
-      where: (translations, { eq }) => eq(translations.verseId, verseId),
-    })
+    const verse = book.verses.find((v: any) => v.id === Number(verseId))
+    if (!verse) {
+      return NextResponse.json({ error: "Verse not found" }, { status: 404 })
+    }
+    const list = verse.lines.flatMap((line: any) =>
+      Object.entries(line.translations).map(([translator, text]) => ({
+        translator,
+        text,
+      }))
+    )
     return NextResponse.json(list)
   }
-  const all = await db.query.translations.findMany()
-  return NextResponse.json(all)
-}
-
-export async function POST(req: Request) {
-  const { text, translator, language, verseId } = await req.json()
-  if (!text || !translator || !verseId) {
-    return NextResponse.json({ error: "Missing fields" }, { status: 400 })
-  }
-  const [translation] = await db
-    .insert(translations)
-    .values({
-      id: crypto.randomUUID(),
-      text,
-      translator,
-      language: language || "English",
-      verseId,
-      updatedAt: new Date(),
-    })
-    .returning()
-  return NextResponse.json(translation, { status: 201 })
+  return NextResponse.json(book.translators)
 }

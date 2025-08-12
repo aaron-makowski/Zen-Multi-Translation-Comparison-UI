@@ -1,28 +1,24 @@
 import { NextResponse } from "next/server"
-import { db } from "@/lib/db"
-import { verses } from "@/lib/schema"
+import { unstable_cache } from "next/cache"
+import { loadCachedTranslations } from "@/lib/verse-cache"
+
+const getBook = unstable_cache(
+  async (bookId: string) => {
+    const data = await loadCachedTranslations()
+    return (data as Record<string, any>)[bookId]
+  },
+  ["verses"],
+  { revalidate: 3600, tags: ["verses"] }
+)
+
+export const revalidate = 3600
 
 export async function GET(req: Request) {
   const { searchParams } = new URL(req.url)
-  const bookId = searchParams.get("bookId")
-  if (bookId) {
-    const byBook = await db.query.verses.findMany({
-      where: (verses, { eq }) => eq(verses.bookId, bookId),
-    })
-    return NextResponse.json(byBook)
+  const bookId = searchParams.get("book") || "xinxinming"
+  const book = await getBook(bookId)
+  if (!book) {
+    return NextResponse.json({ error: "Book not found" }, { status: 404 })
   }
-  const allVerses = await db.query.verses.findMany()
-  return NextResponse.json(allVerses)
-}
-
-export async function POST(req: Request) {
-  const { number, bookId } = await req.json()
-  if (typeof number !== "number" || !bookId) {
-    return NextResponse.json({ error: "Missing fields" }, { status: 400 })
-  }
-  const [verse] = await db
-    .insert(verses)
-    .values({ id: crypto.randomUUID(), number, bookId, updatedAt: new Date() })
-    .returning()
-  return NextResponse.json(verse, { status: 201 })
+  return NextResponse.json(book.verses)
 }

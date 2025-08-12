@@ -1,27 +1,13 @@
 import { NextResponse } from "next/server"
-import { db } from "@/lib/db"
-import { books } from "@/lib/schema"
+import { translations } from "@/lib/translations"
+
+const books = Object.entries(translations).map(([id, book]) => ({
+  id,
+  title: book.title,
+  description: book.description,
+  pdfPath: null as string | null,
+}))
 
 export async function GET() {
-  const allBooks = await db.query.books.findMany()
-  return NextResponse.json(allBooks)
-}
-
-export async function POST(req: Request) {
-  const { title, description, author, coverImage } = await req.json()
-  if (!title || !description) {
-    return NextResponse.json({ error: "Missing fields" }, { status: 400 })
-  }
-  const [book] = await db
-    .insert(books)
-    .values({
-      id: crypto.randomUUID(),
-      title,
-      description,
-      author,
-      coverImage,
-      updatedAt: new Date(),
-    })
-    .returning()
-  return NextResponse.json(book, { status: 201 })
+  return NextResponse.json(books)
 }
