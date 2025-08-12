@@ -1,7 +1,12 @@
 import { NextResponse } from "next/server"
+import { revalidateTag } from "next/cache"
 import { db } from "@/lib/db"
 import { translations } from "@/lib/schema"
 import { v4 as uuidv4 } from "uuid"
+import {
+  loadCachedTranslations,
+  updateTranslationsCache,
+} from "@/lib/verse-cache"
 
 function parseCSV(text: string) {
   const parseLine = (line: string) => {
@@ -66,6 +71,8 @@ export async function POST(req: Request) {
   } catch {
     return NextResponse.json({ error: "Invalid file format" }, { status: 400 })
   }
+  const cache = await loadCachedTranslations()
+  const book = cache.xinxinming
   let count = 0
   for (const r of records) {
     if (!r.text || !r.translator || !r.verseId) continue
@@ -82,6 +89,15 @@ export async function POST(req: Request) {
     } catch {
       // ignore individual insert errors
     }
+    const verse = book.verses.find((v: any) => v.id === Number(r.verseId))
+    if (verse) {
+      const line = verse.lines[0] || { chinese: "", translations: {} }
+      line.translations[r.translator] = r.text
+      verse.lines[0] = line
+    }
   }
+  await updateTranslationsCache(cache)
+  revalidateTag("verses")
+  revalidateTag("translations")
   return NextResponse.json({ imported: count })
 }

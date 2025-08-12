@@ -1,4 +1,5 @@
 "use client"
+
 import { useEffect, useState } from "react"
 
 interface CommentTimerProps {
@@ -7,26 +8,21 @@ interface CommentTimerProps {
 }
 
 export function CommentTimer({ seconds = 5, onComplete }: CommentTimerProps) {
-  const [remaining, setRemaining] = useState(seconds)
+  const [timeLeft, setTimeLeft] = useState(seconds)
 
   useEffect(() => {
-    setRemaining(seconds)
-    const timer = setInterval(() => {
-      setRemaining((prev) => {
-        if (prev <= 1) {
-          clearInterval(timer)
-          onComplete?.()
-          return 0
-        }
-        return prev - 1
-      })
-    }, 1000)
-    return () => clearInterval(timer)
-  }, [seconds, onComplete])
+    setTimeLeft(seconds)
+    if (timeLeft <= 0) {
+      onComplete?.()
+      return
+    }
+    const id = setTimeout(() => setTimeLeft(timeLeft - 1), 1000)
+    return () => clearTimeout(id)
+  }, [timeLeft, onComplete, seconds])
 
   return (
     <div className="text-center text-sm text-muted-foreground">
-      {remaining > 0 ? `Take a breath… ${remaining}s` : "Mindful moment complete"}
+      {timeLeft > 0 ? `Take a breath… ${timeLeft}s` : "Mindful moment complete"}
     </div>
   )
 }

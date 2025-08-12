@@ -1,20 +1,19 @@
 import { defineConfig } from 'vitest/config'
-import path from 'node:path'
+import path from 'path'
 
 export default defineConfig({
   resolve: {
     alias: {
-      '@': path.resolve(__dirname, '.')
-    }
-  },
-  esbuild: {
-    jsx: 'automatic'
+      '@': path.resolve(__dirname, '.'),
+    },
   },
   test: {
-    include: [
-      'tests/**/*.test.{ts,tsx}',
-      'components/__tests__/**/*.test.{ts,tsx}'
-    ],
+    include: ['tests/**/*.test.{ts,tsx}'],
     environment: 'node'
+  },
+  resolve: {
+    alias: {
+      '@': path.resolve(__dirname)
+    }
   }
 })
