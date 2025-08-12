@@ -7,6 +7,8 @@ import { logError } from "@/lib/logger"
 
 export interface Comment {
   id: string
+  username: string
+  karma: number
   content: string
   createdAt: string
   votes: number
