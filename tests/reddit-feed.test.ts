@@ -1,50 +1,108 @@
-import { describe, it, expect, vi, afterEach } from 'vitest'
+import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest'
 import { GET } from '../app/api/reddit-feed/route'
 
-const mockJson = {
+const mockResponse = {
   data: {
     children: [
-      { data: { title: 'First', permalink: '/r/zen/1' } },
-      { data: { title: 'Second', permalink: '/r/zen/2' } }
+      {
+        data: { id: '1', title: 'Post', url: 'https://example.com' }
+      }
     ]
   }
 }
 
 describe('reddit feed API', () => {
+  beforeEach(() => {
+    vi.restoreAllMocks()
+  })
+
   afterEach(() => {
     vi.restoreAllMocks()
   })
 
-  it('returns simplified posts from reddit', async () => {
-    vi.stubGlobal(
-      'fetch',
-      vi.fn(async () => ({
-        ok: true,
-        json: async () => mockJson
-      })) as any
-    )
+  it('returns parsed posts', async () => {
+    vi.spyOn(globalThis, 'fetch').mockResolvedValue({
+      ok: true,
+      json: () => Promise.resolve(mockResponse)
+    } as any)
 
-    const res = await GET(new Request('http://localhost/api/reddit-feed'))
+    const res = await GET()
     const posts = await res.json()
 
-    expect(fetch).toHaveBeenCalledWith('https://www.reddit.com/r/zen/top.json?limit=5')
     expect(posts).toEqual([
-      { title: 'First', url: 'https://www.reddit.com/r/zen/1' },
-      { title: 'Second', url: 'https://www.reddit.com/r/zen/2' }
+      { id: '1', title: 'Post', url: 'https://example.com' }
     ])
   })
 
-  it('handles fetch errors gracefully', async () => {
-    vi.stubGlobal(
-      'fetch',
-      vi.fn(async () => {
-        throw new Error('network error')
-      }) as any
-    )
+  it('returns empty array when no posts', async () => {
+    vi.spyOn(globalThis, 'fetch').mockResolvedValue({
+      ok: true,
+      json: () =>
+        Promise.resolve({
+          data: { children: [] }
+        })
+    } as any)
 
-    const res = await GET(new Request('http://localhost/api/reddit-feed'))
+    const res = await GET()
+    const posts = await res.json()
+
+    expect(posts).toEqual([])
+  })
+
+  it('handles invalid response structure', async () => {
+    vi.spyOn(globalThis, 'fetch').mockResolvedValue({
+      ok: true,
+      json: () => Promise.resolve({})
+    } as any)
+
+    const res = await GET()
+
+    expect(res.status).toBe(502)
+    const body = await res.json()
+    expect(body.error).toBeDefined()
+  })
+
+  it('handles fetch failure', async () => {
+    vi.spyOn(globalThis, 'fetch').mockRejectedValue(new Error('network error'))
+
+    const res = await GET()
+
+    expect(res.status).toBe(502)
+    const body = await res.json()
+    expect(body.error).toBe('Failed to reach Reddit')
+  })
+
+  it('handles non-OK responses', async () => {
+    vi.spyOn(globalThis, 'fetch').mockResolvedValue({
+      ok: false,
+      status: 500,
+      json: () => Promise.resolve({})
+    } as any)
+
+    const res = await GET()
+
     expect(res.status).toBe(500)
     const body = await res.json()
-    expect(body).toEqual({ error: 'Failed to fetch Reddit feed' })
+    expect(body.error).toBe('Failed to fetch Reddit feed')
+  })
+
+  it('handles posts missing required fields', async () => {
+    vi.spyOn(globalThis, 'fetch').mockResolvedValue({
+      ok: true,
+      json: () =>
+        Promise.resolve({
+          data: {
+            children: [
+              { data: { id: '1', title: 'Missing URL' } }
+            ]
+          }
+        })
+    } as any)
+
+    const res = await GET()
+
+    expect(res.status).toBe(500)
+    const body = await res.json()
+    expect(body.error).toBe('Failed to parse Reddit posts')
   })
 })
