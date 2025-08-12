@@ -14,7 +14,7 @@ describe('multi-book comparison', () => {
         ('v3',1,'b2'), ('v4',2,'b2');
     `)
     const res = db.exec(
-      "SELECT b.id as bookId, v.id as verseId, v.number as number FROM books b JOIN verses v ON b.id = v.book_id WHERE b.id IN ('b1','b2') ORDER BY b.id, v.number"
+      "SELECT b.id as bookId, v.id as verseId, v.number as number FROM books b JOIN verses v ON b.id = v.book_id ORDER BY b.id, v.number"
     )
     const rows = res[0].values.map((r) => ({
       bookId: r[0] as string,

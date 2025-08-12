@@ -105,4 +105,22 @@ describe('reddit feed API', () => {
     const body = await res.json()
     expect(body.error).toBe('Failed to parse Reddit posts')
   })
+
+  it('handles invalid JSON', async () => {
+    const originalFetch = global.fetch
+    global.fetch = vi.fn().mockResolvedValue({
+      ok: true,
+      json: () => {
+        throw new Error('bad json')
+      }
+    } as any)
+
+    const res = await GET()
+
+    expect(res.status).toBe(502)
+    const body = await res.json()
+    expect(body.error).toBe('Invalid JSON from Reddit')
+
+    global.fetch = originalFetch
+  })
 })
