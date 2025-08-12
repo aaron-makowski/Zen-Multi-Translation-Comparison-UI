@@ -1,38 +1,26 @@
 "use client"
 
-import React, { useEffect, useState } from "react"
-import { Moon, Sun } from "lucide-react"
+import { useEffect, useState } from "react"
 import { Button } from "@/components/ui/button"
+import { Moon, Sun } from "lucide-react"
 
-/**
- * ThemeSwitcher toggles the `dark` class on the document element
- * enabling TailwindCSS dark mode styles. Preference is stored in
- * localStorage so the choice persists across sessions.
- */
 export function ThemeSwitcher() {
   const [isDark, setIsDark] = useState(false)
 
-  // On mount read the current preference
   useEffect(() => {
-    const root = document.documentElement
-    const stored = localStorage.getItem("theme")
-    if (stored === "dark" || (!stored && root.classList.contains("dark"))) {
-      root.classList.add("dark")
-      setIsDark(true)
-    }
+    const root = window.document.documentElement
+    const stored = window.localStorage.getItem("theme")
+    const initial = stored ? stored === "dark" : root.classList.contains("dark")
+    root.classList.toggle("dark", initial)
+    setIsDark(initial)
   }, [])
 
-  const toggleTheme = () => {
-    const root = document.documentElement
-    if (root.classList.contains("dark")) {
-      root.classList.remove("dark")
-      localStorage.setItem("theme", "light")
-      setIsDark(false)
-    } else {
-      root.classList.add("dark")
-      localStorage.setItem("theme", "dark")
-      setIsDark(true)
-    }
+  function toggleTheme() {
+    const next = !isDark
+    const root = window.document.documentElement
+    root.classList.toggle("dark", next)
+    window.localStorage.setItem("theme", next ? "dark" : "light")
+    setIsDark(next)
   }
 
   return (
@@ -46,5 +34,3 @@ export function ThemeSwitcher() {
     </Button>
   )
 }
-
-export default ThemeSwitcher
