@@ -3,6 +3,7 @@ import { promises as fs } from "fs"
 import path from "path"
 import { marked } from "marked"
 import sanitizeHtml from "sanitize-html"
+import { logError } from "@/lib/logger"
 
 export interface Comment {
   id: string
@@ -20,14 +21,20 @@ export async function readData() {
   try {
     const data = await fs.readFile(COMMENTS_FILE, "utf8")
     return JSON.parse(data || "{}")
-  } catch {
+  } catch (error) {
+    logError(error, "Failed to read comments data")
     return {}
   }
 }
 
 export async function writeData(data: Record<string, Comment[]>) {
-  await fs.mkdir(path.dirname(COMMENTS_FILE), { recursive: true })
-  await fs.writeFile(COMMENTS_FILE, JSON.stringify(data, null, 2))
+  try {
+    await fs.mkdir(path.dirname(COMMENTS_FILE), { recursive: true })
+    await fs.writeFile(COMMENTS_FILE, JSON.stringify(data, null, 2))
+  } catch (error) {
+    logError(error, "Failed to write comments data")
+    throw error
+  }
 }
 
 export function voteComment(
@@ -45,53 +52,68 @@ export function voteComment(
 }
 
 export async function GET(req: Request) {
-  const { searchParams } = new URL(req.url)
-  const verseId = searchParams.get("verseId")
-  const parentId = searchParams.get("parentId")
-  const data = await readData()
-  if (verseId) {
-    let list = data[verseId] || []
-    if (parentId) {
-      list = list.filter((c) => c.parentId === parentId)
+  try {
+    const { searchParams } = new URL(req.url)
+    const verseId = searchParams.get("verseId")
+    const parentId = searchParams.get("parentId")
+    const data = await readData()
+    if (verseId) {
+      let list = data[verseId] || []
+      if (parentId) {
+        list = list.filter((c) => c.parentId === parentId)
+      }
+      return NextResponse.json(list)
     }
-    return NextResponse.json(list)
+    return NextResponse.json(data)
+  } catch (error) {
+    logError(error, "Failed to handle GET /api/comments")
+    return NextResponse.json({ error: "Internal server error" }, { status: 500 })
   }
-  return NextResponse.json(data)
 }
 
 export async function POST(req: Request) {
-  const { verseId, content, parentId } = await req.json()
-  if (!verseId || !content) {
-    return NextResponse.json({ error: "Missing fields" }, { status: 400 })
+  try {
+    const { verseId, content, parentId } = await req.json()
+    if (!verseId || !content) {
+      return NextResponse.json({ error: "Missing fields" }, { status: 400 })
+    }
+    const rawHtml = marked.parse(content)
+    const safeContent = sanitizeHtml(rawHtml)
+    const data = await readData()
+    const comment: Comment = {
+      id: crypto.randomUUID(),
+      content: safeContent,
+      createdAt: new Date().toISOString(),
+      votes: 0,
+      parentId,
+      flagged: false,
+      removed: false,
+    }
+    if (!data[verseId]) data[verseId] = []
+    data[verseId].push(comment)
+    await writeData(data)
+    return NextResponse.json(comment)
+  } catch (error) {
+    logError(error, "Failed to handle POST /api/comments")
+    return NextResponse.json({ error: "Internal server error" }, { status: 500 })
   }
-  const rawHtml = marked.parse(content)
-  const safeContent = sanitizeHtml(rawHtml)
-  const data = await readData()
-  const comment: Comment = {
-    id: crypto.randomUUID(),
-    content: safeContent,
-    createdAt: new Date().toISOString(),
-    votes: 0,
-    parentId,
-    flagged: false,
-    removed: false,
-  }
-  if (!data[verseId]) data[verseId] = []
-  data[verseId].push(comment)
-  await writeData(data)
-  return NextResponse.json(comment)
 }
 
 export async function PATCH(req: Request) {
-  const { verseId, commentId, delta } = await req.json()
-  if (!verseId || !commentId || typeof delta !== "number") {
-    return NextResponse.json({ error: "Missing fields" }, { status: 400 })
+  try {
+    const { verseId, commentId, delta } = await req.json()
+    if (!verseId || !commentId || typeof delta !== "number") {
+      return NextResponse.json({ error: "Missing fields" }, { status: 400 })
+    }
+    const data = await readData()
+    const updated = voteComment(data, verseId, commentId, delta)
+    if (!updated) {
+      return NextResponse.json({ error: "Not found" }, { status: 404 })
+    }
+    await writeData(data)
+    return NextResponse.json(updated)
+  } catch (error) {
+    logError(error, "Failed to handle PATCH /api/comments")
+    return NextResponse.json({ error: "Internal server error" }, { status: 500 })
   }
-  const data = await readData()
-  const updated = voteComment(data, verseId, commentId, delta)
-  if (!updated) {
-    return NextResponse.json({ error: "Not found" }, { status: 404 })
-  }
-  await writeData(data)
-  return NextResponse.json(updated)
 }

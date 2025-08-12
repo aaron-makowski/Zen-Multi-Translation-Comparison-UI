@@ -45,6 +45,7 @@
     "next-intl": "^3.7.1",
     "pdf-parse": "^1.1.1",
     "pg": "latest",
+    "pino": "^9.8.0",
     "postgres": "latest",
     "prisma": "latest",
     "react": "^18",
