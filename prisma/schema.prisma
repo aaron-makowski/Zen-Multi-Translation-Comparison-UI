@@ -22,7 +22,8 @@ model User {
   username  String   @unique
   password  String
   isGuest   Boolean  @default(false)
-  role      Role     @default(USER)
+  commentKarma   Int @default(0)
+  highlightKarma Int @default(0)
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
@@ -39,6 +40,7 @@ model Book {
   description String
   author      String?
   coverImage  String?
+  pdfPath     String?
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
   
@@ -68,8 +70,18 @@ model Translation {
   verse        Verse    @relation(fields: [verseId], references: [id])
   createdAt    DateTime @default(now())
   updatedAt    DateTime @updatedAt
-  
+
   wordMappings WordMapping[]
+}
+
+model Translator {
+  id             String   @id @default(cuid())
+  name           String
+  translatorBio  String?
+  publicationYear Int?
+  license        String?
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
 }
 
 model WordMapping {
