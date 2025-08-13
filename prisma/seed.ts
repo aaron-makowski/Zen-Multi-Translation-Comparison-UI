@@ -4,7 +4,9 @@ import { translations } from "../lib/translations"
 const prisma = new PrismaClient()
 
 async function main() {
-  for (const book of Object.values(translations)) {
+  const books = Object.values(translations)
+
+  for (const book of books) {
     const dbBook = await prisma.book.upsert({
       where: { id: book.id },
       update: {},
