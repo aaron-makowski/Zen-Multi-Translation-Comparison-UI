@@ -1,12 +1,14 @@
 import { db } from "./db"
 import { books, verses, translations as translationsTable } from "./schema"
-import { translations as booksData } from "./translations"
+import { translations } from "./translations"
 import { v4 as uuidv4 } from "uuid"
 
 export async function seedDatabase() {
   console.log("Seeding database...")
 
-  for (const book of Object.values(booksData)) {
+  const books = Object.values(translations)
+
+  for (const book of books) {
     const existingBook = await db.query.books.findFirst({
       where: (b, { eq }) => eq(b.id, book.id),
     })
