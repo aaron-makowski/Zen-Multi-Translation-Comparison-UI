@@ -1,6 +1,7 @@
 import { VerseSelector } from "./verse-selector"
 import { prisma } from "@/lib/db"
 import { Card } from "@/components/ui/card"
+import { DownloadButton, MultiVerseData } from "./download-button"
 
 export default async function MultiComparePage({
   searchParams,
@@ -25,18 +26,7 @@ export default async function MultiComparePage({
     pairs.push({ bookId: parts[0], verseId: parts[1] })
   }
 
-  let data: {
-    translations: {
-      [bookTitle: string]: {
-        [translator: string]: {
-          verseId: string
-          verseNumber: number
-          text: string
-        }[]
-      }
-    }
-    missing: string[]
-  } | null = null
+  let data: MultiVerseData | null = null
 
   if (pairs.length > 0) {
     const verseIds = pairs.map((p) => p.verseId)
@@ -48,15 +38,7 @@ export default async function MultiComparePage({
       },
     })
 
-    const translations: {
-      [bookTitle: string]: {
-        [translator: string]: {
-          verseId: string
-          verseNumber: number
-          text: string
-        }[]
-      }
-    } = {}
+    const translations: MultiVerseData["translations"] = {}
 
     for (const verse of verses) {
       const bookTitle = verse.book.title
@@ -99,6 +81,9 @@ export default async function MultiComparePage({
                 Some requested verses could not be found and were omitted.
               </p>
             )}
+            <div className="flex justify-end">
+              <DownloadButton data={data} />
+            </div>
             {Object.entries(data.translations).map(([bookTitle, translators]) => (
               <div key={bookTitle}>
                 <h2 className="text-2xl font-semibold mb-4">{bookTitle}</h2>
