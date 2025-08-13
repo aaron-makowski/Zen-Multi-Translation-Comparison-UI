@@ -1,73 +1,118 @@
-"use client"
+import Link from "next/link"
+import { translators } from "@/lib/translations"
+import { getKarmaBadge } from "@/lib/karma"
 
-import { useEffect, useState } from "react"
-
-interface RedditPost {
+interface Comment {
   id: string
-  title: string
-  author: string
-  url: string
-  upvotes: number
+  username: string
+  karma: number
+  content: string
+  createdAt: string
 }
 
-export default function FeedPage() {
-  const [posts, setPosts] = useState<RedditPost[]>([])
-  const [query, setQuery] = useState("")
-  const [sort, setSort] = useState<"upvotes" | "title">("upvotes")
+interface Highlight {
+  id: string
+  username: string
+  karma: number
+  text: string
+  createdAt: string
+}
 
-  useEffect(() => {
-    fetch("/api/reddit")
-      .then((res) => (res.ok ? res.json() : []))
-      .then((data) => setPosts(data))
-      .catch(() => setPosts([]))
-  }, [])
+interface Featured {
+  translatorId: string
+  verseId: number
+}
 
-  const filtered = posts
-    .filter((p) => p.title.toLowerCase().includes(query.toLowerCase()))
-    .sort((a, b) =>
-      sort === "title" ? a.title.localeCompare(b.title) : b.upvotes - a.upvotes,
-    )
+async function getLatestComments(): Promise<Comment[]> {
+  const res = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL || ''}/api/comments`, {
+    next: { revalidate: 0 }
+  })
+  const data = await res.json()
+  const all = Object.values(data as Record<string, Comment[]>).flat()
+  return all.sort((a, b) => Date.parse(b.createdAt) - Date.parse(a.createdAt)).slice(0, 5)
+}
+
+async function getHighlights(): Promise<Highlight[]> {
+  const res = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL || ''}/api/highlights`, {
+    next: { revalidate: 0 }
+  })
+  if (!res.ok) return []
+  const data = (await res.json()) as Highlight[]
+  return data
+    .sort((a, b) => Date.parse(b.createdAt) - Date.parse(a.createdAt))
+    .slice(0, 5)
+}
+
+async function getFeatured() {
+  const res = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL || ''}/api/featured`, {
+    next: { revalidate: 0 }
+  })
+  if (!res.ok) return null
+  const data = (await res.json()) as Featured
+  const translator = translators.find((t) => t.id === data.translatorId)
+  return { ...data, translator }
+}
+
+export default async function FeedPage() {
+  const [comments, highlights, featured] = await Promise.all([
+    getLatestComments(),
+    getHighlights(),
+    getFeatured()
+  ])
 
   return (
-    <main className="max-w-2xl mx-auto p-4">
-      <h1 className="text-2xl font-bold mb-4">Community Feed</h1>
-      <div className="flex gap-2 mb-4">
-        <input
-          type="text"
-          placeholder="Search..."
-          value={query}
-          onChange={(e) => setQuery(e.target.value)}
-          className="border rounded px-2 py-1 flex-grow"
-        />
-        <select
-          value={sort}
-          onChange={(e) => setSort(e.target.value as "upvotes" | "title")}
-          className="border rounded px-2 py-1"
-        >
-          <option value="upvotes">Upvotes</option>
-          <option value="title">Title</option>
-        </select>
-      </div>
-      <div className="space-y-4">
-        {filtered.map((post) => (
-          <div key={post.id} className="p-4 border rounded">
-            <a
-              href={post.url}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="font-medium hover:underline"
-            >
-              {post.title}
-            </a>
-            <div className="text-sm text-muted-foreground">
-              by {post.author} • {post.upvotes} upvotes
-            </div>
-          </div>
-        ))}
-        {filtered.length === 0 && (
-          <p className="text-sm text-muted-foreground">No posts available.</p>
-        )}
-      </div>
-    </main>
+    <div className="p-4 space-y-8">
+      <section>
+        <h2 className="text-xl font-semibold mb-2">Latest Comments</h2>
+        <ul className="space-y-2">
+          {comments.map((c) => {
+            const badge = getKarmaBadge(c.karma)
+            return (
+              <li key={c.id} className="text-sm">
+                <strong>{c.username}</strong>{" "}
+                <span className={`text-xs ${badge.color}`}>{badge.label}</span>: {c.content}
+              </li>
+            )
+          })}
+          {comments.length === 0 && (
+            <p className="text-sm text-muted-foreground">No comments yet.</p>
+          )}
+        </ul>
+      </section>
+
+      <section>
+        <h2 className="text-xl font-semibold mb-2">Highlights</h2>
+        <ul className="space-y-2">
+          {highlights.map((h) => {
+            const badge = getKarmaBadge(h.karma)
+            return (
+              <li key={h.id} className="text-sm">
+                <strong>{h.username}</strong>{" "}
+                <span className={`text-xs ${badge.color}`}>{badge.label}</span>: {h.text}
+              </li>
+            )
+          })}
+          {highlights.length === 0 && (
+            <p className="text-sm text-muted-foreground">No highlights yet.</p>
+          )}
+        </ul>
+      </section>
+
+      {featured && (
+        <section>
+          <h2 className="text-xl font-semibold mb-2">Featured Translation</h2>
+          <p className="text-sm">
+            {featured.translator ? (
+              <>
+                <Link href={`/translations/${featured.translator.id}`}>{featured.translator.name}</Link>
+                {` – Verse ${featured.verseId}`}
+              </>
+            ) : (
+              `${featured.translatorId} – Verse ${featured.verseId}`
+            )}
+          </p>
+        </section>
+      )}
+    </div>
   )
 }
