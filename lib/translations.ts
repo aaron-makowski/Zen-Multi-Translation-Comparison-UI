@@ -189,55 +189,6 @@ export const translators: Translator[] = [
     license: "Unknown",
     link: "https://en.wikipedia.org/wiki/Edward_Conze",
   },
-  {
-    id: "translator24",
-    name: "Translator 24",
-    publicationYear: 2024,
-    translatorBio: "Additional Version",
-    license: "Unknown",
-  },
-  {
-    id: "translator25",
-    name: "Translator 25",
-    publicationYear: 2024,
-    translatorBio: "Additional Version",
-    license: "Unknown",
-  },
-  {
-    id: "translator26",
-    name: "Translator 26",
-    publicationYear: 2024,
-    translatorBio: "Additional Version",
-    license: "Unknown",
-  },
-  {
-    id: "translator27",
-    name: "Translator 27",
-    publicationYear: 2024,
-    translatorBio: "Additional Version",
-    license: "Unknown",
-  },
-  {
-    id: "translator28",
-    name: "Translator 28",
-    publicationYear: 2024,
-    translatorBio: "Additional Version",
-    license: "Unknown",
-  },
-  {
-    id: "translator29",
-    name: "Translator 29",
-    publicationYear: 2024,
-    translatorBio: "Additional Version",
-    license: "Unknown",
-  },
-  {
-    id: "translator30",
-    name: "Translator 30",
-    publicationYear: 2024,
-    translatorBio: "Additional Version",
-    license: "Unknown",
-  },
   // Add more translators as needed
 ]
 
@@ -245,8 +196,9 @@ const platformSutraTranslators: Translator[] = [
   {
     id: "mcrae",
     name: "John R. McRae",
-    year: "2000",
-    description: "Platform Sutra translator",
+    publicationYear: 2000,
+    translatorBio: "Platform Sutra translator",
+    license: "Unknown",
     link: "https://en.wikipedia.org/wiki/Platform_Sutra",
   },
 ]
@@ -255,8 +207,9 @@ const heartSutraTranslators: Translator[] = [
   {
     id: "hs_red_pine",
     name: "Red Pine",
-    year: "2004",
-    description: "Heart Sutra translator",
+    publicationYear: 2004,
+    translatorBio: "Heart Sutra translator",
+    license: "Unknown",
     link: "https://en.wikipedia.org/wiki/Red_Pine_(author)",
   },
 ]
@@ -265,8 +218,9 @@ const diamondSutraTranslators: Translator[] = [
   {
     id: "ds_conze",
     name: "Edward Conze",
-    year: "1957",
-    description: "Diamond Sutra translator",
+    publicationYear: 1957,
+    translatorBio: "Diamond Sutra translator",
+    license: "Unknown",
     link: "https://en.wikipedia.org/wiki/Edward_Conze",
   },
 ]
@@ -303,102 +257,6 @@ export const translations: Record<string, Book> = {
                 "Only when freed from hate and love, it reveals itself fully and without disguise.",
               goddard:
                 "Only when freed from hate and love, it reveals itself fully and without disguise.",
-            },
-          },
-        ],
-      },
-    ],
-  },
-  'platform-sutra': {
-    id: "platform-sutra",
-    title: "Platform Sutra",
-    description: "Sutra of the Sixth Patriarch",
-    author: "Huineng",
-    coverImage: "/platform-sutra-cover.png",
-    translators,
-    verses: [
-      {
-        id: 1,
-        lines: [
-          {
-            chinese: "菩提本無樹，",
-            pinyin: "Pútí běn wú shù,",
-            translations: {
-              red_pine: "Bodhi is originally no tree,",
-              conze: "Bodhi originally has no tree,",
-            },
-          },
-          {
-            chinese: "明鏡亦非臺。",
-            pinyin: "Míng jìng yì fēi tái.",
-            translations: {
-              red_pine: "the bright mirror has no stand,",
-              conze: "the bright mirror is no stand,",
-            },
-          },
-          {
-            chinese: "本來無一物，",
-            pinyin: "Běnlái wú yī wù,",
-            translations: {
-              red_pine: "Buddha nature is always clean and pure,",
-              conze: "Originally there is not a single thing,",
-            },
-          },
-          {
-            chinese: "何處惹塵埃。",
-            pinyin: "Hé chù rě chén āi.",
-            translations: {
-              red_pine: "where would dust alight?",
-              conze: "Where can dust alight?",
-            },
-          },
-        ],
-      },
-    ],
-  },
-  'heart-sutra': {
-    id: "heart-sutra",
-    title: "Heart Sutra",
-    description: "Prajñāpāramitā Heart Sutra",
-    author: "",
-    coverImage: "/heart-sutra-cover.png",
-    translators,
-    verses: [
-      {
-        id: 1,
-        lines: [
-          {
-            chinese:
-              "觀自在菩薩，行深般若波羅蜜多時，照見五蘊皆空，度一切苦厄。",
-            translations: {
-              red_pine:
-                "Avalokiteshvara Bodhisattva, practicing deep prajna paramita, clearly saw that all five skandhas are empty, thus relieving all suffering and distress.",
-              conze:
-                "When Bodhisattva Avalokiteshvara was practicing the profound Prajnaparamita, he perceived that all five skandhas are empty, thereby transcending all suffering.",
-            },
-          },
-        ],
-      },
-    ],
-  },
-  'diamond-sutra': {
-    id: "diamond-sutra",
-    title: "Diamond Sutra",
-    description: "The Diamond that Cuts through Illusion",
-    author: "",
-    coverImage: "/diamond-sutra-cover.png",
-    translators,
-    verses: [
-      {
-        id: 1,
-        lines: [
-          {
-            chinese: "如是我聞。一時佛在舍衛國祇樹給孤獨園。",
-            translations: {
-              red_pine:
-                "Thus have I heard. Once the Buddha dwelt in Anathapindika's park in Jetavana at Sravasti.",
-              conze:
-                "Thus I have heard. Once upon a time the Lord dwelt at Shravasti in the Jetavana monastery of Anathapindika.",
             },
           },
         ],
@@ -479,4 +337,4 @@ export const translations: Record<string, Book> = {
 }
 
 // Also export verses for backward compatibility
-export const verses = translations["xinxin-ming"].verses
+export const verses = translations["xinxinming"].verses
