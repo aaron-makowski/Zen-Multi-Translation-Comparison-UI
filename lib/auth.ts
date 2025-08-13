@@ -1,47 +1,25 @@
-import { PrismaAdapter } from "@auth/prisma-adapter"
-import { PrismaClient } from "@prisma/client"
-import type { NextAuthOptions } from "next-auth"
-import NextAuth from "next-auth"
-import GitHubProvider from "next-auth/providers/github"
-import GoogleProvider from "next-auth/providers/google"
-import CredentialsProvider from "next-auth/providers/credentials"
-import bcrypt from "bcryptjs"
+import { NextRequest, NextResponse } from "next/server"
 
-const prisma = new PrismaClient()
-
-export const authOptions: NextAuthOptions = {
-  adapter: PrismaAdapter(prisma),
-  session: { strategy: "database" },
-  providers: [
-    GitHubProvider({
-      clientId: process.env.GITHUB_ID!,
-      clientSecret: process.env.GITHUB_SECRET!,
-    }),
-    GoogleProvider({
-      clientId: process.env.GOOGLE_CLIENT_ID!,
-      clientSecret: process.env.GOOGLE_CLIENT_SECRET!,
-    }),
-    CredentialsProvider({
-      name: "Credentials",
-      credentials: {
-        email: { label: "Email", type: "email" },
-        password: { label: "Password", type: "password" },
-      },
-      async authorize(credentials) {
-        if (!credentials?.email || !credentials.password) return null
-        const user = await prisma.user.findUnique({
-          where: { email: credentials.email },
-        })
-        if (!user || !user.password) return null
-        const isValid = await bcrypt.compare(credentials.password, user.password)
-        if (!isValid) return null
-        return { id: user.id, email: user.email, name: user.username }
-      },
-    }),
-  ],
-  secret: process.env.NEXTAUTH_SECRET,
+export interface AuthUser {
+  id: string
+  role: "user" | "admin"
 }
 
-const handler = NextAuth(authOptions)
+export function getUserFromRequest(req: { headers: Headers }): AuthUser | null {
+  const id = req.headers.get("x-user-id")
+  const role = req.headers.get("x-user-role") as AuthUser["role"] | null
+  if (!id || !role) return null
+  return { id, role }
+}
 
-export { handler as GET, handler as POST }
+export function requireRole(req: NextRequest, role: AuthUser["role"]) {
+  const user = getUserFromRequest(req)
+  if (!user || user.role !== role) {
+    return NextResponse.redirect(new URL("/login", req.url))
+  }
+  return NextResponse.next()
+}
+
+export function requireAdmin(req: NextRequest) {
+  return requireRole(req, "admin")
+}
