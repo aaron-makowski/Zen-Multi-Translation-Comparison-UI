@@ -137,4 +137,19 @@ describe('comments API', () => {
     )
     expect(deleteMissing.status).toBe(404)
   })
+
+  it('removes a comment by id', () => {
+    const data: Record<string, Comment[]> = {
+      verse1: [{ id: 'a', content: 'hi', createdAt: '', votes: 0 }],
+    }
+    const removed = removeComment(data, 'a')
+    expect(removed).toBe(true)
+    expect(data.verse1).toBeUndefined()
+  })
+
+  it('returns false when comment to remove is missing', () => {
+    const data: Record<string, Comment[]> = { verse1: [] }
+    const removed = removeComment(data, 'missing')
+    expect(removed).toBe(false)
+  })
 })
