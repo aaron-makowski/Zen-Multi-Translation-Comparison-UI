@@ -4,6 +4,8 @@ import { CommentForm } from "./comment-form"
 
 interface Comment {
   id: string
+  username?: string
+  karma?: number
   content: string
   createdAt: string
   updatedAt: string
@@ -64,11 +66,8 @@ export function CommentSection({ verseId }: { verseId: string }) {
                 </button>
               </div>
             </div>
-            <div className="text-xs text-muted-foreground">
-              {new Date(c.createdAt).toLocaleString()}
-            </div>
-          </div>
-        ))}
+          )
+        })}
         {comments.length === 0 && (
           <p className="text-sm text-muted-foreground">No comments yet.</p>
         )}
