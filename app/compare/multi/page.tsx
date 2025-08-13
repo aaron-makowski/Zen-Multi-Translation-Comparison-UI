@@ -7,9 +7,15 @@ export default async function MultiComparePage({
 }: {
   searchParams: { pairs?: string }
 }) {
-  const baseUrl = process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000"
-  const res = await fetch(`${baseUrl}/api/books`)
-  const books = await res.json()
+  const books = await prisma.book.findMany({
+    orderBy: { title: "asc" },
+    include: {
+      verses: {
+        orderBy: { number: "asc" },
+        select: { id: true, number: true },
+      },
+    },
+  })
 
   const rawPairs = searchParams.pairs?.split(",") ?? []
   const pairs: { bookId: string; verseId: string }[] = []
