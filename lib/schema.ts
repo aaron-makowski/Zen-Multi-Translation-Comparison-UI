@@ -218,6 +218,7 @@ export const commentsRelations = relations(comments, ({ one }) => ({
     fields: [comments.verseId],
     references: [verses.id],
   }),
+  flags: many(flags),
 }))
 
 export const highlightsRelations = relations(highlights, ({ one }) => ({
@@ -243,4 +244,13 @@ export const wordMappingsRelations = relations(wordMappings, ({ one }) => ({
     fields: [wordMappings.translationId],
     references: [translations.id],
   }),
+}))
+
+export const flagsRelations = relations(flags, ({ one }) => ({
+  user: one(users, { fields: [flags.userId], references: [users.id] }),
+  comment: one(comments, { fields: [flags.commentId], references: [comments.id] }),
+}))
+
+export const auditLogsRelations = relations(auditLogs, ({ one }) => ({
+  user: one(users, { fields: [auditLogs.userId], references: [users.id] }),
 }))

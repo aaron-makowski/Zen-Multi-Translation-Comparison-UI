@@ -190,6 +190,14 @@ export const translators: Translator[] = [
     link: "https://en.wikipedia.org/wiki/Edward_Conze",
   },
   {
+    id: "mcrae",
+    name: "John R. McRae",
+    publicationYear: 2000,
+    translatorBio: "Platform Sutra translator",
+    license: "Unknown",
+    link: "https://en.wikipedia.org/wiki/Platform_Sutra",
+  },
+  {
     id: "translator24",
     name: "Translator 24",
     publicationYear: 2024,
@@ -241,6 +249,39 @@ export const translators: Translator[] = [
   // Add more translators as needed
 ]
 
+const platformSutraTranslators: Translator[] = [
+  {
+    id: "mcrae",
+    name: "John R. McRae",
+    publicationYear: 2000,
+    translatorBio: "Platform Sutra translator",
+    license: "Unknown",
+    link: "https://en.wikipedia.org/wiki/Platform_Sutra",
+  },
+]
+
+const heartSutraTranslators: Translator[] = [
+  {
+    id: "red_pine",
+    name: "Red Pine",
+    publicationYear: 2004,
+    translatorBio: "Heart Sutra translator",
+    license: "Unknown",
+    link: "https://en.wikipedia.org/wiki/Red_Pine_(author)",
+  },
+]
+
+const diamondSutraTranslators: Translator[] = [
+  {
+    id: "conze",
+    name: "Edward Conze",
+    publicationYear: 1957,
+    translatorBio: "Diamond Sutra translator",
+    license: "Unknown",
+    link: "https://en.wikipedia.org/wiki/Edward_Conze",
+  },
+]
+
 // Export the translations data
 export const translations: Record<string, Book> = {
   xinxinming: {
@@ -279,60 +320,40 @@ export const translations: Record<string, Book> = {
       },
     ],
   },
-  'platform-sutra': {
+  "platform-sutra": {
     id: "platform-sutra",
     title: "Platform Sutra",
-    description: "Sutra of the Sixth Patriarch",
+    description: "Teachings of the Sixth Patriarch",
     author: "Huineng",
     coverImage: "/platform-sutra-cover.png",
-    translators,
+    translators: platformSutraTranslators,
     verses: [
       {
         id: 1,
         lines: [
           {
-            chinese: "菩提本無樹，",
-            pinyin: "Pútí běn wú shù,",
+            chinese: "菩提本無樹，明鏡亦非台。",
             translations: {
-              red_pine: "Bodhi is originally no tree,",
-              conze: "Bodhi originally has no tree,",
+              mcrae: "Bodhi originally has no tree; the bright mirror also has no stand.",
             },
           },
           {
-            chinese: "明鏡亦非臺。",
-            pinyin: "Míng jìng yì fēi tái.",
+            chinese: "本來無一物，何處惹塵埃。",
             translations: {
-              red_pine: "the bright mirror has no stand,",
-              conze: "the bright mirror is no stand,",
-            },
-          },
-          {
-            chinese: "本來無一物，",
-            pinyin: "Běnlái wú yī wù,",
-            translations: {
-              red_pine: "Buddha nature is always clean and pure,",
-              conze: "Originally there is not a single thing,",
-            },
-          },
-          {
-            chinese: "何處惹塵埃。",
-            pinyin: "Hé chù rě chén āi.",
-            translations: {
-              red_pine: "where would dust alight?",
-              conze: "Where can dust alight?",
+              mcrae: "Originally there is not a single thing—where can dust collect?",
             },
           },
         ],
       },
     ],
   },
-  'heart-sutra': {
+  "heart-sutra": {
     id: "heart-sutra",
     title: "Heart Sutra",
-    description: "Prajñāpāramitā Heart Sutra",
-    author: "",
+    description: "The Heart of the Perfection of Wisdom",
+    author: "Attributed to Avalokiteśvara",
     coverImage: "/heart-sutra-cover.png",
-    translators,
+    translators: heartSutraTranslators,
     verses: [
       {
         id: 1,
@@ -342,33 +363,28 @@ export const translations: Record<string, Book> = {
               "觀自在菩薩，行深般若波羅蜜多時，照見五蘊皆空，度一切苦厄。",
             translations: {
               red_pine:
-                "Avalokiteshvara Bodhisattva, practicing deep prajna paramita, clearly saw that all five skandhas are empty, thus relieving all suffering and distress.",
-              conze:
-                "When Bodhisattva Avalokiteshvara was practicing the profound Prajnaparamita, he perceived that all five skandhas are empty, thereby transcending all suffering.",
+                "Avalokiteshvara Bodhisattva, practicing deep prajnaparamita, clearly saw that all five skandhas are empty and was saved from all suffering.",
             },
           },
         ],
       },
     ],
   },
-  'diamond-sutra': {
+  "diamond-sutra": {
     id: "diamond-sutra",
     title: "Diamond Sutra",
-    description: "The Diamond that Cuts through Illusion",
-    author: "",
+    description: "Vajracchedika Prajnaparamita Sutra",
+    author: "Attributed to the Buddha",
     coverImage: "/diamond-sutra-cover.png",
-    translators,
+    translators: diamondSutraTranslators,
     verses: [
       {
         id: 1,
         lines: [
           {
-            chinese: "如是我聞。一時佛在舍衛國祇樹給孤獨園。",
+            chinese: "如是我聞。",
             translations: {
-              red_pine:
-                "Thus have I heard. Once the Buddha dwelt in Anathapindika's park in Jetavana at Sravasti.",
-              conze:
-                "Thus I have heard. Once upon a time the Lord dwelt at Shravasti in the Jetavana monastery of Anathapindika.",
+              conze: "Thus have I heard.",
             },
           },
         ],
@@ -378,4 +394,4 @@ export const translations: Record<string, Book> = {
 }
 
 // Also export verses for backward compatibility
-export const verses = translations.xinxinming.verses
+export const verses = translations["xinxinming"].verses
