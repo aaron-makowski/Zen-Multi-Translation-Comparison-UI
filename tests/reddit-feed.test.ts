@@ -34,6 +34,18 @@ describe('reddit feed API', () => {
     ])
   })
 
+  it('requests the Reddit JSON feed', async () => {
+    const fetchMock = vi
+      .spyOn(globalThis, 'fetch')
+      .mockResolvedValue({
+        ok: true,
+        json: () => Promise.resolve(mockResponse)
+      } as any)
+
+    await GET()
+    expect(fetchMock).toHaveBeenCalledWith('https://www.reddit.com/r/zen.json')
+  })
+
   it('returns empty array when no posts', async () => {
     vi.spyOn(globalThis, 'fetch').mockResolvedValue({
       ok: true,
@@ -82,6 +94,20 @@ describe('reddit feed API', () => {
     const res = await GET()
 
     expect(res.status).toBe(500)
+    const body = await res.json()
+    expect(body.error).toBe('Failed to fetch Reddit feed')
+  })
+
+  it('propagates upstream status codes', async () => {
+    vi.spyOn(globalThis, 'fetch').mockResolvedValue({
+      ok: false,
+      status: 502,
+      json: () => Promise.resolve({})
+    } as any)
+
+    const res = await GET()
+
+    expect(res.status).toBe(502)
     const body = await res.json()
     expect(body.error).toBe('Failed to fetch Reddit feed')
   })

@@ -37,4 +37,28 @@ describe('multi-book comparison', () => {
       ]
     })
   })
+
+  it('counts verses per book', async () => {
+    const SQL = await initSqlJs()
+    const db = new SQL.Database()
+    db.run(`
+      CREATE TABLE books (id TEXT PRIMARY KEY, title TEXT);
+      CREATE TABLE verses (id TEXT PRIMARY KEY, number INTEGER, book_id TEXT);
+      INSERT INTO books (id, title) VALUES ('b1','Book 1'), ('b2','Book 2');
+      INSERT INTO verses (id, number, book_id) VALUES
+        ('v1',1,'b1'), ('v2',2,'b1'),
+        ('v3',1,'b2'), ('v4',2,'b2');
+    `)
+    const res = db.exec(
+      `SELECT book_id, COUNT(*) as count FROM verses GROUP BY book_id ORDER BY book_id`
+    )
+    const counts = res[0].values.map((r) => ({
+      bookId: r[0] as string,
+      count: r[1] as number
+    }))
+    expect(counts).toEqual([
+      { bookId: 'b1', count: 2 },
+      { bookId: 'b2', count: 2 }
+    ])
+  })
 })
