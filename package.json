@@ -3,12 +3,11 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "build": "next build",
-    "postbuild": "node scripts/generate-sitemap.mjs",
+    "build": "next build && node scripts/generate-sitemap.js",
     "dev": "next dev",
     "lint": "next lint",
     "start": "next start",
-    "test": "vitest run",
+    "test": "vitest run tests",
     "watch-pdf-cache": "tsx scripts/watch-pdf-cache.ts"
   },
   "dependencies": {
@@ -46,6 +45,7 @@
     "next-intl": "^3.7.1",
     "pdf-parse": "^1.1.1",
     "pg": "latest",
+    "pino": "^9.8.0",
     "postgres": "latest",
     "prisma": "latest",
     "react": "^18",
