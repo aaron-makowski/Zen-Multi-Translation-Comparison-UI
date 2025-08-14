@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 import { defineConfig } from 'vitest/config'
 import path from 'path'
 
@@ -17,3 +18,12 @@ export default defineConfig({
     }
   }
 })
+=======
+import { defineConfig } from 'vitest/config';
+
+export default defineConfig({
+  test: {
+    exclude: ['tests/**/*.spec.ts']
+  }
+});
+>>>>>>> origin/codex/set-up-next-intl-with-translations

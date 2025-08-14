@@ -4,13 +4,19 @@
     "home": "Inicio",
     "books": "Libros",
     "compare": "Comparar",
+<<<<<<< HEAD
     "pdfPreview": "Vista PDF",
+=======
+    "reddit": "Reddit",
+    "pdfPreview": "Vista previa PDF",
+>>>>>>> origin/codex/set-up-next-intl-with-translations
     "about": "Acerca de",
     "login": "Iniciar sesión",
     "register": "Registrarse"
   },
   "Home": {
     "title": "Comparación de Traducciones de Textos Zen",
+<<<<<<< HEAD
     "explore": {
       "title": "Explorar Traducciones",
       "desc": "Explore diferentes traducciones de textos zen clásicos.",
@@ -28,5 +34,26 @@
     },
     "dateLabel": "Fecha de hoy: {date}",
     "numberLabel": "Número de ejemplo: {number}"
+=======
+    "exploreTranslations": "Explorar Traducciones",
+    "exploreDesc": "Explora diferentes traducciones de textos clásicos del Zen.",
+    "viewBooks": "Ver Libros",
+    "compareTranslations": "Comparar Traducciones",
+    "compareDesc": "Compara diferentes traducciones lado a lado.",
+    "aboutProject": "Sobre este Proyecto",
+    "aboutDesc": "Esta aplicación te permite explorar y comparar diferentes traducciones de textos clásicos del Zen. Puedes navegar por libros, leer versos y comparar cómo diferentes traductores han interpretado el mismo texto.",
+    "learnMore": "Saber más"
+  },
+  "Books": {
+    "title": "Biblioteca de Textos Zen",
+    "empty": "La biblioteca está vacía. Intenta sembrar la base de datos.",
+    "seed": "Sembrar la base de datos"
+  },
+  "Comments": {
+    "title": "Comentarios",
+    "placeholder": "Agregar un comentario",
+    "post": "Publicar",
+    "noComments": "Aún no hay comentarios."
+>>>>>>> origin/codex/set-up-next-intl-with-translations
   }
 }

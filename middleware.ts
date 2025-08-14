@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 import createMiddleware from "next-intl/middleware"
 import { NextRequest, NextResponse } from "next/server"
 
@@ -39,3 +40,16 @@ export default function middleware(req: NextRequest) {
 export const config = {
   matcher: ["/((?!api|_next|.*\\..*).*)", "/api/admin/:path*"]
 }
+=======
+import createMiddleware from 'next-intl/middleware';
+import {locales, defaultLocale} from './i18n';
+
+export default createMiddleware({
+  locales,
+  defaultLocale
+});
+
+export const config = {
+  matcher: ['/((?!api|_next|.*\\..*).*)']
+};
+>>>>>>> origin/codex/set-up-next-intl-with-translations

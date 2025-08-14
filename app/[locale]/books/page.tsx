@@ -4,9 +4,11 @@ import { Card } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { db } from "@/lib/db"
+import { useTranslations } from "next-intl"
 
 export const revalidate = 60 // Revalidate data every 60 seconds
 
+<<<<<<< HEAD
 interface PageProps {
   searchParams: {
     q?: string
@@ -24,6 +26,18 @@ export default async function BooksPage({ searchParams }: PageProps) {
         ? (books, { asc }) => [asc(books.title)]
         : (books, { desc }) => [desc(books.createdAt)],
   })
+=======
+export default async function BooksPage() {
+  const t = useTranslations('Books')
+  let allBooks = []
+  try {
+    allBooks = await db.query.books.findMany({
+      orderBy: (books, { asc }) => [asc(books.title)],
+    })
+  } catch {
+    allBooks = []
+  }
+>>>>>>> origin/codex/set-up-next-intl-with-translations
 
   const filteredBooks = query
     ? allBooks.filter((book) => book.title.toLowerCase().includes(query))
@@ -32,7 +46,7 @@ export default async function BooksPage({ searchParams }: PageProps) {
   return (
     <main className="flex min-h-screen flex-col items-center p-4 md:p-24">
       <div className="max-w-4xl w-full">
-        <h1 className="text-3xl font-bold mb-6">Zen Texts Library</h1>
+        <h1 className="text-3xl font-bold mb-6">{t('title')}</h1>
 
         <form className="flex flex-col md:flex-row gap-2 mb-6" action="" method="get">
           <Input name="q" placeholder="Search books" defaultValue={searchParams.q || ""} />
@@ -50,10 +64,10 @@ export default async function BooksPage({ searchParams }: PageProps) {
 
         {filteredBooks.length === 0 ? (
           <Card className="p-6 text-center">
-            <p className="mb-4 text-muted-foreground">The library is currently empty. Try seeding the database.</p>
+            <p className="mb-4 text-muted-foreground">{t('empty')}</p>
             <Button asChild>
               <Link href="/api/seed" target="_blank">
-                Seed Database
+                {t('seed')}
               </Link>
             </Button>
           </Card>

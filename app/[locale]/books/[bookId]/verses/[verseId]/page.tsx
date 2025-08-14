@@ -1,11 +1,19 @@
+<<<<<<< HEAD
 import Link from "next-intl/link"
+=======
+import Link from "next/link"
+>>>>>>> origin/codex/set-up-next-intl-with-translations
 import { notFound } from "next/navigation"
 import { db } from "@/lib/db"
 import { verses } from "@/lib/schema"
 import { eq } from "drizzle-orm"
 import { CommentSection } from "@/components/comment-section"
+<<<<<<< HEAD
 import { Button } from "@/components/ui/button"
 import { Card } from "@/components/ui/card"
+=======
+import TranslationList from "@/components/translation-list"
+>>>>>>> origin/codex/set-up-next-intl-with-translations
 
 export default async function VersePage({
   params,
@@ -14,7 +22,13 @@ export default async function VersePage({
 }) {
   const verse = await db.query.verses.findFirst({
     where: eq(verses.id, params.verseId),
+<<<<<<< HEAD
     with: { book: true },
+=======
+    with: {
+      book: true,
+    },
+>>>>>>> origin/codex/set-up-next-intl-with-translations
   })
 
   if (!verse) {
@@ -22,6 +36,7 @@ export default async function VersePage({
   }
 
   return (
+<<<<<<< HEAD
     <main className="flex min-h-screen flex-col items-center p-4 md:p-24 touch-pan-y">
       <div className="max-w-4xl w-full">
         <div className="flex items-center gap-2 mb-6">
@@ -43,10 +58,26 @@ export default async function VersePage({
               </p>
             </Card>
           ))}
+=======
+    <main className="flex min-h-screen flex-col items-center p-4 md:p-24">
+      <div className="max-w-4xl w-full">
+        <div className="mb-6">
+          <Link href={`/books/${params.bookId}`} className="text-blue-600 hover:underline mb-4 inline-block">
+            ← Back to {verse.book.title}
+          </Link>
+          <h1 className="text-3xl font-bold">Verse {verse.number}</h1>
+          <p className="text-gray-600">{verse.book.title}</p>
+        </div>
+
+        <div className="bg-white rounded-lg shadow-md p-6 mb-8">
+          <h2 className="text-xl font-semibold mb-4">Translations</h2>
+          <TranslationList verseId={params.verseId} />
+>>>>>>> origin/codex/set-up-next-intl-with-translations
         </div>
 
         <CommentSection verseId={params.verseId} />
 
+<<<<<<< HEAD
         <div className="flex justify-between mt-8">
           <Button
             asChild
@@ -57,6 +88,15 @@ export default async function VersePage({
               Compare translations word-by-word →
             </Link>
           </Button>
+=======
+        <div className="flex justify-between">
+          <Link
+            href={`/books/${params.bookId}/verses/${params.verseId}/word-comparison`}
+            className="text-blue-600 hover:underline"
+          >
+            Compare translations word-by-word →
+          </Link>
+>>>>>>> origin/codex/set-up-next-intl-with-translations
         </div>
       </div>
     </main>
