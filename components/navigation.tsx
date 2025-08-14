@@ -3,6 +3,7 @@
 import type React from "react";
 
 <<<<<<< HEAD
+<<<<<<< HEAD
 import Link from "next-intl/link";
 import { useTranslations } from "next-intl";
 import { usePathname } from "next-intl/client";
@@ -14,6 +15,12 @@ import { useTranslations, useLocale } from "next-intl";
 import { Button } from "@/components/ui/button";
 import { ThemeToggle } from "@/components/theme-toggle";
 import { LocaleSwitcher } from "@/components/locale-switcher";
+=======
+import Link from "next/link"
+import { usePathname } from "next/navigation"
+import { Button } from "@/components/ui/button"
+import { ThemeSwitcher } from "@/components/theme-switcher"
+>>>>>>> origin/codex/implement-theme-toggle-with-tailwind
 
 export function Navigation() {
   const pathname = usePathname();
@@ -97,12 +104,16 @@ export function Navigation() {
                 {t('login')}
               </Button>
             </Link>
+<<<<<<< HEAD
             <Link href={`${basePath}/register`} passHref>
               <Button size="sm">{t('register')}</Button>
 >>>>>>> origin/codex/set-up-next-intl-with-translations
             </Link>
             <LocaleSwitcher />
             <ThemeToggle />
+=======
+            <ThemeSwitcher />
+>>>>>>> origin/codex/implement-theme-toggle-with-tailwind
           </div>
         </div>
       </div>
@@ -167,8 +178,12 @@ export function Navigation() {
 >>>>>>> origin/codex/set-up-next-intl-with-translations
               </Button>
             </Link>
+<<<<<<< HEAD
             <LocaleSwitcher />
             <ThemeToggle />
+=======
+            <ThemeSwitcher />
+>>>>>>> origin/codex/implement-theme-toggle-with-tailwind
           </div>
         </div>
       </div>

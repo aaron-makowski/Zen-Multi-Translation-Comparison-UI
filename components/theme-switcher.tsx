@@ -1,4 +1,5 @@
 "use client"
+<<<<<<< HEAD
 
 import { useEffect, useState } from "react"
 import { Button } from "@/components/ui/button"
@@ -22,12 +23,26 @@ export function ThemeSwitcher() {
     window.localStorage.setItem("theme", next ? "dark" : "light")
     setIsDark(next)
   }
+=======
+import * as React from "react"
+import { useTheme } from "next-themes"
+import { Button } from "./ui/button"
+import { Moon, Sun } from "lucide-react"
+
+export function ThemeSwitcher() {
+  const { theme, setTheme } = useTheme()
+  const isDark = theme === "dark"
+>>>>>>> origin/codex/implement-theme-toggle-with-tailwind
 
   return (
     <Button
       variant="ghost"
       size="icon"
+<<<<<<< HEAD
       onClick={toggleTheme}
+=======
+      onClick={() => setTheme(isDark ? "light" : "dark")}
+>>>>>>> origin/codex/implement-theme-toggle-with-tailwind
       aria-label="Toggle theme"
     >
       {isDark ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}

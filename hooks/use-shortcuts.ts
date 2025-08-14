@@ -2,6 +2,7 @@
 
 import { useEffect } from "react"
 
+<<<<<<< HEAD
 interface ShortcutOptions {
   onNextVerse?: () => void
   onSearch?: () => void
@@ -25,4 +26,29 @@ export function useShortcuts({ onNextVerse, onSearch }: ShortcutOptions) {
     window.addEventListener("keydown", handleKey)
     return () => window.removeEventListener("keydown", handleKey)
   }, [onNextVerse, onSearch])
+=======
+interface ShortcutHandlers {
+  onNextVerse?: () => void
+  onPrevVerse?: () => void
+  onSearch?: () => void
+}
+
+export function useShortcuts({ onNextVerse, onPrevVerse, onSearch }: ShortcutHandlers) {
+  useEffect(() => {
+    function handleKeyDown(event: KeyboardEvent) {
+      if (event.key === "ArrowRight") {
+        onNextVerse?.()
+      }
+      if (event.key === "ArrowLeft") {
+        onPrevVerse?.()
+      }
+      if (event.key === "/" || (event.ctrlKey && event.key.toLowerCase() === "f")) {
+        event.preventDefault()
+        onSearch?.()
+      }
+    }
+    window.addEventListener("keydown", handleKeyDown)
+    return () => window.removeEventListener("keydown", handleKeyDown)
+  }, [onNextVerse, onPrevVerse, onSearch])
+>>>>>>> origin/codex/implement-theme-toggle-with-tailwind
 }
