@@ -1,46 +1,38 @@
 "use client"
 
-import { useState } from "react"
-import { useRouter } from "next/navigation"
+import { FormEvent, useState } from "react"
+import Link from "next/link"
 import { signIn } from "next-auth/react"
+import { Input } from "@/components/ui/input"
+import { Button } from "@/components/ui/button"
 
 export default function LoginPage() {
-  const [email, setEmail] = useState("")
-  const [password, setPassword] = useState("")
-  const router = useRouter()
+  const [error, setError] = useState("")
 
-  async function handleSubmit(e: React.FormEvent) {
+  async function handleSubmit(e: FormEvent<HTMLFormElement>) {
     e.preventDefault()
+    const form = new FormData(e.currentTarget)
     const res = await signIn("credentials", {
-      email,
-      password,
       redirect: false,
+      email: form.get("email"),
+      password: form.get("password"),
     })
-    if (!res?.error) {
-      router.push("/")
-    }
+    if (res?.error) setError(res.error)
   }
 
   return (
-    <form onSubmit={handleSubmit} className="flex flex-col gap-2 max-w-sm mx-auto">
-      <h1 className="text-xl font-bold">Login</h1>
-      <input
-        type="email"
-        placeholder="Email"
-        value={email}
-        onChange={(e) => setEmail(e.target.value)}
-        className="border p-2"
-      />
-      <input
-        type="password"
-        placeholder="Password"
-        value={password}
-        onChange={(e) => setPassword(e.target.value)}
-        className="border p-2"
-      />
-      <button type="submit" className="bg-blue-500 text-white p-2 rounded">
-        Sign In
-      </button>
-    </form>
+    <main className="flex min-h-screen flex-col items-center justify-center p-4">
+      <form onSubmit={handleSubmit} className="w-full max-w-sm space-y-4">
+        <Input name="email" type="email" placeholder="Email" required />
+        <Input name="password" type="password" placeholder="Password" required />
+        {error && <p className="text-sm text-red-500">{error}</p>}
+        <Button type="submit" className="w-full">Sign In</Button>
+      </form>
+      <div className="mt-4 text-sm">
+        <Link href="/auth/reset-password" className="underline">
+          Forgot password?
+        </Link>
+      </div>
+    </main>
   )
 }

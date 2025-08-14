@@ -1,41 +1,31 @@
+import { PrismaClient } from "@prisma/client"
 import { NextResponse } from "next/server"
-import { db } from "@/lib/db"
-import { users } from "@/lib/schema"
-import { eq } from "drizzle-orm"
-import { v4 as uuid } from "uuid"
 import bcrypt from "bcryptjs"
+
+const prisma = new PrismaClient()
 
 export async function POST(req: Request) {
   const { email, username, password } = await req.json()
-
-  const existingEmail = await db.query.users.findFirst({
-    where: eq(users.email, email),
-  })
-  if (existingEmail) {
-    return NextResponse.json(
-      { error: "Email already in use" },
-      { status: 400 },
-    )
+  if (!email || !username || !password) {
+    return NextResponse.json({ error: "Missing fields" }, { status: 400 })
   }
-
-  const existingUsername = await db.query.users.findFirst({
-    where: eq(users.username, username),
-  })
-  if (existingUsername) {
-    return NextResponse.json(
-      { error: "Username already taken" },
-      { status: 400 },
-    )
-  }
-
+  const existing = await prisma.user.findUnique({ where: { email } })
   const hashed = await bcrypt.hash(password, 10)
-  await db.insert(users).values({
-    id: uuid(),
-    email,
-    username,
-    password: hashed,
-    createdAt: new Date(),
-    updatedAt: new Date(),
+  if (existing) {
+    if (existing.password) {
+      return NextResponse.json(
+        { error: "User already exists" },
+        { status: 400 }
+      )
+    }
+    await prisma.user.update({
+      where: { id: existing.id },
+      data: { username, password: hashed },
+    })
+    return NextResponse.json({ ok: true })
+  }
+  await prisma.user.create({
+    data: { email, username, password: hashed },
   })
   return NextResponse.json({ ok: true })
 }

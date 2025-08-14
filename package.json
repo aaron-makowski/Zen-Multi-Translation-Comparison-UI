@@ -11,6 +11,7 @@
     "watch-pdf-cache": "tsx scripts/watch-pdf-cache.ts"
   },
   "dependencies": {
+    "@auth/prisma-adapter": "^2.10.0",
     "@aws-sdk/client-rds-data": "latest",
     "@cloudflare/workers-types": "latest",
     "@electric-sql/pglite": "latest",

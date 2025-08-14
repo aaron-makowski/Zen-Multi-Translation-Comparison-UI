@@ -1,61 +1,42 @@
 "use client"
 
-import { useState } from "react"
+import { FormEvent } from "react"
 import { useRouter } from "next/navigation"
 import { signIn } from "next-auth/react"
+import { Input } from "@/components/ui/input"
+import { Button } from "@/components/ui/button"
 
 export default function SignUpPage() {
-  const [email, setEmail] = useState("")
-  const [username, setUsername] = useState("")
-  const [password, setPassword] = useState("")
-  const [error, setError] = useState("")
   const router = useRouter()
 
-  async function handleSubmit(e: React.FormEvent) {
+  async function handleSubmit(e: FormEvent<HTMLFormElement>) {
     e.preventDefault()
-    setError("")
-    const res = await fetch("/api/auth/signup", {
+    const form = new FormData(e.currentTarget)
+    await fetch("/api/auth/signup", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ email, username, password }),
+      body: JSON.stringify({
+        email: form.get("email"),
+        username: form.get("username"),
+        password: form.get("password"),
+      }),
     })
-    const data = await res.json()
-    if (!res.ok) {
-      setError(data.error || "Sign up failed")
-      return
-    }
-    await signIn("credentials", { email, password, redirect: false })
+    await signIn("credentials", {
+      email: form.get("email"),
+      password: form.get("password"),
+      redirect: false,
+    })
     router.push("/")
   }
 
   return (
-    <form onSubmit={handleSubmit} className="flex flex-col gap-2 max-w-sm mx-auto">
-      <h1 className="text-xl font-bold">Sign Up</h1>
-      {error && <p className="text-red-500">{error}</p>}
-      <input
-        type="email"
-        placeholder="Email"
-        value={email}
-        onChange={(e) => setEmail(e.target.value)}
-        className="border p-2"
-      />
-      <input
-        type="text"
-        placeholder="Username"
-        value={username}
-        onChange={(e) => setUsername(e.target.value)}
-        className="border p-2"
-      />
-      <input
-        type="password"
-        placeholder="Password"
-        value={password}
-        onChange={(e) => setPassword(e.target.value)}
-        className="border p-2"
-      />
-      <button type="submit" className="bg-blue-500 text-white p-2 rounded">
-        Create Account
-      </button>
-    </form>
+    <main className="flex min-h-screen flex-col items-center justify-center p-4">
+      <form onSubmit={handleSubmit} className="w-full max-w-sm space-y-4">
+        <Input name="email" type="email" placeholder="Email" required />
+        <Input name="username" type="text" placeholder="Username" required />
+        <Input name="password" type="password" placeholder="Password" required />
+        <Button type="submit" className="w-full">Sign Up</Button>
+      </form>
+    </main>
   )
 }
