@@ -194,3 +194,11 @@ model VerificationToken {
 
   @@unique([identifier, token])
 }
+
+model AuditLog {
+  id        String   @id @default(cuid())
+  action    String
+  entity    String
+  entityId  String
+  createdAt DateTime @default(now())
+}

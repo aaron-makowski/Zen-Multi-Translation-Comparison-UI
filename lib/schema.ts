@@ -153,6 +153,14 @@ export const sessions = pgTable("sessions", {
   createdAt: timestamp("created_at").defaultNow().notNull(),
 })
 
+export const auditLogs = pgTable("audit_logs", {
+  id: text("id").primaryKey(),
+  action: text("action").notNull(),
+  entity: text("entity").notNull(),
+  entityId: text("entity_id").notNull(),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+})
+
 export const booksRelations = relations(books, ({ many }) => ({
   verses: many(verses),
   favorites: many(favorites),
