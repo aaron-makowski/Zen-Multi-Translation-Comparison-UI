@@ -1,13 +1,10 @@
-# Frequently Asked Questions
+# FAQ
 
 ## Why was this project created?
 
-To compare different translations of classic Zen texts and learn from the differences.
+To compare translations of classic Zen texts side by side.
 
-## How can I contribute?
+## How can I report a bug or request a feature?
 
-See our [Contributing Guide](CONTRIBUTING.md) for details.
+Please open an issue on the GitHub repository.
 
-## Where can I report issues?
-
-Please open an issue on the repository if you encounter problems or have suggestions.
