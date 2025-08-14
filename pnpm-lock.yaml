@@ -147,6 +147,12 @@ importers:
         specifier: latest
         version: 11.1.0
     devDependencies:
+      '@mdx-js/react':
+        specifier: ^3.1.0
+        version: 3.1.0(@types/react@18.0.0)(react@18.0.0)
+      '@next/mdx':
+        specifier: ^15.4.6
+        version: 15.4.6(@mdx-js/react@3.1.0(@types/react@18.0.0)(react@18.0.0))
       '@types/node':
         specifier: ^22
         version: 22.0.0
@@ -1419,6 +1425,12 @@ packages:
     cpu: [x64]
     os: [win32]
 
+  '@mdx-js/react@3.1.0':
+    resolution: {integrity: sha512-QjHtSaoameoalGnKDT3FoIl4+9RwyTmo9ZJGBdLOks/YOiWHoRDI3PUwEzOE7kEmGcV3AFcp9K6dYu9rEuKLAQ==}
+    peerDependencies:
+      '@types/react': '>=16'
+      react: '>=16'
+
   '@napi-rs/wasm-runtime@0.2.12':
     resolution: {integrity: sha512-ZVWUcfwY4E/yPitQJl481FjFo3K22D6qF0DuFH6Y/nbnE11GY5uguDxZMGXPQ8WQ0128MXQD7TnfHyK4oWoIJQ==}
 
@@ -1437,6 +1449,17 @@ packages:
 
   '@next/eslint-plugin-next@14.1.0':
     resolution: {integrity: sha512-x4FavbNEeXx/baD/zC/SdrvkjSby8nBn8KcCREqk6UuwvwoAPZmaV8TFCAuo/cpovBRTIY67mHhe86MQQm/68Q==}
+
+  '@next/mdx@15.4.6':
+    resolution: {integrity: sha512-PpJcNWNDq3WctJI2LY7Jur6qTdWklZ3BmbBlS9zG9MvmphcU91MoF/udPmRS1huRSVibGGteXMELu8MXYxjU9g==}
+    peerDependencies:
+      '@mdx-js/loader': '>=0.15.0'
+      '@mdx-js/react': '>=0.15.0'
+    peerDependenciesMeta:
+      '@mdx-js/loader':
+        optional: true
+      '@mdx-js/react':
+        optional: true
 
   '@next/swc-darwin-arm64@14.2.16':
     resolution: {integrity: sha512-uFT34QojYkf0+nn6MEZ4gIWQ5aqGF11uIZ1HSxG+cSbj+Mg3+tYm8qXYd3dKN5jqKUm5rBVvf1PBRO/MeQ6rxw==}
@@ -8287,6 +8310,12 @@ snapshots:
   '@libsql/win32-x64-msvc@0.5.17':
     optional: true
 
+  '@mdx-js/react@3.1.0(@types/react@18.0.0)(react@18.0.0)':
+    dependencies:
+      '@types/mdx': 2.0.13
+      '@types/react': 18.0.0
+      react: 18.0.0
+
   '@napi-rs/wasm-runtime@0.2.12':
     dependencies:
       '@emnapi/core': 1.4.5
@@ -8310,6 +8339,12 @@ snapshots:
   '@next/eslint-plugin-next@14.1.0':
     dependencies:
       glob: 10.3.10
+
+  '@next/mdx@15.4.6(@mdx-js/react@3.1.0(@types/react@18.0.0)(react@18.0.0))':
+    dependencies:
+      source-map: 0.7.6
+    optionalDependencies:
+      '@mdx-js/react': 3.1.0(@types/react@18.0.0)(react@18.0.0)
 
   '@next/swc-darwin-arm64@14.2.16':
     optional: true
