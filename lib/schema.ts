@@ -1,4 +1,12 @@
-import { pgTable, text, timestamp, integer, boolean, uniqueIndex } from "drizzle-orm/pg-core"
+import {
+  pgTable,
+  text,
+  timestamp,
+  integer,
+  boolean,
+  uniqueIndex,
+  pgEnum,
+} from "drizzle-orm/pg-core"
 import { relations } from "drizzle-orm"
 
 // User table
@@ -152,6 +160,41 @@ export const sessions = pgTable("sessions", {
   expiresAt: timestamp("expires_at").notNull(),
   createdAt: timestamp("created_at").defaultNow().notNull(),
 })
+
+// Notification type enum
+export const notificationTypeEnum = pgEnum("notification_type", ["reply", "mention"])
+
+// Notifications table
+export const notifications = pgTable("notifications", {
+  id: text("id").primaryKey(),
+  userId: text("user_id")
+    .notNull()
+    .references(() => users.id),
+  actorId: text("actor_id")
+    .notNull()
+    .references(() => users.id),
+  type: notificationTypeEnum("type").notNull(),
+  commentId: text("comment_id"),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+  read: boolean("read").default(false).notNull(),
+})
+
+// Notification preferences table
+export const notificationPreferences = pgTable("notification_preferences", {
+  id: text("id").primaryKey(),
+  userId: text("user_id")
+    .notNull()
+    .references(() => users.id),
+  email: boolean("email").default(true).notNull(),
+  push: boolean("push").default(true).notNull(),
+  pushEndpoint: text("push_endpoint"),
+},
+  (table) => {
+    return {
+      userUnique: uniqueIndex("notification_pref_user_unique").on(table.userId),
+    }
+  },
+)
 
 export const booksRelations = relations(books, ({ many }) => ({
   verses: many(verses),

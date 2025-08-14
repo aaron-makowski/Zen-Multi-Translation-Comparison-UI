@@ -11,6 +11,7 @@ export interface Comment {
   karma: number
   content: string
   createdAt: string
+  updatedAt: string
   votes: number
   parentId?: string
   flagged?: boolean
@@ -117,5 +118,38 @@ export async function PATCH(req: Request) {
   } catch (error) {
     logError(error, "Failed to handle PATCH /api/comments")
     return NextResponse.json({ error: "Internal server error" }, { status: 500 })
+  }
+}
+
+async function handleNotifications(comment: Comment, list: Comment[]) {
+  const { createNotification } = await import("../../../lib/notifications")
+  const { db } = await import("../../../lib/db")
+  const { users } = await import("../../../lib/schema")
+
+  if (comment.parentId) {
+    const parent = list.find((c) => c.id === comment.parentId)
+    if (parent?.userId && parent.userId !== comment.userId) {
+      await createNotification({
+        userId: parent.userId,
+        actorId: comment.userId!,
+        type: "reply",
+        commentId: comment.id,
+      })
+    }
+  }
+  const mentions = comment.content.match(/@([A-Za-z0-9_]+)/g) || []
+  for (const mention of mentions) {
+    const username = mention.slice(1)
+    const target = await db.query.users.findFirst({
+      where: eq(users.username, username),
+    })
+    if (target && target.id !== comment.userId) {
+      await createNotification({
+        userId: target.id,
+        actorId: comment.userId!,
+        type: "mention",
+        commentId: comment.id,
+      })
+    }
   }
 }

@@ -8,6 +8,7 @@ interface Comment {
   karma?: number
   content: string
   createdAt: string
+  updatedAt: string
   votes: number
   parentId?: string
   flagged?: boolean
