@@ -22,7 +22,11 @@
     "@libsql/client": "latest",
     "@libsql/client-wasm": "latest",
     "@neondatabase/serverless": "latest",
+<<<<<<< HEAD
     "@next-safe/middleware": "^0.10.0",
+=======
+    "@next-auth/prisma-adapter": "^1.0.7",
+>>>>>>> origin/codex/implement-auth-routes-and-features
     "@op-engineering/op-sqlite": "latest",
     "@opentelemetry/api": "latest",
     "@planetscale/database": "latest",
@@ -58,6 +62,7 @@
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
     "next-intl": "^3.7.1",
     "pdf-parse": "^1.1.1",
 =======
@@ -70,6 +75,10 @@
 =======
     "next-themes": "^0.4.6",
 >>>>>>> origin/codex/implement-theme-toggle-with-tailwind
+=======
+    "next-auth": "^4.24.11",
+    "nodemailer": "^7.0.5",
+>>>>>>> origin/codex/implement-auth-routes-and-features
     "pg": "latest",
     "pino": "^9.8.0",
     "postgres": "latest",
