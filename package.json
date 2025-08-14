@@ -56,12 +56,16 @@
     "mysql2": "latest",
     "next": "14.2.16",
 <<<<<<< HEAD
+<<<<<<< HEAD
     "next-intl": "^3.7.1",
     "pdf-parse": "^1.1.1",
 =======
     "next-intl": "^4.3.4",
     "next-themes": "^0.4.6",
 >>>>>>> origin/codex/set-up-next-intl-with-translations
+=======
+    "next-pwa": "^5.6.0",
+>>>>>>> origin/codex/configure-service-worker-with-next-pwa
     "pg": "latest",
     "pino": "^9.8.0",
     "postgres": "latest",

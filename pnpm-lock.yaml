@@ -129,6 +129,7 @@ importers:
         specifier: 14.2.16
 <<<<<<< HEAD
         version: 14.2.16(@babel/core@7.28.0)(@opentelemetry/api@1.9.0)(react-dom@18.0.0(react@18.0.0))(react@18.0.0)
+<<<<<<< HEAD
       next-intl:
         specifier: ^3.7.1
         version: 3.26.5(next@14.2.16(@babel/core@7.28.0)(@opentelemetry/api@1.9.0)(react-dom@18.0.0(react@18.0.0))(react@18.0.0))(react@18.0.0)
@@ -144,6 +145,11 @@ importers:
         specifier: ^0.4.6
         version: 0.4.6(react-dom@18.0.0(react@18.0.0))(react@18.0.0)
 >>>>>>> origin/codex/set-up-next-intl-with-translations
+=======
+      next-pwa:
+        specifier: ^5.6.0
+        version: 5.6.0(@babel/core@7.28.0)(@types/babel__core@7.20.5)(next@14.2.16(@babel/core@7.28.0)(@opentelemetry/api@1.9.0)(react-dom@18.0.0(react@18.0.0))(react@18.0.0))(webpack@5.101.0)
+>>>>>>> origin/codex/configure-service-worker-with-next-pwa
       pg:
         specifier: latest
         version: 8.16.3
@@ -4147,6 +4153,7 @@ packages:
     engines: {node: '>= 0.4'}
 
 <<<<<<< HEAD
+<<<<<<< HEAD
   get-own-enumerable-property-symbols@3.0.2:
     resolution: {integrity: sha512-I0UBV/XOz1XkIJHEUDMZAbzCThU/H8DxmSfmdGcKPnVhu2VfFqr34jr9777IyaTYvxjedWhqVIilEDsCdP5G6g==}
 =======
@@ -4154,6 +4161,10 @@ packages:
     resolution: {integrity: sha512-FJhYRoDaiatfEkUK8HKlicmu/3SGFD51q3itKDGoSTysQJBnfOcxU5GxnhE1E6soB76MbT0MBtnKJuXyAx+96Q==}
     engines: {node: '>=6'}
 >>>>>>> origin/codex/set-up-next-intl-with-translations
+=======
+  get-own-enumerable-property-symbols@3.0.2:
+    resolution: {integrity: sha512-I0UBV/XOz1XkIJHEUDMZAbzCThU/H8DxmSfmdGcKPnVhu2VfFqr34jr9777IyaTYvxjedWhqVIilEDsCdP5G6g==}
+>>>>>>> origin/codex/configure-service-worker-with-next-pwa
 
   get-package-type@0.1.0:
     resolution: {integrity: sha512-pjzuKtY64GYfWizNAJ0fr9VqttZkNiK2iS430LtIHzjBEr6bX8Am2zm4sW4Ro5wjWW5cAlRL1qAMTcXbjNAO2Q==}
@@ -4471,10 +4482,29 @@ packages:
     resolution: {integrity: sha512-41Cifkg6e8TylSpdtTpeLVMqvSBEVzTttHvERD741+pnZ8ANv0004MRL43QKPDlK9cGvNp6NZWZUBlbGXYxxng==}
     engines: {node: '>=0.12.0'}
 
+<<<<<<< HEAD
   is-plain-object@5.0.0:
     resolution: {integrity: sha512-VRSzKkbMm5jMDoKLbltAkFQ5Qr7VDiTFGXxYFXXowVj387GeGNOCsOH6Msy00SGZ3Fp84b1Naa1psqgcCIEP5Q==}
     engines: {node: '>=0.10.0'}
 
+=======
+  is-obj@1.0.1:
+    resolution: {integrity: sha512-l4RyHgRqGN4Y3+9JHVrNqO+tN0rV5My76uW5/nuO4K1b6vw5G8d/cmFjP9tRfEsdhZNt0IFdZuK/c2Vr4Nb+Qg==}
+    engines: {node: '>=0.10.0'}
+
+  is-path-cwd@2.2.0:
+    resolution: {integrity: sha512-w942bTcih8fdJPJmQHFzkS76NEP8Kzzvmw92cXsazb8intwLqPibPPdXf4ANdKV3rYMuuQYGIWtvz9JilB3NFQ==}
+    engines: {node: '>=6'}
+
+  is-path-in-cwd@2.1.0:
+    resolution: {integrity: sha512-rNocXHgipO+rvnP6dk3zI20RpOtrAM/kzbB258Uw5BWr3TpXi861yzjo16Dn4hUox07iw5AyeMLHWsujkjzvRQ==}
+    engines: {node: '>=6'}
+
+  is-path-inside@2.1.0:
+    resolution: {integrity: sha512-wiyhTzfDWsvwAW53OBWF5zuvaOGlZ6PwYxAbPVDhpm+gM09xKQGjBq/8uYN12aDvMxnAnq3dxTyoSoRNmg5YFg==}
+    engines: {node: '>=6'}
+
+>>>>>>> origin/codex/configure-service-worker-with-next-pwa
   is-property@1.0.2:
     resolution: {integrity: sha512-Ks/IoX00TtClbGQr4TWXemAnktAQvYB7HzcCxDGqEZU6oCmb2INHuOoKxbtR+HFkmYWBKv/dOZtGRiAjDhj92g==}
 
@@ -5140,13 +5170,19 @@ packages:
     resolution: {integrity: sha512-myRT3DiWPHqho5PrJaIRyaMv2kgYf0mUVgBNOYMuCH5Ki1yEiQaf/ZJuQ62nvpc44wL5WDbTX7yGJi1Neevw8w==}
     engines: {node: '>= 0.6'}
 
+<<<<<<< HEAD
   negotiator@1.0.0:
     resolution: {integrity: sha512-8Ofs/AUQh8MaEcrlq5xOX0CQ9ypTF5dl78mjlMNfOK08fzpgTHQRQPBxcPlEtIw0yRpws+Zo/3r+5WRby7u3Gg==}
     engines: {node: '>= 0.6'}
+=======
+  neo-async@2.6.2:
+    resolution: {integrity: sha512-Yd3UES5mWCSqR+qNT93S3UoYUkqAZ9lLg8a7g9rimsWmYGK8cVToA4/sF3RrshdyV3sAGMXVUmpMYOw+dLpOuw==}
+>>>>>>> origin/codex/configure-service-worker-with-next-pwa
 
   nested-error-stacks@2.0.1:
     resolution: {integrity: sha512-SrQrok4CATudVzBS7coSz26QRSmlK9TzzoFbeKfcPBUFPjcQM9Rqvr/DlJkOrwI/0KcgvMub1n1g5Jt9EgRn4A==}
 
+<<<<<<< HEAD
 <<<<<<< HEAD
   next-intl@3.26.5:
     resolution: {integrity: sha512-EQlCIfY0jOhRldiFxwSXG+ImwkQtDEfQeSOEQp6ieAGSLWGlgjdb/Ck/O7wMfC430ZHGeUKVKax8KGusTPKCgg==}
@@ -5170,6 +5206,12 @@ packages:
       react: ^16.8 || ^17 || ^18 || ^19 || ^19.0.0-rc
       react-dom: ^16.8 || ^17 || ^18 || ^19 || ^19.0.0-rc
 >>>>>>> origin/codex/set-up-next-intl-with-translations
+=======
+  next-pwa@5.6.0:
+    resolution: {integrity: sha512-XV8g8C6B7UmViXU8askMEYhWwQ4qc/XqJGnexbLV68hzKaGHZDMtHsm2TNxFcbR7+ypVuth/wwpiIlMwpRJJ5A==}
+    peerDependencies:
+      next: '>=9.0.0'
+>>>>>>> origin/codex/configure-service-worker-with-next-pwa
 
   next@14.2.16:
     resolution: {integrity: sha512-LcO7WnFu6lYSvCzZoo1dB+IO0xXz5uEv52HF1IUN0IqVTUIZGHuuR10I5efiLadGt+4oZqTcNZyVVEem/TM5nA==}
@@ -5526,6 +5568,7 @@ packages:
     engines: {node: '>= 6'}
 
 <<<<<<< HEAD
+<<<<<<< HEAD
   pkg-dir@4.2.0:
     resolution: {integrity: sha512-HRDzbaKjC+AOWVXxAU/x54COGeIv9eb+6CkDSQoNTt4XyWoIJvuPsXizxu/Fr23EiekbtZwmh1IcIG/l/a10GQ==}
     engines: {node: '>=8'}
@@ -5540,6 +5583,11 @@ packages:
     engines: {node: '>=18'}
     hasBin: true
 >>>>>>> origin/codex/set-up-next-intl-with-translations
+=======
+  pkg-dir@4.2.0:
+    resolution: {integrity: sha512-HRDzbaKjC+AOWVXxAU/x54COGeIv9eb+6CkDSQoNTt4XyWoIJvuPsXizxu/Fr23EiekbtZwmh1IcIG/l/a10GQ==}
+    engines: {node: '>=8'}
+>>>>>>> origin/codex/configure-service-worker-with-next-pwa
 
   plist@3.1.0:
     resolution: {integrity: sha512-uysumyrvkUX0rX/dEVqt8gC3sTBzd4zoWfLeS29nb53imdaXVvLINYXTI2GNqzaMuvacNx4uJQ8+b3zXR0pkgQ==}
@@ -11811,10 +11859,14 @@ snapshots:
       math-intrinsics: 1.1.0
 
 <<<<<<< HEAD
+<<<<<<< HEAD
   get-own-enumerable-property-symbols@3.0.2: {}
 =======
   get-nonce@1.0.1: {}
 >>>>>>> origin/codex/set-up-next-intl-with-translations
+=======
+  get-own-enumerable-property-symbols@3.0.2: {}
+>>>>>>> origin/codex/configure-service-worker-with-next-pwa
 
   get-package-type@0.1.0: {}
 
@@ -12158,7 +12210,21 @@ snapshots:
 
   is-number@7.0.0: {}
 
+<<<<<<< HEAD
   is-plain-object@5.0.0: {}
+=======
+  is-obj@1.0.1: {}
+
+  is-path-cwd@2.2.0: {}
+
+  is-path-in-cwd@2.1.0:
+    dependencies:
+      is-path-inside: 2.1.0
+
+  is-path-inside@2.1.0:
+    dependencies:
+      path-is-inside: 1.0.2
+>>>>>>> origin/codex/configure-service-worker-with-next-pwa
 
   is-property@1.0.2: {}
 
@@ -12936,6 +13002,7 @@ snapshots:
 
   negotiator@0.6.4: {}
 
+<<<<<<< HEAD
   negotiator@1.0.0: {}
 
   nested-error-stacks@2.0.1: {}
@@ -12948,6 +13015,29 @@ snapshots:
       next: 14.2.16(@babel/core@7.28.0)(@opentelemetry/api@1.9.0)(react-dom@18.0.0(react@18.0.0))(react@18.0.0)
       react: 18.0.0
       use-intl: 3.26.5(react@18.0.0)
+=======
+  neo-async@2.6.2: {}
+
+  nested-error-stacks@2.0.1: {}
+
+  next-pwa@5.6.0(@babel/core@7.28.0)(@types/babel__core@7.20.5)(next@14.2.16(@babel/core@7.28.0)(@opentelemetry/api@1.9.0)(react-dom@18.0.0(react@18.0.0))(react@18.0.0))(webpack@5.101.0):
+    dependencies:
+      babel-loader: 8.4.1(@babel/core@7.28.0)(webpack@5.101.0)
+      clean-webpack-plugin: 4.0.0(webpack@5.101.0)
+      globby: 11.1.0
+      next: 14.2.16(@babel/core@7.28.0)(@opentelemetry/api@1.9.0)(react-dom@18.0.0(react@18.0.0))(react@18.0.0)
+      terser-webpack-plugin: 5.3.14(webpack@5.101.0)
+      workbox-webpack-plugin: 6.6.0(@types/babel__core@7.20.5)(webpack@5.101.0)
+      workbox-window: 6.6.0
+    transitivePeerDependencies:
+      - '@babel/core'
+      - '@swc/core'
+      - '@types/babel__core'
+      - esbuild
+      - supports-color
+      - uglify-js
+      - webpack
+>>>>>>> origin/codex/configure-service-worker-with-next-pwa
 
   next@14.2.16(@babel/core@7.28.0)(@opentelemetry/api@1.9.0)(react-dom@18.0.0(react@18.0.0))(react@18.0.0):
 =======
@@ -13325,6 +13415,7 @@ snapshots:
   pirates@4.0.7: {}
 
 <<<<<<< HEAD
+<<<<<<< HEAD
   pkg-dir@4.2.0:
     dependencies:
       find-up: 4.1.0
@@ -13337,6 +13428,11 @@ snapshots:
     optionalDependencies:
       fsevents: 2.3.2
 >>>>>>> origin/codex/set-up-next-intl-with-translations
+=======
+  pkg-dir@4.2.0:
+    dependencies:
+      find-up: 4.1.0
+>>>>>>> origin/codex/configure-service-worker-with-next-pwa
 
   plist@3.1.0:
     dependencies:
