@@ -112,6 +112,9 @@ export const comments = pgTable("comments", {
 
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> origin/codex/create-tags-table-and-many-to-many-relation
 // Tag table
 export const tags = pgTable("tags", {
   id: text("id").primaryKey(),
@@ -121,9 +124,16 @@ export const tags = pgTable("tags", {
 })
 
 // VerseTags join table
+<<<<<<< HEAD
 export const versesToTags = pgTable(
   "verses_tags",
   {
+=======
+export const verseTags = pgTable(
+  "verse_tags",
+  {
+    id: text("id").primaryKey(),
+>>>>>>> origin/codex/create-tags-table-and-many-to-many-relation
     verseId: text("verse_id")
       .notNull()
       .references(() => verses.id),
@@ -131,6 +141,7 @@ export const versesToTags = pgTable(
       .notNull()
       .references(() => tags.id),
     createdAt: timestamp("created_at").defaultNow().notNull(),
+<<<<<<< HEAD
   },
   (table) => ({
     pk: primaryKey({ columns: [table.verseId, table.tagId] }),
@@ -172,6 +183,17 @@ export const verseViews = pgTable("verse_views", {
 })
 
 >>>>>>> origin/codex/track-verse-views-and-translations
+=======
+    updatedAt: timestamp("updated_at").notNull(),
+  },
+  (table) => {
+    return {
+      verseTagUnique: uniqueIndex("verse_tag_unique").on(table.verseId, table.tagId),
+    }
+  },
+)
+
+>>>>>>> origin/codex/create-tags-table-and-many-to-many-relation
 // Session table
 export const sessions = pgTable("sessions", {
   id: text("id").primaryKey(),
@@ -194,10 +216,14 @@ export const versesRelations = relations(verses, ({ one, many }) => ({
   notes: many(notes),
   comments: many(comments),
 <<<<<<< HEAD
+<<<<<<< HEAD
   verseTags: many(versesToTags),
 =======
   views: many(verseViews),
 >>>>>>> origin/codex/track-verse-views-and-translations
+=======
+  verseTags: many(verseTags),
+>>>>>>> origin/codex/create-tags-table-and-many-to-many-relation
 }))
 
 export const translationsRelations = relations(translations, ({ one, many }) => ({
@@ -300,6 +326,7 @@ export const wordMappingsRelations = relations(wordMappings, ({ one }) => ({
   }),
 }))
 
+<<<<<<< HEAD
 export const flagsRelations = relations(flags, ({ one }) => ({
   comment: one(comments, {
     fields: [flags.commentId],
@@ -315,5 +342,19 @@ export const auditLogsRelations = relations(auditLogs, ({ one }) => ({
   user: one(users, {
     fields: [auditLogs.userId],
     references: [users.id],
+=======
+export const tagsRelations = relations(tags, ({ many }) => ({
+  verseTags: many(verseTags),
+}))
+
+export const verseTagsRelations = relations(verseTags, ({ one }) => ({
+  verse: one(verses, {
+    fields: [verseTags.verseId],
+    references: [verses.id],
+  }),
+  tag: one(tags, {
+    fields: [verseTags.tagId],
+    references: [tags.id],
+>>>>>>> origin/codex/create-tags-table-and-many-to-many-relation
   }),
 }))
