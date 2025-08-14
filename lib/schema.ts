@@ -111,6 +111,7 @@ export const comments = pgTable("comments", {
 })
 
 <<<<<<< HEAD
+<<<<<<< HEAD
 // Tag table
 export const tags = pgTable("tags", {
   id: text("id").primaryKey(),
@@ -158,6 +159,19 @@ export const auditLogs = pgTable("audit_logs", {
 })
 >>>>>>> origin/codex/protect-admin-routes-with-middleware
 
+=======
+// VerseView table to track verse views and translation selections
+export const verseViews = pgTable("verse_views", {
+  id: text("id").primaryKey(),
+  userId: text("user_id").references(() => users.id),
+  verseId: text("verse_id")
+    .notNull()
+    .references(() => verses.id),
+  translationId: text("translation_id").references(() => translations.id),
+  viewedAt: timestamp("viewed_at").defaultNow().notNull(),
+})
+
+>>>>>>> origin/codex/track-verse-views-and-translations
 // Session table
 export const sessions = pgTable("sessions", {
   id: text("id").primaryKey(),
@@ -179,7 +193,11 @@ export const versesRelations = relations(verses, ({ one, many }) => ({
   translations: many(translations),
   notes: many(notes),
   comments: many(comments),
+<<<<<<< HEAD
   verseTags: many(versesToTags),
+=======
+  views: many(verseViews),
+>>>>>>> origin/codex/track-verse-views-and-translations
 }))
 
 export const translationsRelations = relations(translations, ({ one, many }) => ({
@@ -188,6 +206,7 @@ export const translationsRelations = relations(translations, ({ one, many }) => 
     references: [verses.id],
   }),
   wordMappings: many(wordMappings),
+  views: many(verseViews),
 }))
 
 export const usersRelations = relations(users, ({ many }) => ({
@@ -195,8 +214,12 @@ export const usersRelations = relations(users, ({ many }) => ({
   notes: many(notes),
   comments: many(comments),
   sessions: many(sessions),
+<<<<<<< HEAD
   flags: many(flags),
   auditLogs: many(auditLogs),
+=======
+  views: many(verseViews),
+>>>>>>> origin/codex/track-verse-views-and-translations
 }))
 
 export const favoritesRelations = relations(favorites, ({ one }) => ({
@@ -245,6 +268,21 @@ export const versesToTagsRelations = relations(versesToTags, ({ one }) => ({
   tag: one(tags, {
     fields: [versesToTags.tagId],
     references: [tags.id],
+  }),
+}))
+
+export const verseViewsRelations = relations(verseViews, ({ one }) => ({
+  user: one(users, {
+    fields: [verseViews.userId],
+    references: [users.id],
+  }),
+  verse: one(verses, {
+    fields: [verseViews.verseId],
+    references: [verses.id],
+  }),
+  translation: one(translations, {
+    fields: [verseViews.translationId],
+    references: [translations.id],
   }),
 }))
 

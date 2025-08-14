@@ -180,6 +180,17 @@ model UserFollow {
 >>>>>>> origin/codex/protect-admin-routes-with-middleware
 }
 
+model VerseView {
+  id            String       @id @default(cuid())
+  userId        String?
+  user          User?        @relation(fields: [userId], references: [id])
+  verseId       String
+  verse         Verse        @relation(fields: [verseId], references: [id])
+  translationId String?
+  translation   Translation? @relation(fields: [translationId], references: [id])
+  viewedAt      DateTime     @default(now())
+}
+
 model Session {
   id           String   @id @default(cuid())
   sessionToken String   @unique
