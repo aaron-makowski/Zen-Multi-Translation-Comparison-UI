@@ -1,5 +1,9 @@
 {
   "translatorId": "waley",
+<<<<<<< HEAD
   "verseId": 1,
   "createdAt": "2024-01-01T00:00:00.000Z"
+=======
+  "updatedAt": "2024-01-01T00:00:00.000Z"
+>>>>>>> origin/codex/add-page-to-pull-latest-comments-and-highlights
 }

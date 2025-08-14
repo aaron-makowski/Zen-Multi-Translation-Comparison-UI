@@ -2,9 +2,13 @@
   {
     "id": "1",
     "verseId": 1,
+<<<<<<< HEAD
     "username": "demo",
     "karma": 150,
     "text": "Sample highlighted text",
+=======
+    "text": "The Way is perfect like vast space",
+>>>>>>> origin/codex/add-page-to-pull-latest-comments-and-highlights
     "createdAt": "2024-01-01T00:00:00.000Z"
   }
 ]

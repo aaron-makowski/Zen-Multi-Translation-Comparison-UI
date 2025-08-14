@@ -2,6 +2,7 @@ import { NextResponse } from "next/server"
 import { promises as fs } from "fs"
 import path from "path"
 
+<<<<<<< HEAD
 interface Featured {
   translatorId: string
   verseId: number
@@ -42,4 +43,15 @@ export async function POST(req: Request) {
   }
   await writeData(payload)
   return NextResponse.json(payload)
+=======
+const FILE = path.join(process.cwd(), "data", "featured.json")
+
+export async function GET() {
+  try {
+    const data = await fs.readFile(FILE, "utf8")
+    return NextResponse.json(JSON.parse(data || "{}"))
+  } catch {
+    return NextResponse.json({})
+  }
+>>>>>>> origin/codex/add-page-to-pull-latest-comments-and-highlights
 }

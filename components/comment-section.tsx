@@ -1,7 +1,13 @@
 <<<<<<< HEAD
 "use client"
+<<<<<<< HEAD
 import { useEffect, useState } from "react"
 import { CommentForm } from "./comment-form"
+=======
+import { useEffect, useState, FormEvent } from "react"
+import { Button } from "@/components/ui/button"
+import { getBadge } from "@/lib/karma"
+>>>>>>> origin/codex/add-page-to-pull-latest-comments-and-highlights
 
 interface Comment {
   id: string
@@ -11,6 +17,7 @@ interface Comment {
   createdAt: string
   updatedAt: string
   votes: number
+<<<<<<< HEAD
   parentId?: string
   flagged?: boolean
   removed?: boolean
@@ -29,6 +36,9 @@ interface Comment {
   content: string;
   createdAt: string;
   votes: number;
+=======
+  username?: string
+>>>>>>> origin/codex/add-page-to-pull-latest-comments-and-highlights
 }
 
 export function CommentSection({ verseId }: { verseId: string }) {
@@ -55,10 +65,17 @@ export function CommentSection({ verseId }: { verseId: string }) {
     await fetch("/api/comments", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
+<<<<<<< HEAD
       body: JSON.stringify({ verseId, content })
     });
     setContent("");
     load();
+=======
+      body: JSON.stringify({ verseId, content, username: "guest" })
+    })
+    setContent("")
+    load()
+>>>>>>> origin/codex/add-page-to-pull-latest-comments-and-highlights
   }
 
 >>>>>>> origin/codex/set-up-next-intl-with-translations
@@ -115,11 +132,23 @@ export function CommentSection({ verseId }: { verseId: string }) {
               </div>
             </div>
 <<<<<<< HEAD
+<<<<<<< HEAD
           )
         })}
 =======
             <div className="text-xs text-muted-foreground">
               {new Intl.DateTimeFormat(locale, {dateStyle: 'short', timeStyle: 'short'}).format(new Date(c.createdAt))}
+=======
+            <div className="text-xs text-muted-foreground flex items-center gap-2">
+              <span className="flex items-center gap-1">
+                {c.username || "Anonymous"}
+                {(() => {
+                  const badge = getBadge(c.votes)
+                  return <span className={`${badge.className}`}>{badge.label}</span>
+                })()}
+              </span>
+              <span>{new Date(c.createdAt).toLocaleString()}</span>
+>>>>>>> origin/codex/add-page-to-pull-latest-comments-and-highlights
             </div>
           </div>
         ))}
