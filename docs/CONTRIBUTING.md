@@ -1,14 +1,18 @@
-# Contributing
+
+# Contributing Guide
 
 Thank you for considering contributing to this project!
 
 ## Getting Started
 
-1. Fork the repository and create your branch from `main`.
+1. Fork the repository and create a new branch.
 2. Install dependencies with `pnpm install`.
-3. Run `pnpm lint` and `pnpm test` to ensure everything passes.
+3. Make your changes and ensure tests pass with `pnpm test`.
 
-## Submitting changes
+## Pull Requests
 
-- Ensure code adheres to project style and passes all checks.
-- Submit a pull request describing your changes.
+- Describe your changes clearly.
+- Update documentation when applicable.
+- Follow the [Code of Conduct](CODE_OF_CONDUCT.md).
+
+We appreciate all contributions, large or small.

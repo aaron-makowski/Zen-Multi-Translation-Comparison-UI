@@ -1,13 +1,14 @@
 import { prisma } from "./db"
 import { translations } from "./translations"
 import bcrypt from "bcryptjs"
+import { logger, logError } from "./logger"
 
 export async function seedDatabase() {
   try {
     // Check if database is already seeded
     const existingBooks = await prisma.book.findMany()
     if (existingBooks.length > 0) {
-      console.log("Database already seeded")
+      logger.info("Database already seeded")
       return
     }
 
@@ -19,10 +20,11 @@ export async function seedDatabase() {
         description: "Faith in Mind - A classic Zen poem attributed to the Third Patriarch of Zen, Jianzhi Sengcan",
         author: "Jianzhi Sengcan",
         coverImage: "/xinxin-ming-cover.png",
+        pdfPath: null,
       },
     })
 
-    console.log(`Created book: ${xinxinMing.title}`)
+    logger.info(`Created book: ${xinxinMing.title}`)
 
     // Create verses and translations
     for (const [index, translation] of translations.entries()) {
@@ -37,7 +39,7 @@ export async function seedDatabase() {
         },
       })
 
-      console.log(`Created verse: ${verse.number}`)
+      logger.info(`Created verse: ${verse.number}`)
 
       // Create translations for each translator
       for (const translator of Object.keys(translation)) {
@@ -52,7 +54,7 @@ export async function seedDatabase() {
           },
         })
 
-        console.log(`Created translation by: ${translator}`)
+        logger.info(`Created translation by: ${translator}`)
       }
     }
 
@@ -68,7 +70,7 @@ export async function seedDatabase() {
       },
     })
 
-    console.log(`Created demo user: ${demoUser.username}`)
+    logger.info(`Created demo user: ${demoUser.username}`)
 
     // Create a guest user
     const guestUser = await prisma.user.create({
@@ -80,11 +82,11 @@ export async function seedDatabase() {
       },
     })
 
-    console.log(`Created guest user: ${guestUser.username}`)
+    logger.info(`Created guest user: ${guestUser.username}`)
 
     return { success: true }
   } catch (error) {
-    console.error("Error seeding database:", error)
+    logError(error, "Error seeding database")
     return { success: false, error }
   }
 }

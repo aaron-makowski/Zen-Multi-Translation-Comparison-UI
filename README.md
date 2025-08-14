@@ -38,3 +38,13 @@ The Reddit integration uses Reddit's public JSON API and does not require authen
 - [Code of Conduct](docs/CODE_OF_CONDUCT.md)
 - [Contributing](docs/CONTRIBUTING.md)
 - [FAQ](docs/FAQ.md)
+
+## PDF cache
+
+Monitor the `public/pdfs/` folder for new files and ingest them automatically by running:
+
+```bash
+pnpm tsx scripts/watch-pdf-cache.ts
+```
+
+Whenever a new `.pdf` is added, the watcher runs the ingestion script (`scripts/ingest-pdf.ts`) and reports whether it succeeded or failed.

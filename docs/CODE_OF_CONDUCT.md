@@ -7,3 +7,17 @@ We expect all participants to uphold the following guidelines:
 - Accept constructive criticism.
 
 Instances of abusive, harassing, or otherwise unacceptable behavior may be reported by opening an issue.
+We are committed to fostering a welcoming and inclusive community.
+
+## Our Standards
+
+- Be respectful and considerate.
+- Use welcoming and inclusive language.
+- Gracefully accept constructive criticism.
+- Focus on what is best for the community.
+
+## Enforcement
+
+Instances of abusive, harassing, or otherwise unacceptable behavior may be reported by opening an issue or contacting the maintainers.
+
+This project follows the [Contributor Covenant](https://www.contributor-covenant.org/) Code of Conduct.

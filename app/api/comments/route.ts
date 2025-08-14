@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server"
 import { promises as fs } from "fs"
 import path from "path"
+import { Redis } from "@upstash/redis"
 
 export interface Comment {
   id: string
@@ -10,6 +11,13 @@ export interface Comment {
 }
 
 const COMMENTS_FILE = path.join(process.cwd(), "data", "comments.json")
+
+let redis: Redis | null = null
+try {
+  redis = Redis.fromEnv()
+} catch {
+  redis = null
+}
 
 async function readData() {
   try {
@@ -42,10 +50,22 @@ export function voteComment(
 export async function GET(req: Request) {
   const { searchParams } = new URL(req.url)
   const verseId = searchParams.get("verseId")
-  const data = await readData()
   if (verseId) {
-    return NextResponse.json(data[verseId] || [])
+    const cacheKey = `comments:${verseId}`
+    if (redis) {
+      const cached = await redis.get(cacheKey)
+      if (cached) {
+        return NextResponse.json(cached)
+      }
+    }
+    const data = await readData()
+    const comments = data[verseId] || []
+    if (redis) {
+      await redis.set(cacheKey, comments, { ex: 60 })
+    }
+    return NextResponse.json(comments)
   }
+  const data = await readData()
   return NextResponse.json(data)
 }
 
@@ -64,6 +84,9 @@ export async function POST(req: Request) {
   if (!data[verseId]) data[verseId] = []
   data[verseId].push(comment)
   await writeData(data)
+  if (redis) {
+    await redis.del(`comments:${verseId}`)
+  }
   return NextResponse.json(comment)
 }
 
@@ -78,5 +101,8 @@ export async function PATCH(req: Request) {
     return NextResponse.json({ error: "Not found" }, { status: 404 })
   }
   await writeData(data)
+  if (redis) {
+    await redis.del(`comments:${verseId}`)
+  }
   return NextResponse.json(updated)
 }
