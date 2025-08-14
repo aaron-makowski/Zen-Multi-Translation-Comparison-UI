@@ -10,6 +10,7 @@ interface Translation {
   language: string
 }
 
+<<<<<<< HEAD
 interface Props {
   verseId: string
 }
@@ -40,6 +41,32 @@ export function TranslationList({ verseId }: Props) {
       cancelled = true
     }
   }, [verseId, page])
+=======
+export default function TranslationList({ verseId }: { verseId: string }) {
+  const [translations, setTranslations] = useState<Translation[]>([])
+  const [page, setPage] = useState(0)
+  const [loading, setLoading] = useState(false)
+  const [hasMore, setHasMore] = useState(true)
+
+  async function load() {
+    if (loading || !hasMore) return
+    setLoading(true)
+    const res = await fetch(`/api/translations?verseId=${verseId}&page=${page}`)
+    const data: Translation[] = await res.json()
+    setTranslations((prev) => [...prev, ...data])
+    setHasMore(data.length > 0)
+    setPage((prev) => prev + 1)
+    setLoading(false)
+  }
+
+  useEffect(() => {
+    setTranslations([])
+    setPage(0)
+    setHasMore(true)
+    load()
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [verseId])
+>>>>>>> origin/codex/integrate-postgresql-and-update-db.ts
 
   return (
     <div className="space-y-6">
@@ -51,9 +78,15 @@ export function TranslationList({ verseId }: Props) {
         </div>
       ))}
       {hasMore && (
+<<<<<<< HEAD
         <div className="flex justify-center">
           <Button onClick={() => setPage((p) => p + 1)} variant="outline" size="sm">
             Load More
+=======
+        <div className="flex justify-center mt-4">
+          <Button onClick={load} disabled={loading} size="sm">
+            {loading ? "Loading..." : "Load More"}
+>>>>>>> origin/codex/integrate-postgresql-and-update-db.ts
           </Button>
         </div>
       )}

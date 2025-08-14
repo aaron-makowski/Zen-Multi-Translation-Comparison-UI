@@ -1,43 +1,36 @@
 import { NextResponse } from "next/server"
 import { promises as fs } from "fs"
 import path from "path"
-import { marked } from "marked"
-import sanitizeHtml from "sanitize-html"
-import { logError } from "@/lib/logger"
+import { Redis } from "@upstash/redis"
 
 export interface Comment {
   id: string
-  username: string
-  karma: number
   content: string
   createdAt: string
-  updatedAt: string
   votes: number
-  parentId?: string
-  flagged?: boolean
-  removed?: boolean
 }
 
 const COMMENTS_FILE = path.join(process.cwd(), "data", "comments.json")
 
-export async function readData() {
+let redis: Redis | null = null
+try {
+  redis = Redis.fromEnv()
+} catch {
+  redis = null
+}
+
+async function readData() {
   try {
     const data = await fs.readFile(COMMENTS_FILE, "utf8")
     return JSON.parse(data || "{}")
-  } catch (error) {
-    logError(error, "Failed to read comments data")
+  } catch {
     return {}
   }
 }
 
-export async function writeData(data: Record<string, Comment[]>) {
-  try {
-    await fs.mkdir(path.dirname(COMMENTS_FILE), { recursive: true })
-    await fs.writeFile(COMMENTS_FILE, JSON.stringify(data, null, 2))
-  } catch (error) {
-    logError(error, "Failed to write comments data")
-    throw error
-  }
+async function writeData(data: Record<string, Comment[]>) {
+  await fs.mkdir(path.dirname(COMMENTS_FILE), { recursive: true })
+  await fs.writeFile(COMMENTS_FILE, JSON.stringify(data, null, 2))
 }
 
 export function voteComment(
@@ -55,101 +48,61 @@ export function voteComment(
 }
 
 export async function GET(req: Request) {
-  try {
-    const { searchParams } = new URL(req.url)
-    const verseId = searchParams.get("verseId")
-    const parentId = searchParams.get("parentId")
-    const data = await readData()
-    if (verseId) {
-      let list = data[verseId] || []
-      if (parentId) {
-        list = list.filter((c) => c.parentId === parentId)
+  const { searchParams } = new URL(req.url)
+  const verseId = searchParams.get("verseId")
+  if (verseId) {
+    const cacheKey = `comments:${verseId}`
+    if (redis) {
+      const cached = await redis.get(cacheKey)
+      if (cached) {
+        return NextResponse.json(cached)
       }
-      return NextResponse.json(list)
     }
-    return NextResponse.json(data)
-  } catch (error) {
-    logError(error, "Failed to handle GET /api/comments")
-    return NextResponse.json({ error: "Internal server error" }, { status: 500 })
+    const data = await readData()
+    const comments = data[verseId] || []
+    if (redis) {
+      await redis.set(cacheKey, comments, { ex: 60 })
+    }
+    return NextResponse.json(comments)
   }
+  const data = await readData()
+  return NextResponse.json(data)
 }
 
 export async function POST(req: Request) {
-  try {
-    const { verseId, content, parentId } = await req.json()
-    if (!verseId || !content) {
-      return NextResponse.json({ error: "Missing fields" }, { status: 400 })
-    }
-    const rawHtml = marked.parse(content)
-    const safeContent = sanitizeHtml(rawHtml)
-    const data = await readData()
-    const comment: Comment = {
-      id: crypto.randomUUID(),
-      content: safeContent,
-      createdAt: new Date().toISOString(),
-      votes: 0,
-      parentId,
-      flagged: false,
-      removed: false,
-    }
-    if (!data[verseId]) data[verseId] = []
-    data[verseId].push(comment)
-    await writeData(data)
-    return NextResponse.json(comment)
-  } catch (error) {
-    logError(error, "Failed to handle POST /api/comments")
-    return NextResponse.json({ error: "Internal server error" }, { status: 500 })
+  const { verseId, content } = await req.json()
+  if (!verseId || !content) {
+    return NextResponse.json({ error: "Missing fields" }, { status: 400 })
   }
+  const data = await readData()
+  const comment: Comment = {
+    id: crypto.randomUUID(),
+    content,
+    createdAt: new Date().toISOString(),
+    votes: 0,
+  }
+  if (!data[verseId]) data[verseId] = []
+  data[verseId].push(comment)
+  await writeData(data)
+  if (redis) {
+    await redis.del(`comments:${verseId}`)
+  }
+  return NextResponse.json(comment)
 }
 
 export async function PATCH(req: Request) {
-  try {
-    const { verseId, commentId, delta } = await req.json()
-    if (!verseId || !commentId || typeof delta !== "number") {
-      return NextResponse.json({ error: "Missing fields" }, { status: 400 })
-    }
-    const data = await readData()
-    const updated = voteComment(data, verseId, commentId, delta)
-    if (!updated) {
-      return NextResponse.json({ error: "Not found" }, { status: 404 })
-    }
-    await writeData(data)
-    return NextResponse.json(updated)
-  } catch (error) {
-    logError(error, "Failed to handle PATCH /api/comments")
-    return NextResponse.json({ error: "Internal server error" }, { status: 500 })
+  const { verseId, commentId, delta } = await req.json()
+  if (!verseId || !commentId || typeof delta !== "number") {
+    return NextResponse.json({ error: "Missing fields" }, { status: 400 })
   }
-}
-
-async function handleNotifications(comment: Comment, list: Comment[]) {
-  const { createNotification } = await import("../../../lib/notifications")
-  const { db } = await import("../../../lib/db")
-  const { users } = await import("../../../lib/schema")
-
-  if (comment.parentId) {
-    const parent = list.find((c) => c.id === comment.parentId)
-    if (parent?.userId && parent.userId !== comment.userId) {
-      await createNotification({
-        userId: parent.userId,
-        actorId: comment.userId!,
-        type: "reply",
-        commentId: comment.id,
-      })
-    }
+  const data = await readData()
+  const updated = voteComment(data, verseId, commentId, delta)
+  if (!updated) {
+    return NextResponse.json({ error: "Not found" }, { status: 404 })
   }
-  const mentions = comment.content.match(/@([A-Za-z0-9_]+)/g) || []
-  for (const mention of mentions) {
-    const username = mention.slice(1)
-    const target = await db.query.users.findFirst({
-      where: eq(users.username, username),
-    })
-    if (target && target.id !== comment.userId) {
-      await createNotification({
-        userId: target.id,
-        actorId: comment.userId!,
-        type: "mention",
-        commentId: comment.id,
-      })
-    }
+  await writeData(data)
+  if (redis) {
+    await redis.del(`comments:${verseId}`)
   }
+  return NextResponse.json(updated)
 }

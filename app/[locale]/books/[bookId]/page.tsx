@@ -1,17 +1,13 @@
-import Link from "next-intl/link"
+import Link from "next/link"
 import { notFound } from "next/navigation"
 import { Button } from "@/components/ui/button"
 import { Card } from "@/components/ui/card"
 import { db } from "@/lib/db"
 import { books } from "@/lib/schema"
 import { eq } from "drizzle-orm"
-import { VerseList } from "@/components/verse-list"
+import VerseList from "@/components/verse-list"
 
 export const revalidate = 60
-
-export function generateStaticParams() {
-  return [{ bookId: "xinxinming" }]
-}
 
 export default async function BookPage({ params }: { params: { bookId: string } }) {
   const book = await db.query.books.findFirst({
