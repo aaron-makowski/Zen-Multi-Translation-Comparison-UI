@@ -1,36 +1,38 @@
-/**
- * In-memory IP-based rate limiter for API routes.
- *
- * Counters are stored in a local Map, so limits reset on server restart and
- * are not shared across multiple instances. This offers only best-effort
- * protection against bursts of traffic.
- */
-import type { NextRequest } from "next/server";
 import { NextResponse } from "next/server";
+import type { NextRequest } from "next/server";
 
-interface RateLimitInfo {
-  count: number;
-  timestamp: number;
-}
+// Simple in-memory rate limiting per IP
+const WINDOW_MS = 60_000; // 1 minute window
+const MAX_REQUESTS = 60; // Max 60 requests per minute
 
-const WINDOW = 60_000; // 1 minute
-const LIMIT = 100;
-const requests = new Map<string, RateLimitInfo>();
+const ipHits = new Map<string, { count: number; expires: number }>();
 
-export function middleware(req: NextRequest) {
-  const ip = req.ip ?? "127.0.0.1";
+export function middleware(request: NextRequest) {
+  const ip =
+    request.headers.get("x-forwarded-for")?.split(",")[0] ||
+    request.ip ||
+    "unknown";
+
   const now = Date.now();
-  const record = requests.get(ip);
+  const record = ipHits.get(ip) || { count: 0, expires: now + WINDOW_MS };
 
-  if (!record || now - record.timestamp > WINDOW) {
-    requests.set(ip, { count: 1, timestamp: now });
-    return NextResponse.next();
+  if (now > record.expires) {
+    record.count = 0;
+    record.expires = now + WINDOW_MS;
   }
 
-  record.count += 1;
-  if (record.count > LIMIT) {
-    return NextResponse.json({ error: "Too many requests" }, { status: 429 });
+  record.count++;
+  ipHits.set(ip, record);
+
+  if (record.count > MAX_REQUESTS) {
+    return new NextResponse("Too Many Requests", { status: 429 });
   }
 
   return NextResponse.next();
 }
+
+export const config = {
+  matcher: "/api/:path*",
+};
+
+export default middleware;
