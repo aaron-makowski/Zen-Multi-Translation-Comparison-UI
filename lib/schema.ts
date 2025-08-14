@@ -33,6 +33,9 @@ export const users = pgTable("users", {
   role: text("role").default("user").notNull(),
   createdAt: timestamp("created_at").defaultNow().notNull(),
   updatedAt: timestamp("updated_at").notNull(),
+  karma: integer("karma").default(0).notNull(),
+  streak: integer("streak").default(0).notNull(),
+  lastActive: timestamp("last_active").defaultNow().notNull(),
 })
 
 // Book table

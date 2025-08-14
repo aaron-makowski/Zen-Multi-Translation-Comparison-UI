@@ -63,10 +63,13 @@ export async function seedDatabase() {
 
     const demoUser = await prisma.user.create({
       data: {
+        id: "demo-user",
         email: "demo@example.com",
         username: "demo",
         password: hashedPassword,
         isGuest: false,
+        karma: 0,
+        streak: 0,
       },
     })
 
@@ -75,10 +78,13 @@ export async function seedDatabase() {
     // Create a guest user
     const guestUser = await prisma.user.create({
       data: {
+        id: "guest-user",
         email: "guest@example.com",
         username: "guest",
         password: hashedPassword,
         isGuest: true,
+        karma: 0,
+        streak: 0,
       },
     })
 

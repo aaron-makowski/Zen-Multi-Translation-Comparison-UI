@@ -24,6 +24,7 @@ interface Comment {
   votes: number
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
   parentId?: string
   flagged?: boolean
   removed?: boolean
@@ -56,9 +57,12 @@ export function CommentSection({ verseId }: { verseId: string }) {
 =======
   parentId?: string | null
   flagged?: boolean
+=======
+  userId?: string
+>>>>>>> origin/codex/track-karma-points-for-comments
 }
 
-export function CommentSection({ verseId }: { verseId: string }) {
+export function CommentSection({ verseId, userId }: { verseId: string; userId?: string }) {
   const [comments, setComments] = useState<Comment[]>([])
 >>>>>>> origin/codex/extend-api-for-nested-comments-support
 
@@ -81,12 +85,16 @@ export function CommentSection({ verseId }: { verseId: string }) {
       method: "POST",
       headers: { "Content-Type": "application/json" },
 <<<<<<< HEAD
+<<<<<<< HEAD
       body: JSON.stringify({ verseId, content })
     });
     setContent("");
     load();
 =======
       body: JSON.stringify({ verseId, content, username: "guest" })
+=======
+      body: JSON.stringify({ verseId, content, userId })
+>>>>>>> origin/codex/track-karma-points-for-comments
     })
     setContent("")
     load()

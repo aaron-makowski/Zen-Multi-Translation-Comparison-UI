@@ -32,6 +32,12 @@ model User {
 >>>>>>> origin/codex/protect-admin-routes-with-middleware
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+<<<<<<< HEAD
+=======
+  karma     Int      @default(0)
+  streak    Int      @default(0)
+  lastActive DateTime @default(now())
+>>>>>>> origin/codex/track-karma-points-for-comments
 
   favorites Favorite[]
   notes     Note[]

@@ -18,6 +18,7 @@ export interface Comment {
   votes: number
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
   username?: string
 =======
   parentId?: string | null
@@ -27,6 +28,9 @@ export interface Comment {
   userId?: string
   parentId?: string
 >>>>>>> origin/codex/add-notifications-table-and-handlers
+=======
+  userId?: string
+>>>>>>> origin/codex/track-karma-points-for-comments
 }
 
 const COMMENTS_FILE = path.join(process.cwd(), "data", "comments.json")
@@ -108,6 +112,7 @@ export async function GET(req: Request) {
 export async function POST(req: Request) {
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
   const { verseId, content, username } = await req.json()
 =======
   const { verseId, content, parentId } = await req.json()
@@ -115,6 +120,9 @@ export async function POST(req: Request) {
 =======
   const { verseId, content, userId = "anonymous", parentId } = await req.json()
 >>>>>>> origin/codex/add-notifications-table-and-handlers
+=======
+  const { verseId, content, userId } = await req.json()
+>>>>>>> origin/codex/track-karma-points-for-comments
   if (!verseId || !content) {
     return NextResponse.json({ error: "Missing fields" }, { status: 400 })
   }
@@ -127,6 +135,7 @@ export async function POST(req: Request) {
     votes: 0,
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
     username: username || "Anonymous",
 =======
     parentId: parentId ?? null,
@@ -136,10 +145,14 @@ export async function POST(req: Request) {
     userId,
     parentId,
 >>>>>>> origin/codex/add-notifications-table-and-handlers
+=======
+    userId,
+>>>>>>> origin/codex/track-karma-points-for-comments
   }
   if (!data[verseId]) data[verseId] = []
   data[verseId].push(comment)
   await writeData(data)
+<<<<<<< HEAD
 <<<<<<< HEAD
   if (redis) {
     await redis.del(`comments:${verseId}`)
@@ -171,6 +184,16 @@ export async function POST(req: Request) {
     }
 >>>>>>> origin/codex/add-notifications-table-and-handlers
   }
+=======
+  if (userId) {
+    try {
+      const { addKarma } = await import("@/lib/gamification")
+      await addKarma(userId, "comment")
+    } catch (err) {
+      console.error("Failed to update karma", err)
+    }
+  }
+>>>>>>> origin/codex/track-karma-points-for-comments
   return NextResponse.json(comment)
 }
 
