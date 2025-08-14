@@ -1,4 +1,16 @@
+<<<<<<< HEAD
 import { pgTable, text, timestamp, integer, boolean, uniqueIndex, primaryKey } from "drizzle-orm/pg-core"
+=======
+import {
+  pgTable,
+  text,
+  timestamp,
+  integer,
+  boolean,
+  uniqueIndex,
+  primaryKey,
+} from "drizzle-orm/pg-core"
+>>>>>>> origin/codex/add-user-profile-page-with-follow-feature
 import { relations } from "drizzle-orm"
 
 // User table
@@ -7,6 +19,8 @@ export const users = pgTable("users", {
   email: text("email").notNull().unique(),
   username: text("username").notNull().unique(),
   password: text("password").notNull(),
+  avatar: text("avatar"),
+  bio: text("bio"),
   isGuest: boolean("is_guest").default(false).notNull(),
   role: text("role").default("user").notNull(),
   createdAt: timestamp("created_at").defaultNow().notNull(),
@@ -80,6 +94,23 @@ export const favorites = pgTable(
       userBookUnique: uniqueIndex("user_book_unique").on(table.userId, table.bookId),
     }
   },
+)
+
+// User follow join table
+export const userFollows = pgTable(
+  "user_follows",
+  {
+    followerId: text("follower_id")
+      .notNull()
+      .references(() => users.id),
+    followingId: text("following_id")
+      .notNull()
+      .references(() => users.id),
+    createdAt: timestamp("created_at").defaultNow().notNull(),
+  },
+  (table) => ({
+    pk: primaryKey({ columns: [table.followerId, table.followingId] }),
+  }),
 )
 
 // Note table
@@ -241,11 +272,16 @@ export const usersRelations = relations(users, ({ many }) => ({
   comments: many(comments),
   sessions: many(sessions),
 <<<<<<< HEAD
+<<<<<<< HEAD
   flags: many(flags),
   auditLogs: many(auditLogs),
 =======
   views: many(verseViews),
 >>>>>>> origin/codex/track-verse-views-and-translations
+=======
+  followers: many(userFollows, { relationName: "following" }),
+  following: many(userFollows, { relationName: "follower" }),
+>>>>>>> origin/codex/add-user-profile-page-with-follow-feature
 }))
 
 export const favoritesRelations = relations(favorites, ({ one }) => ({
@@ -309,6 +345,19 @@ export const verseViewsRelations = relations(verseViews, ({ one }) => ({
   translation: one(translations, {
     fields: [verseViews.translationId],
     references: [translations.id],
+  }),
+}))
+
+export const userFollowsRelations = relations(userFollows, ({ one }) => ({
+  follower: one(users, {
+    fields: [userFollows.followerId],
+    references: [users.id],
+    relationName: "follower",
+  }),
+  following: one(users, {
+    fields: [userFollows.followingId],
+    references: [users.id],
+    relationName: "following",
   }),
 }))
 
