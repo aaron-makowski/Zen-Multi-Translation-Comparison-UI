@@ -28,7 +28,9 @@ export interface Book {
   verses: Verse[]
 }
 
-export const translators: Translator[] = [
+// Translators for the Xinxin Ming text
+// Additional books define their own translator arrays below.
+export const xinxinmingTranslators: Translator[] = [
   {
     id: "waley",
     name: "Arthur Waley",
@@ -233,7 +235,7 @@ export const translations: Record<string, Book> = {
     description: "Faith in Mind",
     author: "Jianzhi Sengcan",
     coverImage: "/xinxin-ming-cover.png",
-    translators,
+    translators: xinxinmingTranslators,
     verses: [
       {
         id: 1,
