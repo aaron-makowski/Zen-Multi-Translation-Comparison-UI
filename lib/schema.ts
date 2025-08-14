@@ -1,11 +1,4 @@
-import {
-  pgTable,
-  text,
-  timestamp,
-  integer,
-  boolean,
-  uniqueIndex,
-} from "drizzle-orm/pg-core"
+import { pgTable, text, timestamp, integer, boolean, uniqueIndex, primaryKey } from "drizzle-orm/pg-core"
 import { relations } from "drizzle-orm"
 
 // User table
@@ -19,7 +12,6 @@ export const users = pgTable("users", {
   highlightKarma: integer("highlight_karma").default(0).notNull(),
   createdAt: timestamp("created_at").defaultNow().notNull(),
   updatedAt: timestamp("updated_at").notNull(),
-  karma: integer("karma").default(0).notNull(),
 })
 
 // Book table
@@ -70,58 +62,6 @@ export const wordMappings = pgTable("word_mappings", {
   createdAt: timestamp("created_at").defaultNow().notNull(),
   updatedAt: timestamp("updated_at").notNull(),
 })
-
-// Tag table
-export const tags = pgTable("tags", {
-  id: text("id").primaryKey(),
-  name: text("name").notNull().unique(),
-  createdAt: timestamp("created_at").defaultNow().notNull(),
-  updatedAt: timestamp("updated_at").notNull(),
-})
-
-// Verse <-> Tag join table
-export const verseTags = pgTable(
-  "verse_tags",
-  {
-    id: text("id").primaryKey(),
-    verseId: text("verse_id")
-      .notNull()
-      .references(() => verses.id),
-    tagId: text("tag_id")
-      .notNull()
-      .references(() => tags.id),
-    createdAt: timestamp("created_at").defaultNow().notNull(),
-    updatedAt: timestamp("updated_at").notNull(),
-  },
-  (table) => ({
-    verseTagUnique: uniqueIndex("verse_tag_unique").on(
-      table.verseId,
-      table.tagId,
-    ),
-  }),
-)
-
-// Bookmark table
-export const bookmarks = pgTable(
-  "bookmarks",
-  {
-    id: text("id").primaryKey(),
-    userId: text("user_id")
-      .notNull()
-      .references(() => users.id),
-    verseId: text("verse_id")
-      .notNull()
-      .references(() => verses.id),
-    createdAt: timestamp("created_at").defaultNow().notNull(),
-    updatedAt: timestamp("updated_at").notNull(),
-  },
-  (table) => ({
-    userVerseUnique: uniqueIndex("user_verse_unique").on(
-      table.userId,
-      table.verseId,
-    ),
-  }),
-)
 
 // Favorite table
 export const favorites = pgTable(
@@ -257,17 +197,6 @@ export const favoritesRelations = relations(favorites, ({ one }) => ({
   }),
 }))
 
-export const bookmarksRelations = relations(bookmarks, ({ one }) => ({
-  user: one(users, {
-    fields: [bookmarks.userId],
-    references: [users.id],
-  }),
-  verse: one(verses, {
-    fields: [bookmarks.verseId],
-    references: [verses.id],
-  }),
-}))
-
 export const notesRelations = relations(notes, ({ one }) => ({
   user: one(users, {
     fields: [notes.userId],
@@ -306,6 +235,19 @@ export const sessionsRelations = relations(sessions, ({ one }) => ({
   user: one(users, {
     fields: [sessions.userId],
     references: [users.id],
+  }),
+}))
+
+export const userFollowsRelations = relations(userFollows, ({ one }) => ({
+  follower: one(users, {
+    fields: [userFollows.followerId],
+    references: [users.id],
+    relationName: "follower",
+  }),
+  following: one(users, {
+    fields: [userFollows.followingId],
+    references: [users.id],
+    relationName: "following",
   }),
 }))
 

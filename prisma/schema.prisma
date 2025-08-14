@@ -55,11 +55,10 @@ model Verse {
   book      Book     @relation(fields: [bookId], references: [id])
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
-
+  
   translations Translation[]
   notes        Note[]
   comments     Comment[]
-  views        VerseView[]
 }
 
 model Translation {
@@ -73,7 +72,6 @@ model Translation {
   updatedAt    DateTime @updatedAt
 
   wordMappings WordMapping[]
-  views        VerseView[]
 }
 
 model Translator {
@@ -152,18 +150,14 @@ model AuditLog {
   createdAt DateTime @default(now())
 }
 
-model VerseView {
-  id           String   @id @default(cuid())
-  verseId      String
-  verse        Verse    @relation(fields: [verseId], references: [id])
-  translationId String?
-  translation  Translation? @relation(fields: [translationId], references: [id])
-  userId       String?
-  user         User?    @relation(fields: [userId], references: [id])
-  eventType    String
-  createdAt    DateTime @default(now())
+model UserFollow {
+  follower   User   @relation("following", fields: [followerId], references: [id])
+  followerId String
+  following  User   @relation("followers", fields: [followingId], references: [id])
+  followingId String
+  createdAt  DateTime @default(now())
 
-  @@map("verse_views")
+  @@id([followerId, followingId])
 }
 
 model Session {
