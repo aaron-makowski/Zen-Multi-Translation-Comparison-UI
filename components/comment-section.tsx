@@ -1,6 +1,7 @@
 <<<<<<< HEAD
 "use client"
 <<<<<<< HEAD
+<<<<<<< HEAD
 import { useEffect, useState } from "react"
 import { CommentForm } from "./comment-form"
 =======
@@ -8,6 +9,10 @@ import { useEffect, useState, FormEvent } from "react"
 import { Button } from "@/components/ui/button"
 import { getBadge } from "@/lib/karma"
 >>>>>>> origin/codex/add-page-to-pull-latest-comments-and-highlights
+=======
+import { useEffect, useState } from "react"
+import { CommentForm } from "./comment-form"
+>>>>>>> origin/codex/extend-api-for-nested-comments-support
 
 interface Comment {
   id: string
@@ -17,6 +22,7 @@ interface Comment {
   createdAt: string
   updatedAt: string
   votes: number
+<<<<<<< HEAD
 <<<<<<< HEAD
   parentId?: string
   flagged?: boolean
@@ -47,6 +53,14 @@ export function CommentSection({ verseId }: { verseId: string }) {
   const t = useTranslations('Comments');
   const locale = useLocale();
 >>>>>>> origin/codex/set-up-next-intl-with-translations
+=======
+  parentId?: string | null
+  flagged?: boolean
+}
+
+export function CommentSection({ verseId }: { verseId: string }) {
+  const [comments, setComments] = useState<Comment[]>([])
+>>>>>>> origin/codex/extend-api-for-nested-comments-support
 
   async function load() {
     const res = await fetch(`/api/comments?verseId=${verseId}`);
@@ -57,6 +71,7 @@ export function CommentSection({ verseId }: { verseId: string }) {
     load();
   }, [verseId]);
 
+<<<<<<< HEAD
 <<<<<<< HEAD
 =======
   async function submit(e: FormEvent) {
@@ -79,6 +94,8 @@ export function CommentSection({ verseId }: { verseId: string }) {
   }
 
 >>>>>>> origin/codex/set-up-next-intl-with-translations
+=======
+>>>>>>> origin/codex/extend-api-for-nested-comments-support
   async function vote(id: string, delta: number) {
     await fetch("/api/comments", {
       method: "PATCH",
@@ -93,6 +110,7 @@ export function CommentSection({ verseId }: { verseId: string }) {
 <<<<<<< HEAD
       <h3 className="text-lg font-semibold mb-2">Comments</h3>
       <CommentForm verseId={verseId} onSubmitted={load} />
+<<<<<<< HEAD
 =======
       <h3 className="text-lg font-semibold mb-2">{t('title')}</h3>
       <form onSubmit={submit} className="flex gap-2 mb-4">
@@ -105,6 +123,8 @@ export function CommentSection({ verseId }: { verseId: string }) {
         <Button type="submit" size="sm">{t('post')}</Button>
       </form>
 >>>>>>> origin/codex/set-up-next-intl-with-translations
+=======
+>>>>>>> origin/codex/extend-api-for-nested-comments-support
       <div className="space-y-2">
         {comments.map((c) => (
           <div key={c.id} className="p-2 bg-muted rounded">

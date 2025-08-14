@@ -1,18 +1,28 @@
 import { NextResponse } from "next/server"
 import { promises as fs } from "fs"
 import path from "path"
+<<<<<<< HEAD
 import { Redis } from "@upstash/redis"
+=======
+import { renderMarkdown } from "../../../lib/markdown"
+>>>>>>> origin/codex/extend-api-for-nested-comments-support
 
 export interface Comment {
   id: string
   content: string
   createdAt: string
   votes: number
+<<<<<<< HEAD
   username?: string
+=======
+  parentId?: string | null
+  flagged?: boolean
+>>>>>>> origin/codex/extend-api-for-nested-comments-support
 }
 
 const COMMENTS_FILE = path.join(process.cwd(), "data", "comments.json")
 
+<<<<<<< HEAD
 let redis: Redis | null = null
 try {
   redis = Redis.fromEnv()
@@ -21,6 +31,9 @@ try {
 }
 
 async function readData() {
+=======
+export async function readData() {
+>>>>>>> origin/codex/extend-api-for-nested-comments-support
   try {
     const data = await fs.readFile(COMMENTS_FILE, "utf8")
     return JSON.parse(data || "{}")
@@ -29,7 +42,7 @@ async function readData() {
   }
 }
 
-async function writeData(data: Record<string, Comment[]>) {
+export async function writeData(data: Record<string, Comment[]>) {
   await fs.mkdir(path.dirname(COMMENTS_FILE), { recursive: true })
   await fs.writeFile(COMMENTS_FILE, JSON.stringify(data, null, 2))
 }
@@ -51,6 +64,7 @@ export function voteComment(
 export async function GET(req: Request) {
   const { searchParams } = new URL(req.url)
   const verseId = searchParams.get("verseId")
+<<<<<<< HEAD
   if (verseId) {
     const cacheKey = `comments:${verseId}`
     if (redis) {
@@ -65,23 +79,45 @@ export async function GET(req: Request) {
       await redis.set(cacheKey, comments, { ex: 60 })
     }
     return NextResponse.json(comments)
+=======
+  const parentId = searchParams.get("parentId")
+  const data = await readData()
+  if (verseId) {
+    let list = data[verseId] || []
+    if (parentId !== null) {
+      list = list.filter((c) => c.parentId === parentId)
+    } else {
+      list = list.filter((c) => !c.parentId)
+    }
+    return NextResponse.json(list)
+>>>>>>> origin/codex/extend-api-for-nested-comments-support
   }
   const data = await readData()
   return NextResponse.json(data)
 }
 
 export async function POST(req: Request) {
+<<<<<<< HEAD
   const { verseId, content, username } = await req.json()
+=======
+  const { verseId, content, parentId } = await req.json()
+>>>>>>> origin/codex/extend-api-for-nested-comments-support
   if (!verseId || !content) {
     return NextResponse.json({ error: "Missing fields" }, { status: 400 })
   }
+  const sanitized = renderMarkdown(content)
   const data = await readData()
   const comment: Comment = {
     id: crypto.randomUUID(),
-    content,
+    content: sanitized,
     createdAt: new Date().toISOString(),
     votes: 0,
+<<<<<<< HEAD
     username: username || "Anonymous",
+=======
+    parentId: parentId ?? null,
+    flagged: false,
+>>>>>>> origin/codex/extend-api-for-nested-comments-support
   }
   if (!data[verseId]) data[verseId] = []
   data[verseId].push(comment)
