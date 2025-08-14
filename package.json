@@ -7,7 +7,7 @@
     "dev": "next dev",
     "lint": "next lint",
     "start": "next start",
-    "test": "vitest run tests",
+    "test": "vitest --run",
     "watch-pdf-cache": "tsx scripts/watch-pdf-cache.ts"
   },
   "dependencies": {
