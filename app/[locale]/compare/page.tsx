@@ -13,10 +13,10 @@ export default async function ComparePage() {
   return (
     <main className="flex min-h-screen flex-col items-center p-4 md:p-24">
       <div className="max-w-4xl w-full">
-        <h1 className="text-3xl font-bold mb-6">Compare Translations</h1>
+        <h1 className="text-3xl font-bold mb-6">{t("title")}</h1>
 
         <Card className="p-6 mb-8">
-          <h2 className="text-xl font-semibold mb-4">Select a Text to Compare</h2>
+          <h2 className="text-xl font-semibold mb-4">{t("selectText")}</h2>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             {allBooks.map((book) => (
               <Button key={book.id} asChild className="h-auto py-4">
@@ -35,7 +35,7 @@ export default async function ComparePage() {
 
         <div className="mt-8">
           <Button asChild variant="outline">
-            <Link href="/">Return to Home</Link>
+            <Link href="/">{tCommon("returnHome")}</Link>
           </Button>
         </div>
       </div>
