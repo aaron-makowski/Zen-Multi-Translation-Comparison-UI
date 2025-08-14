@@ -1,38 +1,48 @@
 import { NextResponse } from "next/server"
-import { db } from "@/lib/db"
-import { bookmarks } from "@/lib/schema"
-import { and, eq } from "drizzle-orm"
+import { promises as fs } from "fs"
+import path from "path"
 
-export async function GET(req: Request) {
-  const { searchParams } = new URL(req.url)
-  const userId = searchParams.get("userId")
-  if (!userId) {
-    return NextResponse.json({ error: "Missing userId" }, { status: 400 })
+const BOOKMARKS_FILE = path.join(process.cwd(), "data", "bookmarks.json")
+
+async function readData() {
+  try {
+    const data = await fs.readFile(BOOKMARKS_FILE, "utf8")
+    return JSON.parse(data || "[]") as string[]
+  } catch {
+    return [] as string[]
   }
-  const data = await db.select().from(bookmarks).where(eq(bookmarks.userId, userId))
+}
+
+async function writeData(data: string[]) {
+  await fs.mkdir(path.dirname(BOOKMARKS_FILE), { recursive: true })
+  await fs.writeFile(BOOKMARKS_FILE, JSON.stringify(data, null, 2))
+}
+
+export async function GET() {
+  const data = await readData()
   return NextResponse.json(data)
 }
 
 export async function POST(req: Request) {
-  const { userId, verseId } = await req.json()
-  if (!userId || !verseId) {
-    return NextResponse.json({ error: "Missing fields" }, { status: 400 })
+  const { verseId } = await req.json()
+  if (!verseId) {
+    return NextResponse.json({ error: "Missing verseId" }, { status: 400 })
   }
-  const [bookmark] = await db
-    .insert(bookmarks)
-    .values({ id: crypto.randomUUID(), userId, verseId, updatedAt: new Date() })
-    .onConflictDoNothing({ target: [bookmarks.userId, bookmarks.verseId] })
-    .returning()
-  return NextResponse.json(bookmark)
+  const data = await readData()
+  if (!data.includes(verseId)) {
+    data.push(verseId)
+    await writeData(data)
+  }
+  return NextResponse.json({ verseId })
 }
 
 export async function DELETE(req: Request) {
-  const { userId, verseId } = await req.json()
-  if (!userId || !verseId) {
-    return NextResponse.json({ error: "Missing fields" }, { status: 400 })
+  const { verseId } = await req.json()
+  if (!verseId) {
+    return NextResponse.json({ error: "Missing verseId" }, { status: 400 })
   }
-  await db
-    .delete(bookmarks)
-    .where(and(eq(bookmarks.userId, userId), eq(bookmarks.verseId, verseId)))
-  return NextResponse.json({ success: true })
+  let data = await readData()
+  data = data.filter((id) => id !== verseId)
+  await writeData(data)
+  return NextResponse.json({ verseId })
 }

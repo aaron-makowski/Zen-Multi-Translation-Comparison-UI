@@ -1,47 +1,51 @@
 "use client"
 
 import { useEffect, useState } from "react"
+import { Bookmark, BookmarkCheck } from "lucide-react"
 import { Button } from "@/components/ui/button"
 
-interface Props {
+interface BookmarkButtonProps {
   verseId: string
-  userId: string
 }
 
-export function BookmarkButton({ verseId, userId }: Props) {
+export function BookmarkButton({ verseId }: BookmarkButtonProps) {
   const [bookmarked, setBookmarked] = useState(false)
 
   useEffect(() => {
-    fetch(`/api/bookmarks?userId=${userId}`)
-      .then((res) => (res.ok ? res.json() : []))
-      .then((data) => {
-        const isBookmarked = data.some((b: any) => b.verseId === verseId)
-        setBookmarked(isBookmarked)
+    let ignore = false
+    fetch("/api/bookmarks")
+      .then((res) => res.json())
+      .then((data: string[]) => {
+        if (!ignore) {
+          setBookmarked(data.includes(verseId))
+        }
       })
-      .catch(() => setBookmarked(false))
-  }, [userId, verseId])
+    return () => {
+      ignore = true
+    }
+  }, [verseId])
 
-  async function toggle() {
+  const toggle = async () => {
     if (bookmarked) {
       await fetch("/api/bookmarks", {
         method: "DELETE",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ userId, verseId }),
+        body: JSON.stringify({ verseId }),
       })
       setBookmarked(false)
     } else {
       await fetch("/api/bookmarks", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ userId, verseId }),
+        body: JSON.stringify({ verseId }),
       })
       setBookmarked(true)
     }
   }
 
   return (
-    <Button variant={bookmarked ? "default" : "outline"} onClick={toggle} className="ml-4">
-      {bookmarked ? "Bookmarked" : "Bookmark"}
+    <Button variant="ghost" size="icon" onClick={toggle} aria-label={bookmarked ? "Remove bookmark" : "Add bookmark"}>
+      {bookmarked ? <BookmarkCheck className="h-4 w-4" /> : <Bookmark className="h-4 w-4" />}
     </Button>
   )
 }
