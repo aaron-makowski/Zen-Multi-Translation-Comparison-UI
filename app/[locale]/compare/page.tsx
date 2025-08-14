@@ -19,7 +19,7 @@ export default async function ComparePage() {
           <h2 className="text-xl font-semibold mb-4">Select a Text to Compare</h2>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             {allBooks.map((book) => (
-              <Button asChild className="h-auto py-4" key={book.id}>
+              <Button key={book.id} asChild className="h-auto py-4">
                 <Link href={`/books/${book.id}`}>
                   <div className="text-left">
                     <div className="font-medium">{book.title}</div>

@@ -6,9 +6,7 @@ import { v4 as uuidv4 } from "uuid"
 export async function seedDatabase() {
   console.log("Seeding database...")
 
-  const books = Object.values(translations)
-
-  for (const book of books) {
+  for (const book of Object.values(translations)) {
     const existingBook = await db.query.books.findFirst({
       where: (b, { eq }) => eq(b.id, book.id),
     })

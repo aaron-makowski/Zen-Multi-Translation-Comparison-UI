@@ -189,63 +189,6 @@ export const translators: Translator[] = [
     license: "Unknown",
     link: "https://en.wikipedia.org/wiki/Edward_Conze",
   },
-  {
-    id: "mcrae",
-    name: "John R. McRae",
-    publicationYear: 2000,
-    translatorBio: "Platform Sutra translator",
-    license: "Unknown",
-    link: "https://en.wikipedia.org/wiki/Platform_Sutra",
-  },
-  {
-    id: "translator24",
-    name: "Translator 24",
-    publicationYear: 2024,
-    translatorBio: "Additional Version",
-    license: "Unknown",
-  },
-  {
-    id: "translator25",
-    name: "Translator 25",
-    publicationYear: 2024,
-    translatorBio: "Additional Version",
-    license: "Unknown",
-  },
-  {
-    id: "translator26",
-    name: "Translator 26",
-    publicationYear: 2024,
-    translatorBio: "Additional Version",
-    license: "Unknown",
-  },
-  {
-    id: "translator27",
-    name: "Translator 27",
-    publicationYear: 2024,
-    translatorBio: "Additional Version",
-    license: "Unknown",
-  },
-  {
-    id: "translator28",
-    name: "Translator 28",
-    publicationYear: 2024,
-    translatorBio: "Additional Version",
-    license: "Unknown",
-  },
-  {
-    id: "translator29",
-    name: "Translator 29",
-    publicationYear: 2024,
-    translatorBio: "Additional Version",
-    license: "Unknown",
-  },
-  {
-    id: "translator30",
-    name: "Translator 30",
-    publicationYear: 2024,
-    translatorBio: "Additional Version",
-    license: "Unknown",
-  },
   // Add more translators as needed
 ]
 
@@ -262,7 +205,7 @@ const platformSutraTranslators: Translator[] = [
 
 const heartSutraTranslators: Translator[] = [
   {
-    id: "red_pine",
+    id: "hs_red_pine",
     name: "Red Pine",
     publicationYear: 2004,
     translatorBio: "Heart Sutra translator",
@@ -273,7 +216,7 @@ const heartSutraTranslators: Translator[] = [
 
 const diamondSutraTranslators: Translator[] = [
   {
-    id: "conze",
+    id: "ds_conze",
     name: "Edward Conze",
     publicationYear: 1957,
     translatorBio: "Diamond Sutra translator",
@@ -362,7 +305,7 @@ export const translations: Record<string, Book> = {
             chinese:
               "觀自在菩薩，行深般若波羅蜜多時，照見五蘊皆空，度一切苦厄。",
             translations: {
-              red_pine:
+              hs_red_pine:
                 "Avalokiteshvara Bodhisattva, practicing deep prajnaparamita, clearly saw that all five skandhas are empty and was saved from all suffering.",
             },
           },
@@ -384,7 +327,7 @@ export const translations: Record<string, Book> = {
           {
             chinese: "如是我聞。",
             translations: {
-              conze: "Thus have I heard.",
+              ds_conze: "Thus have I heard.",
             },
           },
         ],
