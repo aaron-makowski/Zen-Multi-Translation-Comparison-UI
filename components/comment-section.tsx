@@ -15,7 +15,7 @@ interface Comment {
   removed?: boolean
 }
 
-export function CommentSection({ verseId }: { verseId: string }) {
+export function CommentSection({ verseId, userId }: { verseId: string; userId: string }) {
   const [comments, setComments] = useState<Comment[]>([])
 
   async function load() {

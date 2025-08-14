@@ -19,6 +19,7 @@ export const users = pgTable("users", {
   highlightKarma: integer("highlight_karma").default(0).notNull(),
   createdAt: timestamp("created_at").defaultNow().notNull(),
   updatedAt: timestamp("updated_at").notNull(),
+  karma: integer("karma").default(0).notNull(),
 })
 
 // Book table
