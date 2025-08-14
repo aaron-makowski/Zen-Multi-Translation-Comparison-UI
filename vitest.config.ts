@@ -1,10 +1,14 @@
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> origin/codex/protect-admin-routes-with-middleware
 import { defineConfig } from 'vitest/config'
 import path from 'path'
 
 export default defineConfig({
   resolve: {
     alias: {
+<<<<<<< HEAD
       '@': path.resolve(__dirname, '.'),
     },
   },
@@ -27,3 +31,9 @@ export default defineConfig({
   }
 });
 >>>>>>> origin/codex/set-up-next-intl-with-translations
+=======
+      '@': path.resolve(__dirname),
+    },
+  },
+})
+>>>>>>> origin/codex/protect-admin-routes-with-middleware

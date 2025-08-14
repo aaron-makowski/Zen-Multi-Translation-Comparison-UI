@@ -1,4 +1,5 @@
 <<<<<<< HEAD
+<<<<<<< HEAD
 import createMiddleware from "next-intl/middleware"
 import { NextRequest, NextResponse } from "next/server"
 
@@ -53,3 +54,15 @@ export const config = {
   matcher: ['/((?!api|_next|.*\\..*).*)']
 };
 >>>>>>> origin/codex/set-up-next-intl-with-translations
+=======
+import type { NextRequest } from "next/server"
+import { adminMiddleware } from "./lib/auth"
+
+export function middleware(req: NextRequest) {
+  return adminMiddleware(req)
+}
+
+export const config = {
+  matcher: ["/admin/:path*"],
+}
+>>>>>>> origin/codex/protect-admin-routes-with-middleware

@@ -22,8 +22,12 @@ model User {
   username  String   @unique
   password  String
   isGuest   Boolean  @default(false)
+<<<<<<< HEAD
   commentKarma   Int @default(0)
   highlightKarma Int @default(0)
+=======
+  role      String   @default("user")
+>>>>>>> origin/codex/protect-admin-routes-with-middleware
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
@@ -133,14 +137,21 @@ model Comment {
 model Flag {
   id        String   @id @default(cuid())
   commentId String
+<<<<<<< HEAD
   comment   Comment @relation(fields: [commentId], references: [id])
   userId    String
   user      User    @relation(fields: [userId], references: [id])
+=======
+  comment   Comment  @relation(fields: [commentId], references: [id])
+  userId    String?
+  user      User?    @relation(fields: [userId], references: [id])
+>>>>>>> origin/codex/protect-admin-routes-with-middleware
   reason    String?
   createdAt DateTime @default(now())
 }
 
 model AuditLog {
+<<<<<<< HEAD
   id        String   @id @default(cuid())
   userId    String?
   user      User?    @relation(fields: [userId], references: [id])
@@ -158,6 +169,15 @@ model UserFollow {
   createdAt  DateTime @default(now())
 
   @@id([followerId, followingId])
+=======
+  id         String   @id @default(cuid())
+  action     String
+  targetType String
+  targetId   String
+  userId     String?
+  user       User?    @relation(fields: [userId], references: [id])
+  createdAt  DateTime @default(now())
+>>>>>>> origin/codex/protect-admin-routes-with-middleware
 }
 
 model Session {
