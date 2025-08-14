@@ -87,6 +87,9 @@ export function Navigation() {
                 {t('about')}
 >>>>>>> origin/codex/set-up-next-intl-with-translations
               </NavLink>
+              <NavLink href="/reddit" current={pathname === "/reddit"}>
+                Reddit
+              </NavLink>
             </div>
           </div>
           <div className="hidden sm:ml-6 sm:flex sm:items-center space-x-2">
@@ -143,6 +146,7 @@ export function Navigation() {
           <MobileNavLink href={basePath} current={current === "/"}>
             {t('home')}
           </MobileNavLink>
+<<<<<<< HEAD
           <MobileNavLink href={`${basePath}/books`} current={current.startsWith("/books")}>
             {t('books')}
           </MobileNavLink>
@@ -161,6 +165,13 @@ export function Navigation() {
           </MobileNavLink>
           <div className="flex space-x-2 px-3 py-2 items-center">
             <Link href={`${basePath}/login`} passHref className="w-1/2">
+=======
+          <MobileNavLink href="/reddit" current={pathname === "/reddit"}>
+            Reddit
+          </MobileNavLink>
+          <div className="flex space-x-2 px-3 py-2">
+            <Link href="/login" passHref className="w-1/2">
+>>>>>>> origin/codex/create-reddit-api-and-components
               <Button variant="outline" size="sm" className="w-full">
 <<<<<<< HEAD
                 {t("login")}
