@@ -1,6 +1,9 @@
 <<<<<<< HEAD
+<<<<<<< HEAD
 import { pgTable, text, timestamp, integer, boolean, uniqueIndex, primaryKey } from "drizzle-orm/pg-core"
 =======
+=======
+>>>>>>> origin/codex/add-notifications-table-and-handlers
 import {
   pgTable,
   text,
@@ -8,9 +11,14 @@ import {
   integer,
   boolean,
   uniqueIndex,
+<<<<<<< HEAD
   primaryKey,
 } from "drizzle-orm/pg-core"
 >>>>>>> origin/codex/add-user-profile-page-with-follow-feature
+=======
+  pgEnum,
+} from "drizzle-orm/pg-core"
+>>>>>>> origin/codex/add-notifications-table-and-handlers
 import { relations } from "drizzle-orm"
 
 // User table
@@ -144,6 +152,7 @@ export const comments = pgTable("comments", {
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
 >>>>>>> origin/codex/create-tags-table-and-many-to-many-relation
 // Tag table
@@ -225,6 +234,25 @@ export const verseViews = pgTable("verse_views", {
 )
 
 >>>>>>> origin/codex/create-tags-table-and-many-to-many-relation
+=======
+// Notification table and enum
+export const notificationTypeEnum = pgEnum("notification_type", [
+  "reply",
+  "mention",
+])
+
+export const notifications = pgTable("notifications", {
+  id: text("id").primaryKey(),
+  userId: text("user_id")
+    .notNull()
+    .references(() => users.id),
+  type: notificationTypeEnum("type").notNull(),
+  data: text("data"),
+  read: boolean("read").default(false).notNull(),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+})
+
+>>>>>>> origin/codex/add-notifications-table-and-handlers
 // Session table
 export const sessions = pgTable("sessions", {
   id: text("id").primaryKey(),
@@ -270,6 +298,7 @@ export const usersRelations = relations(users, ({ many }) => ({
   favorites: many(favorites),
   notes: many(notes),
   comments: many(comments),
+  notifications: many(notifications),
   sessions: many(sessions),
 <<<<<<< HEAD
 <<<<<<< HEAD
@@ -358,6 +387,13 @@ export const userFollowsRelations = relations(userFollows, ({ one }) => ({
     fields: [userFollows.followingId],
     references: [users.id],
     relationName: "following",
+  }),
+}))
+
+export const notificationsRelations = relations(notifications, ({ one }) => ({
+  user: one(users, {
+    fields: [notifications.userId],
+    references: [users.id],
   }),
 }))
 
