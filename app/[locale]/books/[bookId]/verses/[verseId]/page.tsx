@@ -1,6 +1,8 @@
 import Link from "next-intl/link"
 import { notFound } from "next/navigation"
 import { db } from "@/lib/db"
+import { verses } from "@/lib/schema"
+import { eq } from "drizzle-orm"
 import { CommentSection } from "@/components/comment-section"
 import { Button } from "@/components/ui/button"
 import { Card } from "@/components/ui/card"
@@ -12,20 +14,12 @@ export default async function VersePage({
 }) {
   const verse = await db.query.verses.findFirst({
     where: eq(verses.id, params.verseId),
-    with: {
-      book: true,
-    },
+    with: { book: true },
   })
 
   if (!verse) {
     notFound()
   }
-
-  const initialTranslations = await db.query.translations.findMany({
-    where: eq(translations.verseId, params.verseId),
-    orderBy: (translations, { asc }) => [asc(translations.translator)],
-    limit: PAGE_SIZE,
-  })
 
   return (
     <main className="flex min-h-screen flex-col items-center p-4 md:p-24 touch-pan-y">
@@ -51,7 +45,7 @@ export default async function VersePage({
           ))}
         </div>
 
-        <CommentSection verseId={params.verseId} userId="demo-user" />
+        <CommentSection verseId={params.verseId} />
 
         <div className="flex justify-between mt-8">
           <Button

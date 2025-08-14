@@ -3,9 +3,9 @@ import { notFound } from "next/navigation"
 import { Button } from "@/components/ui/button"
 import { Card } from "@/components/ui/card"
 import { db } from "@/lib/db"
-import { books, verses } from "@/lib/schema"
-import { eq, asc } from "drizzle-orm"
-import { VersesList } from "@/components/verses-list"
+import { books } from "@/lib/schema"
+import { eq } from "drizzle-orm"
+import { VerseList } from "@/components/verse-list"
 
 export const revalidate = 60
 
@@ -21,12 +21,6 @@ export default async function BookPage({ params }: { params: { bookId: string } 
   if (!book) {
     notFound()
   }
-
-  const initialVerses = await db.query.verses.findMany({
-    where: eq(verses.bookId, params.bookId),
-    orderBy: (verses, { asc }) => [asc(verses.number)],
-    limit: PAGE_SIZE,
-  })
 
   return (
     <main className="flex min-h-screen flex-col items-center p-4 md:p-24">
@@ -57,7 +51,7 @@ export default async function BookPage({ params }: { params: { bookId: string } 
             </div>
 
             <h2 className="text-2xl font-semibold mb-4 border-t pt-4">Verses</h2>
-            <VersesList bookId={book.id} initialVerses={initialVerses} pageSize={PAGE_SIZE} />
+            <VerseList bookId={book.id} />
           </div>
         </div>
       </div>

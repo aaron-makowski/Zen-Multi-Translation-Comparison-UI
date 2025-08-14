@@ -9,7 +9,7 @@ export const db = drizzle(pool, { schema })
 const sql = neon(process.env.DATABASE_URL!)
 
 // Pass the schema with relations to the drizzle function
-export const db = drizzle(sql, { schema })
+export const db = drizzle(pool, { schema })
 
 // Ensure a single PrismaClient instance in serverless environments
 const globalForPrisma = globalThis as unknown as {

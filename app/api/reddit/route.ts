@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server"
+import { redis } from "../../../lib/redis"
 
 export async function GET() {
   try {
@@ -16,6 +17,11 @@ export async function GET() {
       author: child.data.author,
       url: `https://www.reddit.com${child.data.permalink}`
     }))
+
+    if (redis) {
+      await redis.set(cacheKey, posts, { ex: 300 })
+    }
+
     return NextResponse.json(posts)
   } catch {
     return NextResponse.json(
