@@ -5,7 +5,6 @@ import {
   integer,
   boolean,
   uniqueIndex,
-  pgEnum,
 } from "drizzle-orm/pg-core"
 import { relations } from "drizzle-orm"
 
@@ -70,6 +69,58 @@ export const wordMappings = pgTable("word_mappings", {
   createdAt: timestamp("created_at").defaultNow().notNull(),
   updatedAt: timestamp("updated_at").notNull(),
 })
+
+// Tag table
+export const tags = pgTable("tags", {
+  id: text("id").primaryKey(),
+  name: text("name").notNull().unique(),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+  updatedAt: timestamp("updated_at").notNull(),
+})
+
+// Verse <-> Tag join table
+export const verseTags = pgTable(
+  "verse_tags",
+  {
+    id: text("id").primaryKey(),
+    verseId: text("verse_id")
+      .notNull()
+      .references(() => verses.id),
+    tagId: text("tag_id")
+      .notNull()
+      .references(() => tags.id),
+    createdAt: timestamp("created_at").defaultNow().notNull(),
+    updatedAt: timestamp("updated_at").notNull(),
+  },
+  (table) => ({
+    verseTagUnique: uniqueIndex("verse_tag_unique").on(
+      table.verseId,
+      table.tagId,
+    ),
+  }),
+)
+
+// Bookmark table
+export const bookmarks = pgTable(
+  "bookmarks",
+  {
+    id: text("id").primaryKey(),
+    userId: text("user_id")
+      .notNull()
+      .references(() => users.id),
+    verseId: text("verse_id")
+      .notNull()
+      .references(() => verses.id),
+    createdAt: timestamp("created_at").defaultNow().notNull(),
+    updatedAt: timestamp("updated_at").notNull(),
+  },
+  (table) => ({
+    userVerseUnique: uniqueIndex("user_verse_unique").on(
+      table.userId,
+      table.verseId,
+    ),
+  }),
+)
 
 // Favorite table
 export const favorites = pgTable(
@@ -161,41 +212,6 @@ export const sessions = pgTable("sessions", {
   createdAt: timestamp("created_at").defaultNow().notNull(),
 })
 
-// Notification type enum
-export const notificationTypeEnum = pgEnum("notification_type", ["reply", "mention"])
-
-// Notifications table
-export const notifications = pgTable("notifications", {
-  id: text("id").primaryKey(),
-  userId: text("user_id")
-    .notNull()
-    .references(() => users.id),
-  actorId: text("actor_id")
-    .notNull()
-    .references(() => users.id),
-  type: notificationTypeEnum("type").notNull(),
-  commentId: text("comment_id"),
-  createdAt: timestamp("created_at").defaultNow().notNull(),
-  read: boolean("read").default(false).notNull(),
-})
-
-// Notification preferences table
-export const notificationPreferences = pgTable("notification_preferences", {
-  id: text("id").primaryKey(),
-  userId: text("user_id")
-    .notNull()
-    .references(() => users.id),
-  email: boolean("email").default(true).notNull(),
-  push: boolean("push").default(true).notNull(),
-  pushEndpoint: text("push_endpoint"),
-},
-  (table) => {
-    return {
-      userUnique: uniqueIndex("notification_pref_user_unique").on(table.userId),
-    }
-  },
-)
-
 export const booksRelations = relations(books, ({ many }) => ({
   verses: many(verses),
   favorites: many(favorites),
@@ -218,7 +234,6 @@ export const translationsRelations = relations(translations, ({ one, many }) => 
     references: [verses.id],
   }),
   wordMappings: many(wordMappings),
-  verseViews: many(verseViews),
 }))
 
 export const usersRelations = relations(users, ({ many }) => ({
@@ -238,6 +253,17 @@ export const favoritesRelations = relations(favorites, ({ one }) => ({
   book: one(books, {
     fields: [favorites.bookId],
     references: [books.id],
+  }),
+}))
+
+export const bookmarksRelations = relations(bookmarks, ({ one }) => ({
+  user: one(users, {
+    fields: [bookmarks.userId],
+    references: [users.id],
+  }),
+  verse: one(verses, {
+    fields: [bookmarks.verseId],
+    references: [verses.id],
   }),
 }))
 
@@ -278,21 +304,6 @@ export const highlightsRelations = relations(highlights, ({ one }) => ({
 export const sessionsRelations = relations(sessions, ({ one }) => ({
   user: one(users, {
     fields: [sessions.userId],
-    references: [users.id],
-  }),
-}))
-
-export const verseViewsRelations = relations(verseViews, ({ one }) => ({
-  verse: one(verses, {
-    fields: [verseViews.verseId],
-    references: [verses.id],
-  }),
-  translation: one(translations, {
-    fields: [verseViews.translationId],
-    references: [translations.id],
-  }),
-  user: one(users, {
-    fields: [verseViews.userId],
     references: [users.id],
   }),
 }))
