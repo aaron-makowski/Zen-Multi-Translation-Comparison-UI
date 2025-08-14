@@ -1,6 +1,8 @@
 import Link from "next-intl/link"
 import { notFound } from "next/navigation"
-import { prisma } from "@/lib/db"
+import { db } from "@/lib/db"
+import { verses } from "@/lib/schema"
+import { eq, asc } from "drizzle-orm"
 import { CommentSection } from "@/components/comment-section"
 import { Button } from "@/components/ui/button"
 import { Card } from "@/components/ui/card"
@@ -10,16 +12,12 @@ export default async function VersePage({
 }: {
   params: { bookId: string; verseId: string }
 }) {
-  const verse = await prisma.verse.findUnique({
-    where: {
-      id: params.verseId,
-    },
-    include: {
+  const verse = await db.query.verses.findFirst({
+    where: eq(verses.id, params.verseId),
+    with: {
       book: true,
       translations: {
-        orderBy: {
-          translator: "asc",
-        },
+        orderBy: (t, { asc }) => [asc(t.translator)],
       },
     },
   })
@@ -66,6 +64,7 @@ export default async function VersePage({
           </Button>
         </div>
       </div>
+      <VerseAnalytics verseId={params.verseId} />
     </main>
   )
 }

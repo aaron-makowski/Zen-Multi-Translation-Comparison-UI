@@ -175,6 +175,7 @@ export const translationsRelations = relations(translations, ({ one, many }) => 
     references: [verses.id],
   }),
   wordMappings: many(wordMappings),
+  verseViews: many(verseViews),
 }))
 
 export const usersRelations = relations(users, ({ many }) => ({
@@ -234,6 +235,21 @@ export const highlightsRelations = relations(highlights, ({ one }) => ({
 export const sessionsRelations = relations(sessions, ({ one }) => ({
   user: one(users, {
     fields: [sessions.userId],
+    references: [users.id],
+  }),
+}))
+
+export const verseViewsRelations = relations(verseViews, ({ one }) => ({
+  verse: one(verses, {
+    fields: [verseViews.verseId],
+    references: [verses.id],
+  }),
+  translation: one(translations, {
+    fields: [verseViews.translationId],
+    references: [translations.id],
+  }),
+  user: one(users, {
+    fields: [verseViews.userId],
     references: [users.id],
   }),
 }))
