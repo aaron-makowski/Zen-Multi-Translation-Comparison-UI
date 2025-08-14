@@ -1,8 +1,6 @@
 import Link from "next-intl/link"
 import { notFound } from "next/navigation"
 import { db } from "@/lib/db"
-import { verses } from "@/lib/schema"
-import { eq, asc } from "drizzle-orm"
 import { CommentSection } from "@/components/comment-section"
 import { Button } from "@/components/ui/button"
 import { Card } from "@/components/ui/card"
@@ -16,15 +14,18 @@ export default async function VersePage({
     where: eq(verses.id, params.verseId),
     with: {
       book: true,
-      translations: {
-        orderBy: (t, { asc }) => [asc(t.translator)],
-      },
     },
   })
 
   if (!verse) {
     notFound()
   }
+
+  const initialTranslations = await db.query.translations.findMany({
+    where: eq(translations.verseId, params.verseId),
+    orderBy: (translations, { asc }) => [asc(translations.translator)],
+    limit: PAGE_SIZE,
+  })
 
   return (
     <main className="flex min-h-screen flex-col items-center p-4 md:p-24 touch-pan-y">
@@ -64,7 +65,6 @@ export default async function VersePage({
           </Button>
         </div>
       </div>
-      <VerseAnalytics verseId={params.verseId} />
     </main>
   )
 }

@@ -1,12 +1,9 @@
-import { neon, neonConfig } from "@neondatabase/serverless"
-import { drizzle } from "drizzle-orm/neon-http"
+import { Pool } from "pg"
+import { drizzle } from "drizzle-orm/node-postgres"
 import * as schema from "./schema"
 import { PrismaClient } from "@prisma/client"
 
-// Optional: Configure neon to use WebSockets for better performance
-if (typeof WebSocket !== "undefined") {
-  neonConfig.webSocketConstructor = WebSocket
-}
+export const db = drizzle(pool, { schema })
 
 // Create a SQL executor using the Neon serverless driver
 const sql = neon(process.env.DATABASE_URL!)
