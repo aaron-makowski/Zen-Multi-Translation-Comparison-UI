@@ -4,58 +4,60 @@ import { translations } from "../lib/translations"
 const prisma = new PrismaClient()
 
 async function main() {
-  // Loop over every book defined in the translations module
-  const allBooks = Object.values(translations)
+  // Create a book for Xinxin Ming
+  const xinxinMing = await prisma.book.upsert({
+    where: { id: "xinxin-ming" },
+    update: {},
+    create: {
+      id: "xinxin-ming",
+      title: "Xinxin Ming",
+      description: "Faith in Mind - A classic Zen poem attributed to the Third Patriarch of Zen, Jianzhi Sengcan",
+      author: "Jianzhi Sengcan",
+      coverImage: "/xinxin-ming-cover.png",
+    },
+  })
 
-  for (const book of allBooks) {
-    const dbBook = await prisma.book.upsert({
-      where: { id: book.id },
+  console.log(`Created book: ${xinxinMing.title}`)
+
+  // Create verses and translations
+  for (const [index, translation] of translations.entries()) {
+    const verseNumber = index + 1
+
+    // Create verse
+    const verse = await prisma.verse.upsert({
+      where: {
+        id: `xinxin-ming-verse-${verseNumber}`,
+      },
       update: {},
       create: {
-        id: book.id,
-        title: book.title,
-        description: book.description,
-        author: book.author || "",
-        coverImage: book.coverImage || "",
+        id: `xinxin-ming-verse-${verseNumber}`,
+        number: verseNumber,
+        bookId: xinxinMing.id,
       },
     })
 
-    console.log(`Created book: ${dbBook.title}`)
+    console.log(`Created verse: ${verse.number}`)
 
-    for (const verse of book.verses) {
-      const verseId = `${book.id}-verse-${verse.id}`
-      const dbVerse = await prisma.verse.upsert({
-        where: { id: verseId },
-        update: {},
+    // Create translations for each translator
+    for (const translator of Object.keys(translation)) {
+      const translationText = translation[translator]
+
+      await prisma.translation.upsert({
+        where: {
+          id: `xinxin-ming-verse-${verseNumber}-${translator}`,
+        },
+        update: {
+          text: translationText,
+        },
         create: {
-          id: verseId,
-          number: verse.id,
-          bookId: dbBook.id,
+          id: `xinxin-ming-verse-${verseNumber}-${translator}`,
+          text: translationText,
+          translator: translator,
+          verseId: verse.id,
         },
       })
 
-      console.log(`Created verse: ${dbVerse.number}`)
-
-      for (const translator of book.translators) {
-        const translationText =
-          verse.lines
-            .map((line) => line.translations[translator.id] || "")
-            .join(" ")
-            .trim() || "Translation not available."
-
-        await prisma.translation.upsert({
-          where: { id: `${verseId}-${translator.id}` },
-          update: { text: translationText },
-          create: {
-            id: `${verseId}-${translator.id}`,
-            text: translationText,
-            translator: translator.id,
-            verseId: dbVerse.id,
-          },
-        })
-
-        console.log(`Created translation by: ${translator.id}`)
-      }
+      console.log(`Created translation by: ${translator}`)
     }
   }
 
@@ -64,13 +66,12 @@ async function main() {
     where: { email: "demo@example.com" },
     update: {},
     create: {
-      id: "demo-user",
       email: "demo@example.com",
       username: "demo",
       password: "$2a$10$GQH.xZm5DqJu8HgFtuhZEOsj7dQQgWlHhbwwZ1QzPJ8MzJyppyXOq", // hashed 'password123'
       isGuest: false,
-      karma: 0,
-      streak: 0,
+      avatar: "/placeholder.svg?height=64&width=64&text=D",
+      bio: "Demo account for exploring the app",
     },
   })
 
@@ -81,13 +82,12 @@ async function main() {
     where: { email: "guest@example.com" },
     update: {},
     create: {
-      id: "guest-user",
       email: "guest@example.com",
       username: "guest",
       password: "$2a$10$GQH.xZm5DqJu8HgFtuhZEOsj7dQQgWlHhbwwZ1QzPJ8MzJyppyXOq", // hashed 'password123'
       isGuest: true,
-      karma: 0,
-      streak: 0,
+      avatar: "/placeholder.svg?height=64&width=64&text=G",
+      bio: "Guest account",
     },
   })
 

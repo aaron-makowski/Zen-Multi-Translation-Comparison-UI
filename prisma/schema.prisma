@@ -21,11 +21,14 @@ model User {
   pushNotifications  Boolean @default(true)
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+  avatar    String?
+  bio       String?
 
   favorites Favorite[]
   notes     Note[]
   comments  Comment[]
-  notifications Notification[]
+  followers Follow[] @relation("following")
+  following Follow[] @relation("follower")
 }
 
 model Book {
@@ -88,6 +91,17 @@ model Favorite {
   updatedAt DateTime @updatedAt
 
   @@unique([userId, bookId])
+}
+
+model Follow {
+  id          String   @id @default(cuid())
+  followerId  String
+  followingId String
+  follower    User     @relation("follower", fields: [followerId], references: [id])
+  following   User     @relation("following", fields: [followingId], references: [id])
+  createdAt   DateTime @default(now())
+
+  @@unique([followerId, followingId])
 }
 
 model Note {
