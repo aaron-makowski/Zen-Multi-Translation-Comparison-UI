@@ -1,42 +1,59 @@
 "use client"
+import React from 'react'
 
 import { useEffect, useRef, useState } from "react"
+import { Button } from "@/components/ui/button"
 
 interface AudioPlayerProps {
+  /** Text to be read using the browser's text-to-speech engine */
   text?: string
+  /** Optional audio file to play instead of synthesising text */
   src?: string
 }
 
 export function AudioPlayer({ text, src }: AudioPlayerProps) {
-  const audioRef = useRef<HTMLAudioElement>(null)
-  const [speaking, setSpeaking] = useState(false)
-
-  function speak() {
-    if (!text || typeof window === "undefined") return
-    const utterance = new SpeechSynthesisUtterance(text)
-    utterance.onend = () => setSpeaking(false)
-    setSpeaking(true)
-    window.speechSynthesis.speak(utterance)
-  }
+  const audioRef = useRef<HTMLAudioElement | null>(null)
+  const [playing, setPlaying] = useState(false)
+  const [speechSupported, setSpeechSupported] = useState(false)
 
   useEffect(() => {
-    return () => {
-      if (typeof window !== "undefined") window.speechSynthesis.cancel()
+    if (typeof window !== "undefined") {
+      setSpeechSupported("speechSynthesis" in window)
     }
   }, [])
 
+  function play() {
+    if (src && audioRef.current) {
+      audioRef.current.play()
+      setPlaying(true)
+      return
+    }
+
+    if (text && speechSupported) {
+      const utterance = new SpeechSynthesisUtterance(text)
+      utterance.onend = () => setPlaying(false)
+      speechSynthesis.speak(utterance)
+      setPlaying(true)
+    }
+  }
+
+  function stop() {
+    if (src && audioRef.current) {
+      audioRef.current.pause()
+      audioRef.current.currentTime = 0
+    } else if (speechSupported) {
+      speechSynthesis.cancel()
+    }
+    setPlaying(false)
+  }
+
   return (
     <div className="flex items-center gap-2">
-      {src && <audio ref={audioRef} controls src={src} className="h-8" />}
-      {text && (
-        <button
-          onClick={speak}
-          disabled={speaking}
-          className="text-sm px-2 py-1 border rounded"
-        >
-          {speaking ? "Speaking..." : "Speak"}
-        </button>
-      )}
+      {src && <audio ref={audioRef} src={src} onEnded={() => setPlaying(false)} />}
+      <Button size="sm" onClick={playing ? stop : play}>
+        {playing ? "Stop" : "Play"}
+      </Button>
     </div>
   )
 }
+

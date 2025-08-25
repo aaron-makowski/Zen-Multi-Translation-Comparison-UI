@@ -1,17 +1,10 @@
-import { defineConfig } from 'vitest/config';
-import { fileURLToPath } from 'url';
-import { dirname, resolve } from 'path';
-
-const __dirname = dirname(fileURLToPath(import.meta.url));
+import { defineConfig } from 'vitest/config'
+import path from 'path'
 
 export default defineConfig({
   resolve: {
     alias: {
-      '@': resolve(__dirname, './'),
-    },
-  },
-  esbuild: {
-    jsx: 'automatic',
-    jsxImportSource: 'react',
-  },
-});
+      '@': path.resolve(__dirname, '.')
+    }
+  }
+})
