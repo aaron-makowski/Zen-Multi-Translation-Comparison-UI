@@ -2,27 +2,29 @@
 
 import { useEffect, useState } from "react"
 
-interface CommentTimerProps {
-  seconds?: number
-  onComplete?: () => void
-}
-
-export function CommentTimer({ seconds = 5, onComplete }: CommentTimerProps) {
-  const [timeLeft, setTimeLeft] = useState(seconds)
+export function CommentTimer({
+  initialSeconds = 10,
+  onExpire
+}: {
+  initialSeconds?: number
+  onExpire?: () => void
+}) {
+  const [seconds, setSeconds] = useState(initialSeconds)
 
   useEffect(() => {
-    setTimeLeft(seconds)
-    if (timeLeft <= 0) {
-      onComplete?.()
+    if (seconds <= 0) {
+      onExpire?.()
       return
     }
-    const id = setTimeout(() => setTimeLeft(timeLeft - 1), 1000)
+    const id = setTimeout(() => setSeconds((s) => s - 1), 1000)
     return () => clearTimeout(id)
-  }, [timeLeft, onComplete, seconds])
+  }, [seconds, onExpire])
 
   return (
-    <div className="text-center text-sm text-muted-foreground">
-      {timeLeft > 0 ? `Take a breath… ${timeLeft}s` : "Mindful moment complete"}
+    <div className="text-sm text-muted-foreground">
+      {seconds > 0
+        ? `Take a breath... ${seconds}s`
+        : "You may comment now."}
     </div>
   )
 }
