@@ -1,11 +1,7 @@
 {
   "crons": [
     {
-<<<<<<< HEAD
-      "path": "/api/cron/weekly-featured",
-=======
-      "path": "/api/cron/featured",
->>>>>>> origin/codex/add-page-to-pull-latest-comments-and-highlights
+      "path": "/api/cron/feature-translation",
       "schedule": "0 0 * * 0"
     }
   ]

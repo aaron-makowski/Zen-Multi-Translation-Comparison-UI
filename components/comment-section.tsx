@@ -1,146 +1,76 @@
-<<<<<<< HEAD
 "use client"
-<<<<<<< HEAD
-<<<<<<< HEAD
-import { useEffect, useState } from "react"
-import { CommentForm } from "./comment-form"
-=======
 import { useEffect, useState, FormEvent } from "react"
 import { Button } from "@/components/ui/button"
-import { getBadge } from "@/lib/karma"
->>>>>>> origin/codex/add-page-to-pull-latest-comments-and-highlights
-=======
-import { useEffect, useState } from "react"
-import { CommentForm } from "./comment-form"
->>>>>>> origin/codex/extend-api-for-nested-comments-support
+import { formatKarmaBadge } from "@/lib/karma"
 
 interface Comment {
   id: string
-  username?: string
-  karma?: number
   content: string
   createdAt: string
-  updatedAt: string
   votes: number
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-  parentId?: string
-  flagged?: boolean
-  removed?: boolean
-}
-
-export function CommentSection({ verseId, userId }: { verseId: string; userId: string }) {
-  const [comments, setComments] = useState<Comment[]>([])
-=======
-"use client";
-import { useEffect, useState, FormEvent } from "react";
-import { Button } from "@/components/ui/button";
-import {useTranslations, useLocale} from "next-intl";
-
-interface Comment {
-  id: string;
-  content: string;
-  createdAt: string;
-  votes: number;
-=======
-  username?: string
->>>>>>> origin/codex/add-page-to-pull-latest-comments-and-highlights
+  user: {
+    name: string
+    karma: number
+  }
 }
 
 export function CommentSection({ verseId }: { verseId: string }) {
-  const [comments, setComments] = useState<Comment[]>([]);
-  const [content, setContent] = useState("");
-  const t = useTranslations('Comments');
-  const locale = useLocale();
->>>>>>> origin/codex/set-up-next-intl-with-translations
-=======
-  parentId?: string | null
-  flagged?: boolean
-=======
-  userId?: string
->>>>>>> origin/codex/track-karma-points-for-comments
-}
-
-export function CommentSection({ verseId, userId }: { verseId: string; userId?: string }) {
   const [comments, setComments] = useState<Comment[]>([])
->>>>>>> origin/codex/extend-api-for-nested-comments-support
+  const [content, setContent] = useState("")
 
   async function load() {
-    const res = await fetch(`/api/comments?verseId=${verseId}`);
-    if (res.ok) setComments(await res.json());
+    const res = await fetch(`/api/comments?verseId=${verseId}`)
+    if (res.ok) setComments(await res.json())
   }
 
   useEffect(() => {
-    load();
-  }, [verseId]);
+    load()
+  }, [verseId])
 
-<<<<<<< HEAD
-<<<<<<< HEAD
-=======
   async function submit(e: FormEvent) {
-    e.preventDefault();
-    if (!content.trim()) return;
+    e.preventDefault()
+    if (!content.trim()) return
     await fetch("/api/comments", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-<<<<<<< HEAD
-<<<<<<< HEAD
       body: JSON.stringify({ verseId, content })
-    });
-    setContent("");
-    load();
-=======
-      body: JSON.stringify({ verseId, content, username: "guest" })
-=======
-      body: JSON.stringify({ verseId, content, userId })
->>>>>>> origin/codex/track-karma-points-for-comments
     })
     setContent("")
     load()
->>>>>>> origin/codex/add-page-to-pull-latest-comments-and-highlights
   }
 
->>>>>>> origin/codex/set-up-next-intl-with-translations
-=======
->>>>>>> origin/codex/extend-api-for-nested-comments-support
   async function vote(id: string, delta: number) {
     await fetch("/api/comments", {
       method: "PATCH",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ verseId, commentId: id, delta })
-    });
-    load();
+    })
+    load()
   }
 
   return (
     <div className="mt-8">
-<<<<<<< HEAD
       <h3 className="text-lg font-semibold mb-2">Comments</h3>
-      <CommentForm verseId={verseId} onSubmitted={load} />
-<<<<<<< HEAD
-=======
-      <h3 className="text-lg font-semibold mb-2">{t('title')}</h3>
       <form onSubmit={submit} className="flex gap-2 mb-4">
         <input
           value={content}
           onChange={(e) => setContent(e.target.value)}
-          placeholder={t('placeholder')}
+          placeholder="Add a comment"
           className="flex-1 border rounded p-2 text-sm"
         />
-        <Button type="submit" size="sm">{t('post')}</Button>
+        <Button type="submit" size="sm">Post</Button>
       </form>
->>>>>>> origin/codex/set-up-next-intl-with-translations
-=======
->>>>>>> origin/codex/extend-api-for-nested-comments-support
       <div className="space-y-2">
         {comments.map((c) => (
           <div key={c.id} className="p-2 bg-muted rounded">
             <div className="flex items-center justify-between">
-              <div
-                className="text-sm flex-1"
-                dangerouslySetInnerHTML={{ __html: c.content }}
-              />
+              <div className="text-sm flex-1">
+                <span className="font-medium">{c.user.name}</span>
+                <span className="ml-1 text-xs text-muted-foreground">
+                  {formatKarmaBadge(c.user.karma)}
+                </span>
+                : {c.content}
+              </div>
               <div className="flex items-center gap-1 ml-2">
                 <button
                   aria-label="upvote"
@@ -149,7 +79,7 @@ export function CommentSection({ verseId, userId }: { verseId: string; userId?: 
                 >
                   ▲
                 </button>
-                <span className="text-xs w-4 text-center">{new Intl.NumberFormat(locale).format(c.votes)}</span>
+                <span className="text-xs w-4 text-center">{c.votes}</span>
                 <button
                   aria-label="downvote"
                   className="text-xs"
@@ -159,32 +89,15 @@ export function CommentSection({ verseId, userId }: { verseId: string; userId?: 
                 </button>
               </div>
             </div>
-<<<<<<< HEAD
-<<<<<<< HEAD
-          )
-        })}
-=======
             <div className="text-xs text-muted-foreground">
-              {new Intl.DateTimeFormat(locale, {dateStyle: 'short', timeStyle: 'short'}).format(new Date(c.createdAt))}
-=======
-            <div className="text-xs text-muted-foreground flex items-center gap-2">
-              <span className="flex items-center gap-1">
-                {c.username || "Anonymous"}
-                {(() => {
-                  const badge = getBadge(c.votes)
-                  return <span className={`${badge.className}`}>{badge.label}</span>
-                })()}
-              </span>
-              <span>{new Date(c.createdAt).toLocaleString()}</span>
->>>>>>> origin/codex/add-page-to-pull-latest-comments-and-highlights
+              {new Date(c.createdAt).toLocaleString()}
             </div>
           </div>
         ))}
->>>>>>> origin/codex/set-up-next-intl-with-translations
         {comments.length === 0 && (
-          <p className="text-sm text-muted-foreground">{t('noComments')}</p>
+          <p className="text-sm text-muted-foreground">No comments yet.</p>
         )}
       </div>
     </div>
-  );
+  )
 }
