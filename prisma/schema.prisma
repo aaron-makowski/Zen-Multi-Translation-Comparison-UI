@@ -126,19 +126,15 @@ model Comment {
   updatedAt DateTime @updatedAt
 }
 
-model Notification {
-  id        String   @id @default(cuid())
-  type      NotificationType
-  content   String?
-  userId    String
-  user      User     @relation(fields: [userId], references: [id])
-  read      Boolean  @default(false)
-  createdAt DateTime @default(now())
-}
-
-enum NotificationType {
-  reply
-  mention
+model VerseView {
+  id            String        @id @default(cuid())
+  userId        String?
+  user          User?         @relation(fields: [userId], references: [id])
+  verseId       String
+  verse         Verse         @relation(fields: [verseId], references: [id])
+  translationId String?
+  translation   Translation?  @relation(fields: [translationId], references: [id])
+  createdAt     DateTime      @default(now())
 }
 
 model Session {

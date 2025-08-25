@@ -139,15 +139,12 @@ export const comments = pgTable("comments", {
   updatedAt: timestamp("updated_at").notNull(),
 })
 
-// Notification table
-export const notifications = pgTable("notifications", {
+// Verse views table
+export const verseViews = pgTable("verse_views", {
   id: text("id").primaryKey(),
-  userId: text("user_id")
-    .notNull()
-    .references(() => users.id),
-  type: text("type").$type<NotificationType>().notNull(),
-  content: text("content"),
-  read: boolean("read").default(false).notNull(),
+  userId: text("user_id").references(() => users.id),
+  verseId: text("verse_id").notNull().references(() => verses.id),
+  translationId: text("translation_id").references(() => translations.id),
   createdAt: timestamp("created_at").defaultNow().notNull(),
 })
 
@@ -172,6 +169,7 @@ export const versesRelations = relations(verses, ({ one, many }) => ({
   translations: many(translations),
   notes: many(notes),
   comments: many(comments),
+  verseViews: many(verseViews),
 }))
 
 export const translationsRelations = relations(translations, ({ one, many }) => ({
@@ -180,6 +178,7 @@ export const translationsRelations = relations(translations, ({ one, many }) => 
     references: [verses.id],
   }),
   wordMappings: many(wordMappings),
+  verseViews: many(verseViews),
 }))
 
 export const usersRelations = relations(users, ({ many }) => ({
@@ -187,8 +186,7 @@ export const usersRelations = relations(users, ({ many }) => ({
   notes: many(notes),
   comments: many(comments),
   sessions: many(sessions),
-  followers: many(follows, { relationName: "following" }),
-  following: many(follows, { relationName: "follower" }),
+  verseViews: many(verseViews),
 }))
 
 export const favoritesRelations = relations(favorites, ({ one }) => ({
@@ -234,6 +232,21 @@ export const commentsRelations = relations(comments, ({ one }) => ({
   verse: one(verses, {
     fields: [comments.verseId],
     references: [verses.id],
+  }),
+}))
+
+export const verseViewsRelations = relations(verseViews, ({ one }) => ({
+  user: one(users, {
+    fields: [verseViews.userId],
+    references: [users.id],
+  }),
+  verse: one(verses, {
+    fields: [verseViews.verseId],
+    references: [verses.id],
+  }),
+  translation: one(translations, {
+    fields: [verseViews.translationId],
+    references: [translations.id],
   }),
 }))
 
