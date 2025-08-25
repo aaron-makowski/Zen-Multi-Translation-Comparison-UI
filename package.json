@@ -21,6 +21,7 @@
     "@opentelemetry/api": "latest",
     "@planetscale/database": "latest",
     "@prisma/client": "latest",
+    "@radix-ui/react-slot": "^1.2.3",
     "@tidbcloud/serverless": "latest",
     "@types/better-sqlite3": "latest",
     "@types/pg": "latest",
@@ -65,6 +66,7 @@
     "postcss": "^8.5",
     "tailwindcss": "^3.3.0",
     "typescript": "^5",
+    "vite-tsconfig-paths": "^5.1.4",
     "vitest": "^3.2.4"
   }
 }

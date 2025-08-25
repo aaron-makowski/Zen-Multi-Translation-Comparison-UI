@@ -12,9 +12,8 @@ export interface Verse {
 export interface Translator {
   id: string
   name: string
-  publicationYear: number
-  translatorBio?: string
-  license?: string
+  year: string
+  description?: string
   link?: string
 }
 
@@ -28,214 +27,201 @@ export interface Book {
   verses: Verse[]
 }
 
-// Translators for the Xinxin Ming text
-// Additional books define their own translator arrays below.
-export const xinxinmingTranslators: Translator[] = [
+export const translators: Translator[] = [
   {
     id: "waley",
     name: "Arthur Waley",
-    publicationYear: 1934,
-    translatorBio: "On Trust in the Heart",
-    license: "Unknown",
+    year: "1934",
+    description: "On Trust in the Heart",
     link: "https://en.wikipedia.org/wiki/Arthur_Waley",
   },
   {
     id: "suzuki",
     name: "D.T. Suzuki",
-    publicationYear: 1935,
-    translatorBio: "On Believing in Mind",
-    license: "Unknown",
+    year: "1935",
+    description: "On Believing in Mind",
     link: "https://en.wikipedia.org/wiki/D._T._Suzuki",
   },
   {
     id: "goddard",
     name: "Dwight Goddard",
-    publicationYear: 1932,
-    translatorBio: "On Believing in Mind",
-    license: "Unknown",
+    year: "1932",
+    description: "On Believing in Mind",
     link: "https://en.wikipedia.org/wiki/Dwight_Goddard",
   },
   {
     id: "clarke",
     name: "Richard B. Clarke",
-    publicationYear: 1973,
-    translatorBio: "Have Faith in Your Mind",
-    license: "Unknown",
+    year: "1973",
+    description: "Have Faith in Your Mind",
     link: "https://terebess.hu/zen/xinxinming.html#Clarke",
   },
   {
     id: "sheng",
     name: "Sheng-Yen",
-    publicationYear: 1987,
-    translatorBio: "Faith in Mind",
-    license: "Unknown",
+    year: "1987",
+    description: "Faith in Mind",
     link: "https://en.wikipedia.org/wiki/Sheng-yen",
   },
   {
     id: "mitchell",
     name: "Stephen Mitchell",
-    publicationYear: 1989,
-    translatorBio: "The Mind of Absolute Trust",
-    license: "Unknown",
+    year: "1989",
+    description: "The Mind of Absolute Trust",
     link: "https://en.wikipedia.org/wiki/Stephen_Mitchell_(translator)",
   },
   {
     id: "cleary",
     name: "Thomas Cleary",
-    publicationYear: 1998,
-    translatorBio: "Faith Mind",
-    license: "Unknown",
+    year: "1998",
+    description: "Faith Mind",
     link: "https://en.wikipedia.org/wiki/Thomas_Cleary",
   },
   {
     id: "red_pine",
     name: "Red Pine",
-    publicationYear: 2001,
-    translatorBio: "Trust in Mind",
-    license: "Unknown",
+    year: "2001",
+    description: "Trust in Mind",
     link: "https://en.wikipedia.org/wiki/Red_Pine_(author)",
   },
   {
     id: "wu",
     name: "John Wu",
-    publicationYear: 1975,
-    translatorBio: "On Trust in the Heart",
-    license: "Unknown",
+    year: "1975",
+    description: "On Trust in the Heart",
     link: "https://en.wikipedia.org/wiki/John_C._H._Wu",
   },
   {
     id: "puqun",
     name: "Puqun Li",
-    publicationYear: 2012,
-    translatorBio: "Trust in Mind",
-    license: "Unknown",
+    year: "2012",
+    description: "Trust in Mind",
     link: "https://terebess.hu/zen/xinxinming.html#Li",
   },
   {
     id: "heine",
     name: "Steven Heine",
-    publicationYear: 2014,
-    translatorBio: "Faith in Mind",
-    license: "Unknown",
+    year: "2014",
+    description: "Faith in Mind",
     link: "https://en.wikipedia.org/wiki/Steven_Heine_(academic)",
   },
   {
     id: "addiss",
     name: "Stephen Addiss",
-    publicationYear: 2015,
-    translatorBio: "Trust in Mind",
-    license: "Unknown",
+    year: "2015",
+    description: "Trust in Mind",
     link: "https://en.wikipedia.org/wiki/Stephen_Addiss",
   },
   {
     id: "hinton",
     name: "David Hinton",
-    publicationYear: 2016,
-    translatorBio: "Trust in Mind",
-    license: "Unknown",
+    year: "2016",
+    description: "Trust in Mind",
     link: "https://en.wikipedia.org/wiki/David_Hinton",
   },
   {
     id: "dusan",
     name: "Dusan Pajin",
-    publicationYear: 1988,
-    translatorBio: "Faith in Mind",
-    license: "Unknown",
+    year: "1988",
+    description: "Faith in Mind",
     link: "https://terebess.hu/zen/xinxinming.html#Pajin",
   },
   {
     id: "reps",
     name: "Paul Reps",
-    publicationYear: 1957,
-    translatorBio: "Affirming Faith in Mind",
-    license: "Unknown",
+    year: "1957",
+    description: "Affirming Faith in Mind",
     link: "https://en.wikipedia.org/wiki/Paul_Reps",
   },
   {
     id: "takakusu",
     name: "Junjiro Takakusu",
-    publicationYear: 1906,
-    translatorBio: "On Faith in the Mind",
-    license: "Unknown",
+    year: "1906",
+    description: "On Faith in the Mind",
     link: "https://en.wikipedia.org/wiki/Junjir%C5%8D_Takakusu",
   },
   {
     id: "yampolsky",
     name: "Philip Yampolsky",
-    publicationYear: 1967,
-    translatorBio: "On Faith in Mind",
-    license: "Unknown",
+    year: "1967",
+    description: "On Faith in Mind",
     link: "https://en.wikipedia.org/wiki/Philip_Yampolsky",
   },
   {
     id: "luk",
     name: "Charles Luk",
-    publicationYear: 1960,
-    translatorBio: "On Believing in Mind",
-    license: "Unknown",
+    year: "1960",
+    description: "On Believing in Mind",
     link: "https://en.wikipedia.org/wiki/Charles_Luk",
   },
   {
     id: "bancroft",
     name: "Anne Bancroft",
-    publicationYear: 1997,
-    translatorBio: "Trust in Mind",
-    license: "Unknown",
+    year: "1997",
+    description: "Trust in Mind",
     link: "https://terebess.hu/zen/xinxinming.html#Bancroft",
   },
   {
     id: "conze",
     name: "Edward Conze",
-    publicationYear: 1958,
-    translatorBio: "Trust in the Heart",
-    license: "Unknown",
+    year: "1958",
+    description: "Trust in the Heart",
     link: "https://en.wikipedia.org/wiki/Edward_Conze",
+  },
+  {
+    id: "translator24",
+    name: "Translator 24",
+    year: "2024",
+    description: "Additional Version",
+  },
+  {
+    id: "translator25",
+    name: "Translator 25",
+    year: "2024",
+    description: "Additional Version",
+  },
+  {
+    id: "translator26",
+    name: "Translator 26",
+    year: "2024",
+    description: "Additional Version",
+  },
+  {
+    id: "translator27",
+    name: "Translator 27",
+    year: "2024",
+    description: "Additional Version",
+  },
+  {
+    id: "translator28",
+    name: "Translator 28",
+    year: "2024",
+    description: "Additional Version",
+  },
+  {
+    id: "translator29",
+    name: "Translator 29",
+    year: "2024",
+    description: "Additional Version",
+  },
+  {
+    id: "translator30",
+    name: "Translator 30",
+    year: "2024",
+    description: "Additional Version",
   },
   // Add more translators as needed
-]
-
-const platformSutraTranslators: Translator[] = [
-  {
-    id: "mcrae",
-    name: "John R. McRae",
-    publicationYear: 2000,
-    translatorBio: "Platform Sutra translator",
-    license: "Unknown",
-    link: "https://en.wikipedia.org/wiki/Platform_Sutra",
-  },
-]
-
-const heartSutraTranslators: Translator[] = [
-  {
-    id: "hs_red_pine",
-    name: "Red Pine",
-    publicationYear: 2004,
-    translatorBio: "Heart Sutra translator",
-    license: "Unknown",
-    link: "https://en.wikipedia.org/wiki/Red_Pine_(author)",
-  },
-]
-
-const diamondSutraTranslators: Translator[] = [
-  {
-    id: "ds_conze",
-    name: "Edward Conze",
-    publicationYear: 1957,
-    translatorBio: "Diamond Sutra translator",
-    license: "Unknown",
-    link: "https://en.wikipedia.org/wiki/Edward_Conze",
-  },
 ]
 
 // Export the translations data
 export const translations: Record<string, Book> = {
   xinxinming: {
-    id: "xinxinming",
+    id: "xinxin-ming",
     title: "Xinxin Ming",
     description: "Faith in Mind",
     author: "Jianzhi Sengcan",
     coverImage: "/xinxin-ming-cover.png",
-    translators: xinxinmingTranslators,
+    translators: translators,
     verses: [
       {
         id: 1,
@@ -265,78 +251,34 @@ export const translations: Record<string, Book> = {
       },
     ],
   },
-  "platform-sutra": {
+  platformSutra: {
     id: "platform-sutra",
     title: "Platform Sutra",
     description: "Teachings of the Sixth Patriarch",
     author: "Huineng",
     coverImage: "/platform-sutra-cover.png",
-    translators: platformSutraTranslators,
-    verses: [
-      {
-        id: 1,
-        lines: [
-          {
-            chinese: "菩提本無樹，明鏡亦非台。",
-            translations: {
-              mcrae: "Bodhi originally has no tree; the bright mirror also has no stand.",
-            },
-          },
-          {
-            chinese: "本來無一物，何處惹塵埃。",
-            translations: {
-              mcrae: "Originally there is not a single thing—where can dust collect?",
-            },
-          },
-        ],
-      },
-    ],
+    translators: [],
+    verses: [],
   },
-  "heart-sutra": {
+  heartSutra: {
     id: "heart-sutra",
     title: "Heart Sutra",
     description: "The Heart of the Perfection of Wisdom",
-    author: "Attributed to Avalokiteśvara",
+    author: "",
     coverImage: "/heart-sutra-cover.png",
-    translators: heartSutraTranslators,
-    verses: [
-      {
-        id: 1,
-        lines: [
-          {
-            chinese:
-              "觀自在菩薩，行深般若波羅蜜多時，照見五蘊皆空，度一切苦厄。",
-            translations: {
-              hs_red_pine:
-                "Avalokiteshvara Bodhisattva, practicing deep prajnaparamita, clearly saw that all five skandhas are empty and was saved from all suffering.",
-            },
-          },
-        ],
-      },
-    ],
+    translators: [],
+    verses: [],
   },
-  "diamond-sutra": {
+  diamondSutra: {
     id: "diamond-sutra",
     title: "Diamond Sutra",
-    description: "Vajracchedika Prajnaparamita Sutra",
-    author: "Attributed to the Buddha",
+    description: "The Diamond That Cuts Through Illusion",
+    author: "",
     coverImage: "/diamond-sutra-cover.png",
-    translators: diamondSutraTranslators,
-    verses: [
-      {
-        id: 1,
-        lines: [
-          {
-            chinese: "如是我聞。",
-            translations: {
-              ds_conze: "Thus have I heard.",
-            },
-          },
-        ],
-      },
-    ],
+    translators: [],
+    verses: [],
   },
 }
 
 // Also export verses for backward compatibility
-export const verses = translations["xinxinming"].verses
+export const verses = translations.xinxinming.verses
