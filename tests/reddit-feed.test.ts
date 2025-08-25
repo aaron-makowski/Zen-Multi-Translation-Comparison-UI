@@ -1,47 +1,44 @@
-import { describe, expect, it, vi, afterEach } from 'vitest'
-import { GET } from '../app/api/reddit-feed/route'
+import { describe, it, expect, vi, afterEach } from 'vitest'
+import { GET } from '../app/api/reddit/route'
 
-const sample = {
-  data: {
-    children: [
-      { data: { id: '1', title: 'Post', url: 'https://example.com' } }
-    ]
-  }
-}
+describe('reddit api route', () => {
+  afterEach(() => {
+    vi.restoreAllMocks()
+  })
 
-describe('reddit feed API', () => {
-  afterEach(() => vi.restoreAllMocks())
+  it('returns formatted posts from reddit', async () => {
+    const mockResponse = {
+      data: {
+        children: [
+          { data: { id: '1', title: 't1', author: 'a1', permalink: '/r/test1', ups: 10 } },
+          { data: { id: '2', title: 't2', author: 'a2', permalink: '/r/test2', ups: 5 } },
+        ],
+      },
+    }
 
-  it('returns posts from reddit', async () => {
-    vi.spyOn(globalThis, 'fetch').mockResolvedValue({
+    vi.spyOn(global, 'fetch').mockResolvedValue({
       ok: true,
-      json: () => Promise.resolve(sample)
+      json: async () => mockResponse,
     } as any)
 
-    const res = await GET()
-    expect(res.status).toBe(200)
-    const body = await res.json()
-    expect(body).toEqual([
-      { id: '1', title: 'Post', url: 'https://example.com' }
+    const req = new Request('http://localhost/api/reddit?subreddit=test')
+    const res = await GET(req)
+    const posts = await res.json()
+
+    expect(posts).toEqual([
+      { id: '1', title: 't1', author: 'a1', url: 'https://www.reddit.com/r/test1', upvotes: 10 },
+      { id: '2', title: 't2', author: 'a2', url: 'https://www.reddit.com/r/test2', upvotes: 5 },
     ])
   })
 
-  it('uses the public subreddit feed', async () => {
-    const mock = vi.spyOn(globalThis, 'fetch').mockResolvedValue({
-      ok: true,
-      json: () => Promise.resolve(sample)
-    } as any)
+  it('handles error response', async () => {
+    vi.spyOn(global, 'fetch').mockResolvedValue({ ok: false, status: 404 } as any)
 
-    await GET()
-    expect(mock).toHaveBeenCalledWith('https://www.reddit.com/r/zen.json')
-  })
-
-  it('handles fetch failures', async () => {
-    vi.spyOn(globalThis, 'fetch').mockRejectedValue(new Error('nope'))
-
-    const res = await GET()
-    expect(res.status).toBe(502)
+    const req = new Request('http://localhost/api/reddit?subreddit=test')
+    const res = await GET(req)
     const body = await res.json()
-    expect(body.error).toBe('Failed to reach Reddit')
+
+    expect(res.status).toBe(404)
+    expect(body.error).toBe('Failed to fetch posts')
   })
 })
