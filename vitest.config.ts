@@ -1,39 +1,17 @@
-<<<<<<< HEAD
-<<<<<<< HEAD
-=======
->>>>>>> origin/codex/protect-admin-routes-with-middleware
-import { defineConfig } from 'vitest/config'
-import path from 'path'
-
-export default defineConfig({
-  resolve: {
-    alias: {
-<<<<<<< HEAD
-      '@': path.resolve(__dirname, '.'),
-    },
-  },
-  test: {
-    include: ['tests/**/*.test.{ts,tsx}'],
-    environment: 'node'
-  },
-  resolve: {
-    alias: {
-      '@': path.resolve(__dirname)
-    }
-  }
-})
-=======
 import { defineConfig } from 'vitest/config';
+import { fileURLToPath } from 'url';
+import { dirname, resolve } from 'path';
+
+const __dirname = dirname(fileURLToPath(import.meta.url));
 
 export default defineConfig({
-  test: {
-    exclude: ['tests/**/*.spec.ts']
-  }
-});
->>>>>>> origin/codex/set-up-next-intl-with-translations
-=======
-      '@': path.resolve(__dirname),
+  resolve: {
+    alias: {
+      '@': resolve(__dirname, './'),
     },
   },
-})
->>>>>>> origin/codex/protect-admin-routes-with-middleware
+  esbuild: {
+    jsx: 'automatic',
+    jsxImportSource: 'react',
+  },
+});

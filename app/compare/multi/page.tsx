@@ -1,92 +1,91 @@
+import { db } from "@/lib/db"
+import { verses } from "@/lib/schema"
+import { inArray, asc } from "drizzle-orm"
+import { Button } from "@/components/ui/button"
 import { Card } from "@/components/ui/card"
-import { prisma } from "@/lib/db"
-import { getAggregatedTranslations, type AggregatedResult } from "@/lib/multi-verse"
-import { VerseSelector } from "./verse-selector"
-import { DownloadButton } from "./download-button"
 
-interface PageProps {
-  searchParams?: { pairs?: string }
-}
-
-export default async function MultiComparePage({ searchParams }: PageProps) {
-  const pairsParam = searchParams?.pairs ? decodeURIComponent(searchParams.pairs) : ""
-  const pairStrings = pairsParam ? pairsParam.split(",").filter(Boolean) : []
-
-  const validPairs: { bookId: string; verseId: string }[] = []
-  const invalidPairs: string[] = []
-
-  for (const pair of pairStrings) {
-    const [bookId, verseId] = pair.split(":")
-    if (bookId && verseId) {
-      validPairs.push({ bookId, verseId })
-    } else {
-      invalidPairs.push(pair)
-    }
-  }
-
-  const books = await prisma.book.findMany({
-    orderBy: { title: "asc" },
-    include: {
+export default async function MultiComparePage({
+  searchParams,
+}: {
+  searchParams: { ids?: string | string[] }
+}) {
+  // Fetch all books with their verses for the selection UI
+  const allBooks = await db.query.books.findMany({
+    with: {
       verses: {
-        orderBy: { number: "asc" },
-        select: { id: true, number: true },
+        orderBy: (v, { asc }) => [asc(v.number)],
       },
     },
   })
 
-  let data: AggregatedResult = { translations: {}, missing: [] }
-  if (validPairs.length > 0) {
-    data = await getAggregatedTranslations(validPairs)
-  }
+  // Normalize the ids search param into an array
+  const idsParam = searchParams?.ids
+  const verseIds = Array.isArray(idsParam)
+    ? idsParam
+    : idsParam
+    ? [idsParam]
+    : []
 
-  const hasResults = Object.keys(data.translations).length > 0
+  // Fetch selected verses with their translations
+  const selectedVerses = verseIds.length
+    ? await db.query.verses.findMany({
+        where: inArray(verses.id, verseIds),
+        with: {
+          book: true,
+          translations: {
+            orderBy: (t, { asc }) => [asc(t.translator)],
+          },
+        },
+        orderBy: (v, { asc }) => [asc(v.bookId), asc(v.number)],
+      })
+    : []
 
   return (
     <main className="flex min-h-screen flex-col items-center p-4 md:p-24">
-      <div className="max-w-4xl w-full space-y-6">
-        <h1 className="text-3xl font-bold">Compare Multiple Verses</h1>
+      <div className="max-w-4xl w-full">
+        <h1 className="text-3xl font-bold mb-6">Compare Multiple Verses</h1>
 
-        <Card className="p-6">
-          <VerseSelector
-            books={books}
-            initialPairs={validPairs.length > 0 ? validPairs : undefined}
-          />
+        <Card className="p-6 mb-8">
+          <form className="space-y-4">
+            <div>
+              <label className="block text-sm font-medium mb-2">Select Verses</label>
+              <select
+                name="ids"
+                multiple
+                size={10}
+                defaultValue={verseIds}
+                className="w-full border rounded p-2 h-48"
+              >
+                {allBooks.map((book) => (
+                  <optgroup key={book.id} label={book.title}>
+                    {book.verses.map((verse) => (
+                      <option key={verse.id} value={verse.id}>
+                        Verse {verse.number}
+                      </option>
+                    ))}
+                  </optgroup>
+                ))}
+              </select>
+            </div>
+            <Button type="submit">Compare</Button>
+          </form>
         </Card>
 
-        {invalidPairs.length > 0 && (
-          <p className="text-red-500">Some verse selections were invalid.</p>
-        )}
-        {data.missing.length > 0 && (
-          <p className="text-red-500">Some requested verses could not be found.</p>
-        )}
-
-        {hasResults && (
-          <>
-            <div>
-              <DownloadButton data={data} />
-            </div>
-            <div className="space-y-8">
-              {Object.entries(data.translations).map(([bookTitle, translators]) => (
-                <div key={bookTitle}>
-                  <h2 className="text-xl font-semibold mb-2">{bookTitle}</h2>
-                  {Object.entries(translators).map(([translator, verses]) => (
-                    <div key={translator} className="mb-4">
-                      <h3 className="font-medium">{translator}</h3>
-                      <div className="space-y-2">
-                        {verses.map((v) => (
-                          <div key={v.verseId}>
-                            <p className="font-semibold">Verse {v.verseNumber}</p>
-                            <p className="whitespace-pre-line">{v.text}</p>
-                          </div>
-                        ))}
-                      </div>
-                    </div>
-                  ))}
+        {selectedVerses.map((verse) => (
+          <Card key={verse.id} className="p-6 mb-4">
+            <h2 className="text-xl font-semibold mb-4">
+              {verse.book.title} - Verse {verse.number}
+            </h2>
+            <div className="space-y-4">
+              {verse.translations.map((t) => (
+                <div key={t.id} className="border-b pb-2 last:border-0 last:pb-0">
+                  <h3 className="font-medium">{t.translator}</h3>
+                  <p className="whitespace-pre-line">{t.text}</p>
                 </div>
               ))}
             </div>
-          </>
-        )}
+          </Card>
+        ))}
       </div>
     </main>
   )
