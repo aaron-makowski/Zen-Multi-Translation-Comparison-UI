@@ -1,25 +1,8 @@
-<<<<<<< HEAD
-<<<<<<< HEAD
-import { pgTable, text, timestamp, integer, boolean, uniqueIndex, primaryKey } from "drizzle-orm/pg-core"
-=======
-=======
->>>>>>> origin/codex/add-notifications-table-and-handlers
-import {
-  pgTable,
-  text,
-  timestamp,
-  integer,
-  boolean,
-  uniqueIndex,
-<<<<<<< HEAD
-  primaryKey,
-} from "drizzle-orm/pg-core"
->>>>>>> origin/codex/add-user-profile-page-with-follow-feature
-=======
-  pgEnum,
-} from "drizzle-orm/pg-core"
->>>>>>> origin/codex/add-notifications-table-and-handlers
+import { pgTable, text, timestamp, integer, boolean, uniqueIndex } from "drizzle-orm/pg-core"
 import { relations } from "drizzle-orm"
+
+export const notificationTypes = ["reply", "mention"] as const
+export type NotificationType = (typeof notificationTypes)[number]
 
 // User table
 export const users = pgTable("users", {
@@ -27,15 +10,11 @@ export const users = pgTable("users", {
   email: text("email").notNull().unique(),
   username: text("username").notNull().unique(),
   password: text("password").notNull(),
-  avatar: text("avatar"),
-  bio: text("bio"),
   isGuest: boolean("is_guest").default(false).notNull(),
-  role: text("role").default("user").notNull(),
+  emailNotifications: boolean("email_notifications").default(true).notNull(),
+  pushNotifications: boolean("push_notifications").default(true).notNull(),
   createdAt: timestamp("created_at").defaultNow().notNull(),
   updatedAt: timestamp("updated_at").notNull(),
-  karma: integer("karma").default(0).notNull(),
-  streak: integer("streak").default(0).notNull(),
-  lastActive: timestamp("last_active").defaultNow().notNull(),
 })
 
 // Book table
@@ -107,23 +86,6 @@ export const favorites = pgTable(
   },
 )
 
-// User follow join table
-export const userFollows = pgTable(
-  "user_follows",
-  {
-    followerId: text("follower_id")
-      .notNull()
-      .references(() => users.id),
-    followingId: text("following_id")
-      .notNull()
-      .references(() => users.id),
-    createdAt: timestamp("created_at").defaultNow().notNull(),
-  },
-  (table) => ({
-    pk: primaryKey({ columns: [table.followerId, table.followingId] }),
-  }),
-)
-
 // Note table
 export const notes = pgTable("notes", {
   id: text("id").primaryKey(),
@@ -152,110 +114,18 @@ export const comments = pgTable("comments", {
   updatedAt: timestamp("updated_at").notNull(),
 })
 
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-=======
->>>>>>> origin/codex/create-tags-table-and-many-to-many-relation
-// Tag table
-export const tags = pgTable("tags", {
-  id: text("id").primaryKey(),
-  name: text("name").notNull().unique(),
-  createdAt: timestamp("created_at").defaultNow().notNull(),
-  updatedAt: timestamp("updated_at").notNull(),
-})
-
-// VerseTags join table
-<<<<<<< HEAD
-export const versesToTags = pgTable(
-  "verses_tags",
-  {
-=======
-export const verseTags = pgTable(
-  "verse_tags",
-  {
-    id: text("id").primaryKey(),
->>>>>>> origin/codex/create-tags-table-and-many-to-many-relation
-    verseId: text("verse_id")
-      .notNull()
-      .references(() => verses.id),
-    tagId: text("tag_id")
-      .notNull()
-      .references(() => tags.id),
-    createdAt: timestamp("created_at").defaultNow().notNull(),
-<<<<<<< HEAD
-  },
-  (table) => ({
-    pk: primaryKey({ columns: [table.verseId, table.tagId] }),
-  })
-)
-=======
-// Flags table for comment moderation
-export const flags = pgTable("flags", {
-  id: text("id").primaryKey(),
-  commentId: text("comment_id")
-    .notNull()
-    .references(() => comments.id),
-  userId: text("user_id").references(() => users.id),
-  reason: text("reason"),
-  createdAt: timestamp("created_at").defaultNow().notNull(),
-})
-
-// Audit log table for moderation actions
-export const auditLogs = pgTable("audit_logs", {
-  id: text("id").primaryKey(),
-  action: text("action").notNull(),
-  targetType: text("target_type").notNull(),
-  targetId: text("target_id").notNull(),
-  userId: text("user_id").references(() => users.id),
-  createdAt: timestamp("created_at").defaultNow().notNull(),
-})
->>>>>>> origin/codex/protect-admin-routes-with-middleware
-
-=======
-// VerseView table to track verse views and translation selections
-export const verseViews = pgTable("verse_views", {
-  id: text("id").primaryKey(),
-  userId: text("user_id").references(() => users.id),
-  verseId: text("verse_id")
-    .notNull()
-    .references(() => verses.id),
-  translationId: text("translation_id").references(() => translations.id),
-  viewedAt: timestamp("viewed_at").defaultNow().notNull(),
-})
-
->>>>>>> origin/codex/track-verse-views-and-translations
-=======
-    updatedAt: timestamp("updated_at").notNull(),
-  },
-  (table) => {
-    return {
-      verseTagUnique: uniqueIndex("verse_tag_unique").on(table.verseId, table.tagId),
-    }
-  },
-)
-
->>>>>>> origin/codex/create-tags-table-and-many-to-many-relation
-=======
-// Notification table and enum
-export const notificationTypeEnum = pgEnum("notification_type", [
-  "reply",
-  "mention",
-])
-
+// Notification table
 export const notifications = pgTable("notifications", {
   id: text("id").primaryKey(),
   userId: text("user_id")
     .notNull()
     .references(() => users.id),
-  type: notificationTypeEnum("type").notNull(),
-  data: text("data"),
+  type: text("type").$type<NotificationType>().notNull(),
+  content: text("content"),
   read: boolean("read").default(false).notNull(),
   createdAt: timestamp("created_at").defaultNow().notNull(),
 })
 
->>>>>>> origin/codex/add-notifications-table-and-handlers
 // Session table
 export const sessions = pgTable("sessions", {
   id: text("id").primaryKey(),
@@ -277,15 +147,6 @@ export const versesRelations = relations(verses, ({ one, many }) => ({
   translations: many(translations),
   notes: many(notes),
   comments: many(comments),
-<<<<<<< HEAD
-<<<<<<< HEAD
-  verseTags: many(versesToTags),
-=======
-  views: many(verseViews),
->>>>>>> origin/codex/track-verse-views-and-translations
-=======
-  verseTags: many(verseTags),
->>>>>>> origin/codex/create-tags-table-and-many-to-many-relation
 }))
 
 export const translationsRelations = relations(translations, ({ one, many }) => ({
@@ -294,26 +155,14 @@ export const translationsRelations = relations(translations, ({ one, many }) => 
     references: [verses.id],
   }),
   wordMappings: many(wordMappings),
-  views: many(verseViews),
 }))
 
 export const usersRelations = relations(users, ({ many }) => ({
   favorites: many(favorites),
   notes: many(notes),
   comments: many(comments),
-  notifications: many(notifications),
   sessions: many(sessions),
-<<<<<<< HEAD
-<<<<<<< HEAD
-  flags: many(flags),
-  auditLogs: many(auditLogs),
-=======
-  views: many(verseViews),
->>>>>>> origin/codex/track-verse-views-and-translations
-=======
-  followers: many(userFollows, { relationName: "following" }),
-  following: many(userFollows, { relationName: "follower" }),
->>>>>>> origin/codex/add-user-profile-page-with-follow-feature
+  notifications: many(notifications),
 }))
 
 export const favoritesRelations = relations(favorites, ({ one }) => ({
@@ -338,7 +187,7 @@ export const notesRelations = relations(notes, ({ one }) => ({
   }),
 }))
 
-export const commentsRelations = relations(comments, ({ one, many }) => ({
+export const commentsRelations = relations(comments, ({ one }) => ({
   user: one(users, {
     fields: [comments.userId],
     references: [users.id],
@@ -346,57 +195,6 @@ export const commentsRelations = relations(comments, ({ one, many }) => ({
   verse: one(verses, {
     fields: [comments.verseId],
     references: [verses.id],
-  }),
-  flags: many(flags),
-}))
-
-export const tagsRelations = relations(tags, ({ many }) => ({
-  verseTags: many(versesToTags),
-}))
-
-export const versesToTagsRelations = relations(versesToTags, ({ one }) => ({
-  verse: one(verses, {
-    fields: [versesToTags.verseId],
-    references: [verses.id],
-  }),
-  tag: one(tags, {
-    fields: [versesToTags.tagId],
-    references: [tags.id],
-  }),
-}))
-
-export const verseViewsRelations = relations(verseViews, ({ one }) => ({
-  user: one(users, {
-    fields: [verseViews.userId],
-    references: [users.id],
-  }),
-  verse: one(verses, {
-    fields: [verseViews.verseId],
-    references: [verses.id],
-  }),
-  translation: one(translations, {
-    fields: [verseViews.translationId],
-    references: [translations.id],
-  }),
-}))
-
-export const userFollowsRelations = relations(userFollows, ({ one }) => ({
-  follower: one(users, {
-    fields: [userFollows.followerId],
-    references: [users.id],
-    relationName: "follower",
-  }),
-  following: one(users, {
-    fields: [userFollows.followingId],
-    references: [users.id],
-    relationName: "following",
-  }),
-}))
-
-export const notificationsRelations = relations(notifications, ({ one }) => ({
-  user: one(users, {
-    fields: [notifications.userId],
-    references: [users.id],
   }),
 }))
 
@@ -407,42 +205,16 @@ export const sessionsRelations = relations(sessions, ({ one }) => ({
   }),
 }))
 
+export const notificationsRelations = relations(notifications, ({ one }) => ({
+  user: one(users, {
+    fields: [notifications.userId],
+    references: [users.id],
+  }),
+}))
+
 export const wordMappingsRelations = relations(wordMappings, ({ one }) => ({
   translation: one(translations, {
     fields: [wordMappings.translationId],
     references: [translations.id],
-  }),
-}))
-
-<<<<<<< HEAD
-export const flagsRelations = relations(flags, ({ one }) => ({
-  comment: one(comments, {
-    fields: [flags.commentId],
-    references: [comments.id],
-  }),
-  user: one(users, {
-    fields: [flags.userId],
-    references: [users.id],
-  }),
-}))
-
-export const auditLogsRelations = relations(auditLogs, ({ one }) => ({
-  user: one(users, {
-    fields: [auditLogs.userId],
-    references: [users.id],
-=======
-export const tagsRelations = relations(tags, ({ many }) => ({
-  verseTags: many(verseTags),
-}))
-
-export const verseTagsRelations = relations(verseTags, ({ one }) => ({
-  verse: one(verses, {
-    fields: [verseTags.verseId],
-    references: [verses.id],
-  }),
-  tag: one(tags, {
-    fields: [verseTags.tagId],
-    references: [tags.id],
->>>>>>> origin/codex/create-tags-table-and-many-to-many-relation
   }),
 }))

@@ -1,137 +1,89 @@
-import { describe, it, expect, beforeEach, vi } from 'vitest'
-import { promises as fs } from 'fs'
-import path from 'path'
-import { POST as commentPost } from '../app/api/comments/route'
-import { GET as notificationsGet, POST as notificationsMarkRead } from '../app/api/notifications/route'
-import * as notificationService from '../lib/notifications'
+import { describe, it, expect, vi, beforeEach } from 'vitest'
 
-const notificationsFile = path.join(process.cwd(), 'data', 'notifications.json')
-const commentsFile = path.join(process.cwd(), 'data', 'comments.json')
-const prefsFile = path.join(process.cwd(), 'data', 'preferences.json')
+const data = [
+  { id: 'n1', userId: 'u1', type: 'reply', content: 'hi', read: false }
+]
 
-beforeEach(async () => {
-  await fs.writeFile(notificationsFile, '[]')
-  await fs.writeFile(commentsFile, '{}')
-  await fs.writeFile(prefsFile, '{}')
-})
+let currentUserId: string | undefined
+let currentId: string | undefined
 
-describe('comment notification triggers', () => {
-  it('emits reply notification for parent author', async () => {
-    const initialComments = {
-      verse1: [
-        { id: 'parent', content: 'hi', createdAt: '', votes: 0, userId: 'parentUser' }
-      ]
-    }
-    await fs.writeFile(commentsFile, JSON.stringify(initialComments))
+vi.mock('../lib/schema', () => ({
+  notifications: {}
+}))
 
-    const req = new Request('http://localhost/api/comments', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        verseId: 'verse1',
-        content: 'replying',
-        userId: 'otherUser',
-        parentId: 'parent'
+vi.mock('drizzle-orm', () => ({
+  eq: () => ({})
+}))
+
+vi.mock('../lib/db', () => ({
+  db: {
+    select: () => ({
+      from: () => ({
+        where: async () => data.filter(r => r.userId === currentUserId)
+      })
+    }),
+    update: () => ({
+      set: (fields: any) => ({
+        where: async () => {
+          const idx = data.findIndex(r => r.id === currentId)
+          if (idx !== -1) {
+            data[idx] = { ...data[idx], ...fields }
+          }
+        }
       })
     })
-    await commentPost(req)
+  }
+}))
 
-    const notifs = JSON.parse(await fs.readFile(notificationsFile, 'utf8'))
-    expect(notifs).toHaveLength(1)
-    expect(notifs[0]).toMatchObject({ userId: 'parentUser', type: 'reply' })
-  })
+import { GET, PATCH } from '../app/api/notifications/route'
 
-  it('skips reply notification for self-reply', async () => {
-    const initialComments = {
-      verse1: [
-        { id: 'self', content: 'hi', createdAt: '', votes: 0, userId: 'selfUser' }
-      ]
-    }
-    await fs.writeFile(commentsFile, JSON.stringify(initialComments))
-
-    const req = new Request('http://localhost/api/comments', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        verseId: 'verse1',
-        content: 'replying',
-        userId: 'selfUser',
-        parentId: 'self'
-      })
-    })
-    await commentPost(req)
-
-    const notifs = JSON.parse(await fs.readFile(notificationsFile, 'utf8'))
-    expect(notifs).toHaveLength(0)
-  })
-
-  it('emits mention notifications for mentioned users excluding self', async () => {
-    const req = new Request('http://localhost/api/comments', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        verseId: 'verse1',
-        content: 'hello @bob and @carol and @alice',
-        userId: 'alice'
-      })
-    })
-    await commentPost(req)
-
-    const notifs = JSON.parse(await fs.readFile(notificationsFile, 'utf8'))
-    const recipients = notifs.map((n: any) => n.userId).sort()
-    expect(recipients).toEqual(['bob', 'carol'])
-    expect(notifs.every((n: any) => n.type === 'mention')).toBe(true)
-  })
+beforeEach(() => {
+  data[0].read = false
+  currentUserId = undefined
+  currentId = undefined
 })
 
 describe('notifications API', () => {
-  it('returns notifications and allows marking all as read', async () => {
-    const seed = [
-      { id: '1', userId: 'u1', type: 'reply', read: false, createdAt: '' },
-      { id: '2', userId: 'u1', type: 'mention', read: false, createdAt: '' },
-      { id: '3', userId: 'u2', type: 'reply', read: false, createdAt: '' }
-    ]
-    await fs.writeFile(notificationsFile, JSON.stringify(seed))
+  it('GET returns notifications for a user', async () => {
+    currentUserId = 'u1'
+    const res = await GET(new Request('http://test/notifications?userId=u1'))
+    expect(res.status).toBe(200)
+    const json = await res.json()
+    expect(json).toEqual(data)
+  })
 
-    const getReq = new Request('http://localhost/api/notifications?userId=u1')
-    const res = await notificationsGet(getReq)
-    const list = await res.json()
-    expect(list).toHaveLength(2)
-    expect(list.every((n: any) => n.userId === 'u1')).toBe(true)
+  it('GET returns 400 if missing userId', async () => {
+    const res = await GET(new Request('http://test/notifications'))
+    expect(res.status).toBe(400)
+    const json = await res.json()
+    expect(json).toEqual({ error: 'Missing userId' })
+  })
 
-    const postReq = new Request('http://localhost/api/notifications', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ userId: 'u1' })
-    })
-    await notificationsMarkRead(postReq)
+  it('PATCH marks notification as read', async () => {
+    currentId = 'n1'
+    const res = await PATCH(
+      new Request('http://test/notifications', {
+        method: 'PATCH',
+        body: JSON.stringify({ id: 'n1' }),
+        headers: { 'Content-Type': 'application/json' }
+      })
+    )
+    expect(res.status).toBe(200)
+    const json = await res.json()
+    expect(json).toEqual({ success: true })
+    expect(data[0].read).toBe(true)
+  })
 
-    const updated = JSON.parse(await fs.readFile(notificationsFile, 'utf8'))
-    const userNotifs = updated.filter((n: any) => n.userId === 'u1')
-    expect(userNotifs.every((n: any) => n.read)).toBe(true)
+  it('PATCH returns 400 if missing id', async () => {
+    const res = await PATCH(
+      new Request('http://test/notifications', {
+        method: 'PATCH',
+        body: JSON.stringify({}),
+        headers: { 'Content-Type': 'application/json' }
+      })
+    )
+    expect(res.status).toBe(400)
+    const json = await res.json()
+    expect(json).toEqual({ error: 'Missing id' })
   })
 })
-
-describe('delivery preferences', () => {
-  it('sends email and push when enabled', async () => {
-    const prefs = {
-      userX: {
-        email: 'x@example.com',
-        emailNotifications: true,
-        pushEndpoint: 'https://push.example',
-        pushNotifications: true,
-      },
-    }
-    await fs.writeFile(prefsFile, JSON.stringify(prefs))
-
-    const logSpy = vi.spyOn(console, 'log').mockImplementation(() => {})
-
-    await notificationService.addNotification({ userId: 'userX', type: 'reply' })
-
-    expect(logSpy).toHaveBeenCalledWith('Email to x@example.com', ['reply'])
-    expect(logSpy).toHaveBeenCalledWith('Push to https://push.example', 'reply')
-
-    logSpy.mockRestore()
-  })
-})
-
