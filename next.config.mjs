@@ -1,22 +1,7 @@
-import withPWA from 'next-pwa'
+import nextMDX from "@next/mdx"
 
-const withPWAFunc = withPWA({
-  dest: 'public',
-  disable: process.env.NODE_ENV === 'development',
-  runtimeCaching: [
-    {
-      urlPattern: ({ url }) =>
-        url.pathname.startsWith('/books/') && url.pathname.includes('/verses/'),
-      handler: 'NetworkFirst',
-      options: {
-        cacheName: 'verse-data',
-        expiration: {
-          maxEntries: 200,
-          maxAgeSeconds: 30 * 24 * 60 * 60,
-        },
-      },
-    },
-  ],
+const withMDX = nextMDX({
+  extension: /\.(md|mdx)$/,
 })
 
 /** @type {import('next').NextConfig} */
@@ -30,6 +15,7 @@ const nextConfig = {
   images: {
     unoptimized: true,
   },
+  pageExtensions: ["ts", "tsx", "js", "jsx", "md", "mdx"],
 }
 
-export default withPWAFunc(nextConfig)
+export default withMDX(nextConfig)
