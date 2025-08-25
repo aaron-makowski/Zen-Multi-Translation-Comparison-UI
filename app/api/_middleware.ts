@@ -1,38 +1,38 @@
-import { NextResponse } from "next/server";
-import type { NextRequest } from "next/server";
+// NOTE: This rate limiter stores counts in memory and is unsuitable for serverless or
+// multi-instance deployments. It should only be used for development or single-instance
+// production setups. For robust deployments, use a distributed store like Redis.
+import { NextRequest, NextResponse } from 'next/server';
 
-// Simple in-memory rate limiting per IP
-const WINDOW_MS = 60_000; // 1 minute window
-const MAX_REQUESTS = 60; // Max 60 requests per minute
+const RATE_LIMIT_WINDOW_MS = 60_000; // 1 minute
+const RATE_LIMIT_MAX_REQUESTS = 100;
 
-const ipHits = new Map<string, { count: number; expires: number }>();
+const ipHits = new Map<string, { count: number; timestamp: number }>();
 
-export function middleware(request: NextRequest) {
+export function middleware(req: NextRequest) {
   const ip =
-    request.headers.get("x-forwarded-for")?.split(",")[0] ||
-    request.ip ||
-    "unknown";
+    req.ip ||
+    req.headers.get('x-real-ip') ||
+    req.headers.get('x-forwarded-for')?.split(',')[0] ||
+    'unknown';
 
   const now = Date.now();
-  const record = ipHits.get(ip) || { count: 0, expires: now + WINDOW_MS };
+  const record = ipHits.get(ip) || { count: 0, timestamp: now };
 
-  if (now > record.expires) {
+  if (now - record.timestamp > RATE_LIMIT_WINDOW_MS) {
     record.count = 0;
-    record.expires = now + WINDOW_MS;
+    record.timestamp = now;
   }
 
-  record.count++;
+  record.count += 1;
   ipHits.set(ip, record);
 
-  if (record.count > MAX_REQUESTS) {
-    return new NextResponse("Too Many Requests", { status: 429 });
+  if (record.count > RATE_LIMIT_MAX_REQUESTS) {
+    return NextResponse.json({ error: 'Too Many Requests' }, { status: 429 });
   }
 
   return NextResponse.next();
 }
 
 export const config = {
-  matcher: "/api/:path*",
+  matcher: '/api/:path*',
 };
-
-export default middleware;
