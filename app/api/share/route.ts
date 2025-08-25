@@ -1,17 +1,15 @@
-import { NextRequest, NextResponse } from "next/server";
+import { NextResponse } from "next/server"
 
-export async function GET(req: NextRequest) {
-  const { searchParams } = new URL(req.url);
-  const id = searchParams.get("id") || searchParams.get("highlightId");
-  if (!id) {
-    return NextResponse.json({ error: "Missing highlight id" }, { status: 400 });
+export async function POST(req: Request) {
+  const { bookId, verseId, highlight } = await req.json()
+
+  if (!bookId || !verseId || !highlight) {
+    return NextResponse.json({ error: "Missing fields" }, { status: 400 })
   }
 
-  const baseUrl = req.nextUrl.origin;
-  const highlightUrl = `${baseUrl}/highlights/${id}`;
+  const url = new URL(req.url)
+  const baseUrl = `${url.protocol}//${url.host}`
+  const shareUrl = `${baseUrl}/books/${bookId}/verses/${verseId}?highlight=${encodeURIComponent(highlight)}`
 
-  const twitter = `https://twitter.com/intent/tweet?url=${encodeURIComponent(highlightUrl)}`;
-  const facebook = `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(highlightUrl)}`;
-
-  return NextResponse.json({ url: highlightUrl, twitter, facebook });
+  return NextResponse.json({ url: shareUrl })
 }

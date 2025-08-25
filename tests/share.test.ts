@@ -1,60 +1,41 @@
-import { describe, it, expect, afterEach } from 'vitest'
-import { GET } from '../app/api/share/route'
+import { describe, it, expect } from 'vitest'
+import { POST } from '../app/api/share/route'
 
-describe('/api/share', () => {
-  const ORIGINAL_BASE = process.env.NEXT_PUBLIC_APP_URL
+const baseUrl = 'https://example.com'
 
-  afterEach(() => {
-    if (ORIGINAL_BASE === undefined) {
-      delete process.env.NEXT_PUBLIC_APP_URL
-    } else {
-      process.env.NEXT_PUBLIC_APP_URL = ORIGINAL_BASE
-    }
+function createRequest(body: Record<string, unknown>) {
+  return new Request(`${baseUrl}/api/share`, {
+    method: 'POST',
+    headers: { 'content-type': 'application/json' },
+    body: JSON.stringify(body)
   })
+}
 
-  it('generates encoded share links for all platforms', async () => {
-    const cases = [
-      {
-        text: 'Hello World!',
-        url: 'https://example.com/a?b=1&c=two'
-      },
-      {
-        text: 'Symbols & spaces',
-        url: 'https://foo.bar/baz qux?q=one&z=2'
-      }
-    ]
+describe('POST /api/share', () => {
+  it('returns a share URL for valid input', async () => {
+    const req = createRequest({
+      bookId: 'john',
+      verseId: '3-16',
+      highlight: 'For God so loved the world'
+    })
 
-    for (const { text, url } of cases) {
-      const res = await GET(
-        new Request(`http://test/api/share?text=${encodeURIComponent(text)}&url=${encodeURIComponent(url)}`)
-      )
-      const data = await res.json()
-      const encodedText = encodeURIComponent(text)
-      const encodedUrl = encodeURIComponent(url)
-
-      expect(data).toEqual({
-        twitter: `https://twitter.com/intent/tweet?text=${encodedText}&url=${encodedUrl}`,
-        facebook: `https://www.facebook.com/sharer/sharer.php?u=${encodedUrl}`,
-        reddit: `https://www.reddit.com/submit?url=${encodedUrl}&title=${encodedText}`
-      })
-    }
-  })
-
-  it('returns 400 when text is missing', async () => {
-    const res = await GET(new Request('http://test/api/share?url=https://example.com'))
-    expect(res.status).toBe(400)
-    expect(await res.json()).toEqual({ error: 'Missing text' })
-  })
-
-  it('falls back to default base URL when url is missing', async () => {
-    process.env.NEXT_PUBLIC_APP_URL = 'https://base.example'
-    const res = await GET(new Request('http://test/api/share?text=hi'))
+    const res = await POST(req)
     const data = await res.json()
-    const encodedText = encodeURIComponent('hi')
-    const encodedUrl = encodeURIComponent('https://base.example')
 
-    expect(data.twitter).toBe(`https://twitter.com/intent/tweet?text=${encodedText}&url=${encodedUrl}`)
-    expect(data.facebook).toBe(`https://www.facebook.com/sharer/sharer.php?u=${encodedUrl}`)
-    expect(data.reddit).toBe(`https://www.reddit.com/submit?url=${encodedUrl}&title=${encodedText}`)
+    expect(res.status).toBe(200)
+    expect(data.url).toBe(
+      `${baseUrl}/books/john/verses/3-16?highlight=${encodeURIComponent(
+        'For God so loved the world'
+      )}`
+    )
+  })
+
+  it('returns 400 when required fields are missing', async () => {
+    const req = createRequest({ bookId: 'john' })
+    const res = await POST(req)
+    const data = await res.json()
+
+    expect(res.status).toBe(400)
+    expect(data.error).toBe('Missing fields')
   })
 })
