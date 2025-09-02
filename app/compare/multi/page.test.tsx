@@ -2,6 +2,8 @@ import React from 'react';
 import { describe, it, expect, beforeEach, vi } from 'vitest';
 import { renderToString } from 'react-dom/server';
 
+;(globalThis as any).React = React;
+
 const { booksFindMany, versesFindMany } = vi.hoisted(() => ({
   booksFindMany: vi.fn(),
   versesFindMany: vi.fn(),
@@ -19,6 +21,8 @@ vi.mock('@/lib/db', () => ({
     },
   },
 }));
+
+vi.mock('@/lib/schema', () => ({ verses: {} }));
 
 import MultiComparePage from './page';
 
@@ -64,7 +68,7 @@ describe('MultiComparePage', () => {
       },
     ]);
 
-    const jsx = await MultiComparePage({ searchParams: { ids: ['v1', 'v2'] } });
+    const jsx = await MultiComparePage({ searchParams: { ids: 'v1,v2' } });
     const html = renderToString(jsx);
 
     expect(html).toContain('Book One<!-- --> - Verse <!-- -->1');
@@ -87,7 +91,7 @@ describe('MultiComparePage', () => {
   it('handles invalid ids', async () => {
     versesFindMany.mockResolvedValue([]);
 
-    const jsx = await MultiComparePage({ searchParams: { ids: ['bad'] } });
+    const jsx = await MultiComparePage({ searchParams: { ids: 'bad' } });
     const html = renderToString(jsx);
 
     expect(versesFindMany).toHaveBeenCalled();

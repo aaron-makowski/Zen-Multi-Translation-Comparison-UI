@@ -18,12 +18,12 @@ export default async function MultiComparePage({
     },
   })
 
-  // Normalize the ids search param into an array
+  // Normalize the ids search param into an array, supporting comma-separated values
   const idsParam = searchParams?.ids
   const verseIds = Array.isArray(idsParam)
-    ? idsParam
-    : idsParam
-    ? [idsParam]
+    ? idsParam.flatMap((v) => v.split(",").filter(Boolean))
+    : typeof idsParam === "string"
+    ? idsParam.split(",").filter(Boolean)
     : []
 
   // Fetch selected verses with their translations
