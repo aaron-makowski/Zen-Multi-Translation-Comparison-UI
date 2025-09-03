@@ -54,7 +54,7 @@ export function MultiVerseSelector({ books, initialSelected }: MultiVerseSelecto
 
   const handleCompare = () => {
     if (selected.length > 0) {
-      router.push(`/compare/multi?verses=${selected.join(",")}`)
+      router.push(`/compare/multi?ids=${selected.join(",")}`)
     }
   }
 
