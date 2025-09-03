@@ -4,37 +4,14 @@
     "home": "Inicio",
     "books": "Libros",
     "compare": "Comparar",
-<<<<<<< HEAD
-    "pdfPreview": "Vista PDF",
-=======
     "reddit": "Reddit",
     "pdfPreview": "Vista previa PDF",
->>>>>>> origin/codex/set-up-next-intl-with-translations
     "about": "Acerca de",
     "login": "Iniciar sesión",
     "register": "Registrarse"
   },
   "Home": {
     "title": "Comparación de Traducciones de Textos Zen",
-<<<<<<< HEAD
-    "explore": {
-      "title": "Explorar Traducciones",
-      "desc": "Explore diferentes traducciones de textos zen clásicos.",
-      "button": "Ver Libros"
-    },
-    "compare": {
-      "title": "Comparar Traducciones",
-      "desc": "Comparar diferentes traducciones lado a lado.",
-      "button": "Comparar Traducciones"
-    },
-    "about": {
-      "title": "Sobre Este Proyecto",
-      "desc": "Esta aplicación te permite explorar y comparar diferentes traducciones de textos zen clásicos. Puedes navegar por libros, leer versos y comparar cómo distintos traductores han interpretado el mismo texto.",
-      "button": "Aprender Más"
-    },
-    "dateLabel": "Fecha de hoy: {date}",
-    "numberLabel": "Número de ejemplo: {number}"
-=======
     "exploreTranslations": "Explorar Traducciones",
     "exploreDesc": "Explora diferentes traducciones de textos clásicos del Zen.",
     "viewBooks": "Ver Libros",
@@ -42,7 +19,9 @@
     "compareDesc": "Compara diferentes traducciones lado a lado.",
     "aboutProject": "Sobre este Proyecto",
     "aboutDesc": "Esta aplicación te permite explorar y comparar diferentes traducciones de textos clásicos del Zen. Puedes navegar por libros, leer versos y comparar cómo diferentes traductores han interpretado el mismo texto.",
-    "learnMore": "Saber más"
+    "learnMore": "Saber más",
+    "dateLabel": "Fecha de hoy: {date}",
+    "numberLabel": "Número de ejemplo: {number}"
   },
   "Books": {
     "title": "Biblioteca de Textos Zen",
@@ -54,6 +33,5 @@
     "placeholder": "Agregar un comentario",
     "post": "Publicar",
     "noComments": "Aún no hay comentarios."
->>>>>>> origin/codex/set-up-next-intl-with-translations
   }
 }

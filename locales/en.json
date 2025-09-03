@@ -4,10 +4,7 @@
     "home": "Home",
     "books": "Books",
     "compare": "Compare",
-<<<<<<< HEAD
-=======
     "reddit": "Reddit",
->>>>>>> origin/codex/set-up-next-intl-with-translations
     "pdfPreview": "PDF Preview",
     "about": "About",
     "login": "Login",
@@ -15,25 +12,6 @@
   },
   "Home": {
     "title": "Zen Texts Translation Comparison",
-<<<<<<< HEAD
-    "explore": {
-      "title": "Explore Translations",
-      "desc": "Browse through different translations of classic Zen texts.",
-      "button": "View Books"
-    },
-    "compare": {
-      "title": "Compare Translations",
-      "desc": "Compare different translations side by side.",
-      "button": "Compare Translations"
-    },
-    "about": {
-      "title": "About This Project",
-      "desc": "This application allows you to explore and compare different translations of classic Zen texts. You can browse through books, read verses, and compare how different translators have interpreted the same text.",
-      "button": "Learn More"
-    },
-    "dateLabel": "Today's date: {date}",
-    "numberLabel": "Sample number: {number}"
-=======
     "exploreTranslations": "Explore Translations",
     "exploreDesc": "Browse through different translations of classic Zen texts.",
     "viewBooks": "View Books",
@@ -41,7 +19,9 @@
     "compareDesc": "Compare different translations side by side.",
     "aboutProject": "About This Project",
     "aboutDesc": "This application allows you to explore and compare different translations of classic Zen texts. You can browse through books, read verses, and compare how different translators have interpreted the same text.",
-    "learnMore": "Learn More"
+    "learnMore": "Learn More",
+    "dateLabel": "Today's date: {date}",
+    "numberLabel": "Sample number: {number}"
   },
   "Books": {
     "title": "Zen Texts Library",
@@ -53,6 +33,5 @@
     "placeholder": "Add a comment",
     "post": "Post",
     "noComments": "No comments yet."
->>>>>>> origin/codex/set-up-next-intl-with-translations
   }
 }
