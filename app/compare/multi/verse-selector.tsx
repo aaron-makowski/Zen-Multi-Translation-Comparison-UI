@@ -45,9 +45,9 @@ export function VerseSelector({ books, initialPairs = [{ bookId: books[0]?.id ??
     e.preventDefault()
     const query = pairs
       .filter((p) => p.bookId && p.verseId)
-      .map((p) => `${p.bookId}:${p.verseId}`)
+      .map((p) => p.verseId)
       .join(",")
-    router.push(`/compare/multi?pairs=${encodeURIComponent(query)}`)
+    router.push(`/compare/multi?ids=${encodeURIComponent(query)}`)
   }
 
   return (
