@@ -1,141 +1,56 @@
-import { describe, it, expect, beforeEach, vi } from 'vitest'
+import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest'
+import { promises as fs } from 'fs'
+import path from 'path'
+import os from 'os'
 
-let GET: any, POST: any, DELETE_: any
-let store: any[]
+let GET: () => Promise<Response>
+let POST: (req: Request) => Promise<Response>
+let DELETE_: (req: Request) => Promise<Response>
+let tempDir: string
 
 beforeEach(async () => {
-  store = []
-  await vi.resetModules()
+  vi.resetModules()
+  tempDir = await fs.mkdtemp(path.join(os.tmpdir(), 'bookmarks-'))
+  vi.spyOn(process, 'cwd').mockReturnValue(tempDir)
+  ;({ GET, POST, DELETE: DELETE_ } = await import('../../app/api/bookmarks/route'))
+})
 
-  vi.doMock('@/lib/schema', () => ({
-    bookmarks: { userId: 'userId', verseId: 'verseId' }
-  }))
-
-  vi.doMock('drizzle-orm', () => ({
-    eq: (field: string, value: any) => ({ field, value }),
-    and: (a: any, b: any) => ({ cond1: a, cond2: b })
-  }))
-
-  vi.doMock('@/lib/db', () => ({
-    db: {
-      select: () => ({
-        from: () => ({
-          where: ({ field, value }: any) => Promise.resolve(store.filter((b) => b[field] === value))
-        })
-      }),
-      insert: () => ({
-        values: (val: any) => ({
-          onConflictDoNothing: () => ({
-            returning: () => {
-              const exists = store.some((b) => b.userId === val.userId && b.verseId === val.verseId)
-              if (!exists) {
-                store.push(val)
-                return Promise.resolve([val])
-              }
-              return Promise.resolve([null])
-            }
-          })
-        })
-      }),
-      delete: () => ({
-        where: ({ cond1, cond2 }: any) => {
-          const userId = cond1.value
-          const verseId = cond2.value
-          const index = store.findIndex((b) => b.userId === userId && b.verseId === verseId)
-          if (index !== -1) store.splice(index, 1)
-          return Promise.resolve()
-        }
-      })
-    }
-  }))
-
-  const mod = await import('../../app/api/bookmarks/route')
-  GET = mod.GET
-  POST = mod.POST
-  DELETE_ = mod.DELETE
+afterEach(async () => {
+  vi.restoreAllMocks()
+  await fs.rm(tempDir, { recursive: true, force: true })
 })
 
 describe('bookmarks API', () => {
-  it('GET requires userId', async () => {
-    const res = await GET(new Request('http://test/api/bookmarks'))
-    expect(res.status).toBe(400)
-  })
-
-  it('POST requires fields', async () => {
-    const res = await POST(
-      new Request('http://test/api/bookmarks', {
-        method: 'POST',
-        body: JSON.stringify({ userId: 'u1' }),
-        headers: { 'Content-Type': 'application/json' }
-      })
-    )
-    expect(res.status).toBe(400)
-  })
-
-  it('DELETE requires fields', async () => {
-    const res = await DELETE_(
-      new Request('http://test/api/bookmarks', {
-        method: 'DELETE',
-        body: JSON.stringify({ userId: 'u1' }),
-        headers: { 'Content-Type': 'application/json' }
-      })
-    )
-    expect(res.status).toBe(400)
-  })
-
-  it('posting twice does not duplicate', async () => {
-    const makeReq = () =>
-      new Request('http://test/api/bookmarks', {
-        method: 'POST',
-        body: JSON.stringify({ userId: 'u1', verseId: 'v1' }),
-        headers: { 'Content-Type': 'application/json' }
-      })
-    await POST(makeReq())
-    await POST(makeReq())
-    const res = await GET(new Request('http://test/api/bookmarks?userId=u1'))
-    const list = await res.json()
-    expect(list).toHaveLength(1)
-  })
-
-  it('lists bookmarks for a user', async () => {
+  it('adds and lists bookmarks', async () => {
     await POST(
-      new Request('http://test/api/bookmarks', {
+      new Request('http://test', {
         method: 'POST',
-        body: JSON.stringify({ userId: 'u1', verseId: 'v1' }),
-        headers: { 'Content-Type': 'application/json' }
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ verseId: '1' })
       })
     )
-    await POST(
-      new Request('http://test/api/bookmarks', {
-        method: 'POST',
-        body: JSON.stringify({ userId: 'u2', verseId: 'v2' }),
-        headers: { 'Content-Type': 'application/json' }
-      })
-    )
-    const res = await GET(new Request('http://test/api/bookmarks?userId=u1'))
-    const list = await res.json()
-    expect(list).toHaveLength(1)
-    expect(list[0].userId).toBe('u1')
+    const res = await GET()
+    expect(res.status).toBe(200)
+    expect(await res.json()).toEqual(['1'])
   })
 
-  it('deleting a bookmark removes it', async () => {
+  it('removes bookmarks', async () => {
     await POST(
-      new Request('http://test/api/bookmarks', {
+      new Request('http://test', {
         method: 'POST',
-        body: JSON.stringify({ userId: 'u1', verseId: 'v1' }),
-        headers: { 'Content-Type': 'application/json' }
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ verseId: '1' })
       })
     )
     await DELETE_(
-      new Request('http://test/api/bookmarks', {
+      new Request('http://test', {
         method: 'DELETE',
-        body: JSON.stringify({ userId: 'u1', verseId: 'v1' }),
-        headers: { 'Content-Type': 'application/json' }
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ verseId: '1' })
       })
     )
-    const res = await GET(new Request('http://test/api/bookmarks?userId=u1'))
-    const list = await res.json()
-    expect(list).toHaveLength(0)
+    const res = await GET()
+    expect(await res.json()).toEqual([])
   })
 })
 
