@@ -67,12 +67,14 @@ export async function addKarma(userId: string, type: ActivityType) {
   const points = KARMA_VALUES[type]
   type UserStats = {
     karma: number
+    commentKarma: number
+    highlightKarma: number
     streak: number
     lastActive: Date | null
   }
   const user = (await db.query.users.findFirst({
     where: eq(users.id, userId),
-  })) as (UserStats | null)
+  })) as UserStats | null
   if (!user) {
     throw new Error(`User with id ${userId} not found`)
   }
@@ -85,13 +87,23 @@ export async function addKarma(userId: string, type: ActivityType) {
   else if (diff > 1) streak = 1
 
   const karma = (user.karma ?? 0) + points
+  let commentKarma = user.commentKarma ?? 0
+  let highlightKarma = user.highlightKarma ?? 0
+  if (type === "comment") commentKarma += points
+  if (type === "highlight") highlightKarma += points
 
   await db
     .update(users)
-    .set({ karma, streak, lastActive: now })
+    .set({ karma, commentKarma, highlightKarma, streak, lastActive: now })
     .where(eq(users.id, userId))
 
-  return { karma, streak, badge: getKarmaBadge(karma) }
+  return {
+    karma,
+    commentKarma,
+    highlightKarma,
+    streak,
+    badge: getKarmaBadge(karma),
+  }
 }
 
 export function getBadges(user: {
