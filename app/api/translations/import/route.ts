@@ -1,8 +1,9 @@
 import { NextResponse } from "next/server"
+import { revalidateTag } from "next/cache"
 import { db } from "@/lib/db"
 import { translations } from "@/lib/schema"
+import { loadCachedTranslations, updateTranslationsCache } from "@/lib/verse-cache"
 
-<<<<<<< HEAD
 function parseCSV(text: string) {
   const [headerLine, ...lines] = text.trim().split(/\r?\n/)
   const headers = headerLine.split(",")
@@ -48,35 +49,22 @@ export async function POST(req: Request) {
     return NextResponse.json({ error: "Missing fields" }, { status: 400 })
   }
   await db.insert(translations).values(values)
+
+  const cache = await loadCachedTranslations()
+  for (const v of values) {
+    for (const book of Object.values(cache) as any[]) {
+      const verse = book.verses.find((ver: any) => ver.id === Number(v.verseId))
+      if (verse) {
+        for (const line of verse.lines) {
+          line.translations[v.translator] = v.text
+        }
+      }
+    }
+  }
+  await updateTranslationsCache(cache)
+  revalidateTag("verses")
+  revalidateTag("translations")
+
   return NextResponse.json({ imported: values.length })
-=======
-export async function POST(req: Request) {
-  const form = await req.formData()
-  const file = form.get("file")
-  if (!file || typeof file === "string") {
-    return NextResponse.json({ error: "File is required" }, { status: 400 })
-  }
-  try {
-    const text = await (file as File).text()
-    const data = JSON.parse(text)
-    if (!Array.isArray(data)) {
-      return NextResponse.json({ error: "Invalid data" }, { status: 400 })
-    }
-    for (const item of data) {
-      if (!item.text || !item.translator || !item.verseId) continue
-      await db.insert(translations).values({
-        id: crypto.randomUUID(),
-        text: item.text,
-        translator: item.translator,
-        language: item.language || "English",
-        verseId: item.verseId,
-        createdAt: new Date(),
-        updatedAt: new Date(),
-      })
-    }
-    return NextResponse.json({ success: true, count: data.length })
-  } catch (e) {
-    return NextResponse.json({ error: "Failed to import" }, { status: 500 })
-  }
->>>>>>> origin/codex/build-rest-api-for-books-and-translations
 }
+
