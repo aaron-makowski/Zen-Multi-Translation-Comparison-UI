@@ -8,25 +8,6 @@ import { useTranslations } from "next-intl"
 
 export const revalidate = 60 // Revalidate data every 60 seconds
 
-<<<<<<< HEAD
-interface PageProps {
-  searchParams: {
-    q?: string
-    sort?: string
-  }
-}
-
-export default async function BooksPage({ searchParams }: PageProps) {
-  const sort = searchParams.sort === "recent" ? "recent" : "title"
-  const query = searchParams.q?.toLowerCase() ?? ""
-
-  const allBooks = await db.query.books.findMany({
-    orderBy:
-      sort === "title"
-        ? (books, { asc }) => [asc(books.title)]
-        : (books, { desc }) => [desc(books.createdAt)],
-  })
-=======
 export default async function BooksPage() {
   const t = useTranslations('Books')
   let allBooks = []
@@ -37,7 +18,6 @@ export default async function BooksPage() {
   } catch {
     allBooks = []
   }
->>>>>>> origin/codex/set-up-next-intl-with-translations
 
   const filteredBooks = query
     ? allBooks.filter((book) => book.title.toLowerCase().includes(query))

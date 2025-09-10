@@ -1,17 +1,4 @@
 import type React from "react";
-<<<<<<< HEAD
-import { notFound } from "next/navigation";
-import { NextIntlClientProvider } from "next-intl";
-import { unstable_setRequestLocale } from "next-intl/server";
-import { Navigation } from "@/components/navigation";
-import { ThemeProvider } from "@/components/theme-provider";
-
-export function generateStaticParams() {
-  return [{ locale: "en" }, { locale: "es" }];
-}
-
-export default async function LocaleLayout({
-=======
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import {NextIntlClientProvider} from "next-intl";
@@ -34,18 +21,12 @@ export function generateStaticParams() {
 }
 
 export default async function RootLayout({
->>>>>>> origin/codex/set-up-next-intl-with-translations
   children,
   params: { locale },
 }: {
   children: React.ReactNode;
   params: { locale: string };
 }) {
-<<<<<<< HEAD
-  unstable_setRequestLocale(locale);
-
-=======
->>>>>>> origin/codex/set-up-next-intl-with-translations
   let messages;
   try {
     messages = (await import(`../../locales/${locale}.json`)).default;
@@ -54,14 +35,6 @@ export default async function RootLayout({
   }
 
   return (
-<<<<<<< HEAD
-    <NextIntlClientProvider locale={locale} messages={messages}>
-      <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
-        <Navigation />
-        {children}
-      </ThemeProvider>
-    </NextIntlClientProvider>
-=======
     <html lang={locale}>
       <body className={`${inter.className} bg-gray-50 min-h-screen`}>
         <NextIntlClientProvider locale={locale} messages={messages}>
@@ -72,6 +45,5 @@ export default async function RootLayout({
         </NextIntlClientProvider>
       </body>
     </html>
->>>>>>> origin/codex/set-up-next-intl-with-translations
   );
 }

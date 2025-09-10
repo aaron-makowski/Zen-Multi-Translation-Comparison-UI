@@ -1,8 +1,6 @@
 import { NextResponse } from "next/server"
 import { readData, writeData, Comment } from "../route"
 
-<<<<<<< HEAD
-=======
 function collectDescendants(list: Comment[], id: string, acc: Set<string>) {
   for (const c of list) {
     if (c.parentId === id) {
@@ -20,35 +18,10 @@ export function removeWithDescendants(list: Comment[], id: string) {
   return { removed: target, list: list.filter((c) => !ids.has(c.id)) }
 }
 
->>>>>>> origin/codex/extend-api-for-nested-comments-support
 export async function POST(
   req: Request,
   { params }: { params: { id: string } }
 ) {
-<<<<<<< HEAD
-  const { verseId, action } = await req.json()
-  if (!verseId || !action) {
-    return NextResponse.json({ error: "Missing fields" }, { status: 400 })
-  }
-  const data = await readData()
-  const list = data[verseId]
-  if (!list) {
-    return NextResponse.json({ error: "Not found" }, { status: 404 })
-  }
-  const idx = list.findIndex((c: Comment) => c.id === params.id)
-  if (idx === -1) {
-    return NextResponse.json({ error: "Not found" }, { status: 404 })
-  }
-  if (action === "remove") {
-    list.splice(idx, 1)
-  } else if (action === "flag") {
-    list[idx].flagged = true
-  } else {
-    return NextResponse.json({ error: "Invalid action" }, { status: 400 })
-  }
-  await writeData(data)
-  return NextResponse.json({ success: true })
-=======
   if (req.headers.get("x-admin") !== "true") {
     return NextResponse.json({ error: "Unauthorized" }, { status: 403 })
   }
@@ -83,5 +56,4 @@ export async function POST(
 
   await writeData(data)
   return NextResponse.json(found)
->>>>>>> origin/codex/extend-api-for-nested-comments-support
 }
