@@ -1,6 +1,8 @@
 import { NextResponse } from "next/server"
 import { promises as fs } from "fs"
 import path from "path"
+import { addKarma } from "@/lib/gamification"
+import { createNotification } from "@/lib/notifications"
 
 export interface Comment {
   id: string
@@ -74,8 +76,8 @@ export async function POST(req: Request) {
   if (!data[verseId]) data[verseId] = []
   data[verseId].push(comment)
   await writeData(data)
+  await addKarma(userId, "comment")
   if (replyToUserId || (Array.isArray(mentions) && mentions.length)) {
-    const { createNotification } = await import("../../../lib/notifications")
     if (replyToUserId) {
       await createNotification(replyToUserId, "reply", content)
     }
