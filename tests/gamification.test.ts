@@ -1,16 +1,21 @@
-import { describe, expect, it, vi } from 'vitest'
+import { describe, expect, it, vi, beforeEach } from 'vitest'
+
+const mocks = vi.hoisted(() => {
+  const where = vi.fn().mockResolvedValue(undefined)
+  const set = vi.fn(() => ({ where }))
+  const update = vi.fn(() => ({ set }))
+  const findFirst = vi.fn()
+  return { where, set, update, findFirst }
+})
 
 vi.mock('../lib/db', () => ({
   db: {
-    update: () => ({
-      set: () => ({
-        where: () => ({
-          returning: () => Promise.resolve([]),
-        }),
-      }),
-    }),
+    update: mocks.update,
+    query: { users: { findFirst: mocks.findFirst } },
   },
 }))
+
+vi.mock('../lib/schema', () => ({ users: {} }))
 
 import {
   calculateStreak,
@@ -34,7 +39,46 @@ describe('gamification helpers', () => {
 })
 
 describe('addKarma', () => {
+  beforeEach(() => {
+    mocks.findFirst.mockReset()
+    mocks.update.mockClear()
+    mocks.set.mockClear()
+    mocks.where.mockClear()
+  })
+
   it('throws for invalid user ID', async () => {
+    mocks.findFirst.mockResolvedValue(null)
     await expect(addKarma('invalid', 'comment')).rejects.toThrow()
+  })
+
+  it('updates karma and streak and persists', async () => {
+    const mockUser = {
+      id: 'u1',
+      karma: 10,
+      commentKarma: 4,
+      highlightKarma: 1,
+      streak: 2,
+      lastActive: new Date(Date.now() - 86400000),
+    }
+    mocks.findFirst.mockResolvedValue(mockUser)
+
+    const result = await addKarma('u1', 'comment')
+
+    expect(result.karma).toBe(15)
+    expect(result.commentKarma).toBe(9)
+    expect(result.highlightKarma).toBe(1)
+    expect(result.streak).toBe(3)
+    expect(result.badge.name).toBe('Commentator')
+
+    expect(mocks.update).toHaveBeenCalledTimes(1)
+    expect(mocks.set).toHaveBeenCalledWith(
+      expect.objectContaining({
+        karma: 15,
+        commentKarma: 9,
+        highlightKarma: 1,
+        streak: 3,
+        lastActive: expect.any(Date),
+      })
+    )
   })
 })
