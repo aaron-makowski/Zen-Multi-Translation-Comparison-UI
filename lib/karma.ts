@@ -1,11 +1,22 @@
-export function getKarmaBadge(karma: number): string {
-  if (karma >= 1000) return "sage"
-  if (karma >= 500) return "adept"
-  if (karma >= 100) return "apprentice"
-  return "novice"
+export interface KarmaBadge {
+  /** Minimum karma required for this badge */
+  min: number
+  label: string
+  color: string
 }
 
-export function formatKarmaBadge(karma: number): string {
-  const badge = getKarmaBadge(karma)
-  return badge.charAt(0).toUpperCase() + badge.slice(1)
+// Ordered by minimum karma requirement ascending
+export const karmaBadges: KarmaBadge[] = [
+  { min: 0, label: "Novice", color: "text-gray-500" },
+  { min: 100, label: "Contributor", color: "text-green-600" },
+  { min: 500, label: "Adept", color: "text-blue-600" },
+  { min: 1000, label: "Sage", color: "text-purple-600" },
+]
+
+/**
+ * Return the badge information for the given karma value.
+ */
+export function getKarmaBadge(karma: number): { label: string; color: string } {
+  const badge = [...karmaBadges].reverse().find((b) => karma >= b.min) ?? karmaBadges[0]
+  return { label: badge.label, color: badge.color }
 }
