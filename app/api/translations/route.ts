@@ -1,24 +1,24 @@
 import { NextResponse } from "next/server"
 import { db } from "@/lib/db"
 import { translations } from "@/lib/schema"
-import { eq } from "drizzle-orm"
-import { Redis } from "@upstash/redis"
-
-let redis: Redis | null = null
-try {
-  redis = Redis.fromEnv()
-} catch {
-  redis = null
-}
+import { eq, asc } from "drizzle-orm"
+import { redis } from "@/lib/redis"
 
 export async function GET(req: Request) {
   const { searchParams } = new URL(req.url)
   const verseId = searchParams.get("verseId")
-  const page = parseInt(searchParams.get("page") || "0")
-  const limit = parseInt(searchParams.get("limit") || "5")
+  const page = parseInt(searchParams.get("page") ?? "1", 10)
+  const limit = parseInt(searchParams.get("limit") ?? "5", 10)
 
   if (!verseId) {
     return NextResponse.json({ error: "Missing verseId" }, { status: 400 })
+  }
+
+  if (isNaN(page) || page <= 0 || isNaN(limit) || limit <= 0) {
+    return NextResponse.json(
+      { error: "Invalid page or limit" },
+      { status: 400 }
+    )
   }
 
   const cacheKey = `translations:${verseId}:${page}:${limit}`
@@ -29,12 +29,14 @@ export async function GET(req: Request) {
     }
   }
 
-  const data = await db.query.translations.findMany({
-    where: eq(translations.verseId, verseId),
-    orderBy: (translations, { asc }) => [asc(translations.translator)],
-    limit,
-    offset: page * limit,
-  })
+  const offset = (page - 1) * limit
+  const data = await db
+    .select()
+    .from(translations)
+    .where(eq(translations.verseId, verseId))
+    .orderBy(asc(translations.translator))
+    .limit(limit)
+    .offset(offset)
 
   if (redis) {
     await redis.set(cacheKey, data, { ex: 60 })
