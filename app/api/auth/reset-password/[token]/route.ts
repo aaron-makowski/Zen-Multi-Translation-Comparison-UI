@@ -1,19 +1,35 @@
-import { PrismaClient } from "@prisma/client"
+import { prisma } from "@/lib/db"
 import { NextResponse } from "next/server"
 import bcrypt from "bcryptjs"
+import { z } from "zod"
+import { rateLimit } from "@/lib/rate-limit"
 
-const prisma = new PrismaClient()
+const schema = z.object({ password: z.string().min(6) })
 
-export async function POST(req: Request, { params }: { params: { token: string } }) {
-  const { password } = await req.json()
-  if (!password) {
-    return NextResponse.json({ error: "Password required" }, { status: 400 })
+export async function POST(
+  req: Request,
+  { params }: { params: { token: string } },
+) {
+  const ip =
+    req.headers.get("x-forwarded-for")?.split(",")[0] ||
+    req.headers.get("x-real-ip") ||
+    "unknown"
+
+  if (await rateLimit(`reset-password:${ip}`)) {
+    return NextResponse.json({ error: "Too many requests" }, { status: 429 })
   }
+
+  const parsed = schema.safeParse(await req.json())
+  if (!parsed.success) {
+    return NextResponse.json({ error: "Invalid input" }, { status: 400 })
+  }
+
+  const { password } = parsed.data
   const record = await prisma.verificationToken.findUnique({
     where: { token: params.token },
   })
   if (!record || record.expires < new Date()) {
-    return NextResponse.json({ error: "Invalid token" }, { status: 400 })
+    return NextResponse.json({ error: "Invalid input" }, { status: 400 })
   }
   const hashed = await bcrypt.hash(password, 10)
   await prisma.user.update({

@@ -1,15 +1,28 @@
-import { PrismaClient } from "@prisma/client"
 import { NextResponse } from "next/server"
+import { prisma } from "@/lib/db"
 import { randomUUID } from "crypto"
 import nodemailer from "nodemailer"
+import { z } from "zod"
+import { rateLimit } from "@/lib/rate-limit"
 
-const prisma = new PrismaClient()
+const schema = z.object({ email: z.string().email() })
 
 export async function POST(req: Request) {
-  const { email } = await req.json()
-  if (!email) {
-    return NextResponse.json({ error: "Email required" }, { status: 400 })
+  const ip =
+    req.headers.get("x-forwarded-for")?.split(",")[0] ||
+    req.headers.get("x-real-ip") ||
+    "unknown"
+
+  if (await rateLimit(`reset-password:${ip}`)) {
+    return NextResponse.json({ error: "Too many requests" }, { status: 429 })
   }
+
+  const parsed = schema.safeParse(await req.json())
+  if (!parsed.success) {
+    return NextResponse.json({ error: "Invalid input" }, { status: 400 })
+  }
+
+  const { email } = parsed.data
   const user = await prisma.user.findUnique({ where: { email } })
   if (!user) {
     return NextResponse.json({ ok: true })
