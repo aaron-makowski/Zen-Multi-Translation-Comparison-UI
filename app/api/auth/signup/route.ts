@@ -1,27 +1,32 @@
 import { NextResponse } from "next/server"
 import { PrismaClient } from "@prisma/client"
 import { hash } from "bcryptjs"
+import { z } from "zod"
+import { rateLimit } from "@/lib/rate-limit"
 
 const prisma = new PrismaClient()
 
+const signupSchema = z.object({
+  email: z.string().email(),
+  username: z.string().min(1),
+  password: z.string().min(6),
+})
+
 export async function POST(req: Request) {
-  const { email, username, password } = await req.json()
-  if (
-    typeof email !== "string" ||
-    typeof username !== "string" ||
-    typeof password !== "string"
-  ) {
-    return NextResponse.json({ error: "Missing fields" }, { status: 400 })
+  const ip =
+    req.headers.get("x-real-ip") ||
+    req.headers.get("x-forwarded-for")?.split(",")[0] ||
+    "unknown"
+  const allowed = await rateLimit(`signup:${ip}`, 5, 60)
+  if (!allowed) {
+    return NextResponse.json({ error: "Too many requests" }, { status: 429 })
   }
-  if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email)) {
-    return NextResponse.json({ error: "Invalid email" }, { status: 400 })
+
+  const parse = signupSchema.safeParse(await req.json())
+  if (!parse.success) {
+    return NextResponse.json({ error: "Invalid input" }, { status: 400 })
   }
-  if (password.length < 6) {
-    return NextResponse.json(
-      { error: "Password must be at least 6 characters" },
-      { status: 400 }
-    )
-  }
+  const { email, username, password } = parse.data
   const existing = await prisma.user.findFirst({
     where: { OR: [{ email }, { username }] },
   })
