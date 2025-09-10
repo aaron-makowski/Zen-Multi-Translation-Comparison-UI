@@ -7,6 +7,13 @@ export interface Badge {
   requirement: number
 }
 
+// Karma badges include a visual class for display purposes
+export interface KarmaBadge {
+  label: string
+  className: string
+  requirement: number
+}
+
 export const commentBadges: Badge[] = [
   { name: "First Comment", requirement: 1 },
   { name: "Conversationalist", requirement: 10 },
@@ -19,11 +26,11 @@ export const highlightBadges: Badge[] = [
   { name: "Illuminator", requirement: 50 },
 ]
 
-export const karmaBadges: Badge[] = [
-  { name: "Novice", requirement: 0 },
-  { name: "Commentator", requirement: 10 },
-  { name: "Scholar", requirement: 50 },
-  { name: "Sage", requirement: 150 },
+export const karmaBadges: KarmaBadge[] = [
+  { label: "Novice", className: "text-gray-500", requirement: 0 },
+  { label: "Contributor", className: "text-green-600", requirement: 100 },
+  { label: "Adept", className: "text-blue-600", requirement: 500 },
+  { label: "Sage", className: "text-purple-600", requirement: 1000 },
 ]
 
 const KARMA_VALUES = {
@@ -37,7 +44,7 @@ function daysBetween(a: Date, b: Date): number {
   return Math.floor((a.getTime() - b.getTime()) / 86_400_000)
 }
 
-export function getKarmaBadge(karma: number): Badge {
+export function getKarmaBadge(karma: number): KarmaBadge {
   let current = karmaBadges[0]
   for (const badge of karmaBadges) {
     if (karma >= badge.requirement) {
@@ -47,7 +54,9 @@ export function getKarmaBadge(karma: number): Badge {
   return current
 }
 
-export function getNextKarmaBadge(karma: number): Badge | undefined {
+export function getNextKarmaBadge(
+  karma: number,
+): KarmaBadge | undefined {
   return karmaBadges.find((b) => b.requirement > karma)
 }
 

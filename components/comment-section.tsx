@@ -1,7 +1,7 @@
 "use client"
 import { useEffect, useState, FormEvent } from "react"
 import { Button } from "@/components/ui/button"
-import { formatKarmaBadge } from "@/lib/karma"
+import { getKarmaBadge } from "@/lib/gamification"
 
 interface Comment {
   id: string
@@ -67,7 +67,7 @@ export function CommentSection({ verseId }: { verseId: string }) {
               <div className="text-sm flex-1">
                 <span className="font-medium">{c.user.name}</span>
                 <span className="ml-1 text-xs text-muted-foreground">
-                  {formatKarmaBadge(c.user.karma)}
+                  {getKarmaBadge(c.user.karma).label}
                 </span>
                 : {c.content}
               </div>
