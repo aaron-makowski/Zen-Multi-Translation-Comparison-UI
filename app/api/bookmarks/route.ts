@@ -1,48 +1,38 @@
 import { NextResponse } from "next/server"
-import { promises as fs } from "fs"
-import path from "path"
+import { db } from "@/lib/db"
+import { favorites } from "@/lib/schema"
+import { eq, and } from "drizzle-orm"
 
-const BOOKMARKS_FILE = path.join(process.cwd(), "data", "bookmarks.json")
-
-async function readData() {
-  try {
-    const data = await fs.readFile(BOOKMARKS_FILE, "utf8")
-    return JSON.parse(data || "[]") as string[]
-  } catch {
-    return [] as string[]
+export async function GET(req: Request) {
+  const { searchParams } = new URL(req.url)
+  const userId = searchParams.get("userId")
+  if (!userId) {
+    return NextResponse.json({ error: "Missing userId" }, { status: 400 })
   }
-}
-
-async function writeData(data: string[]) {
-  await fs.mkdir(path.dirname(BOOKMARKS_FILE), { recursive: true })
-  await fs.writeFile(BOOKMARKS_FILE, JSON.stringify(data, null, 2))
-}
-
-export async function GET() {
-  const data = await readData()
-  return NextResponse.json(data)
+  const rows = await db.select().from(favorites).where(eq(favorites.userId, userId))
+  return NextResponse.json(rows)
 }
 
 export async function POST(req: Request) {
-  const { verseId } = await req.json()
-  if (!verseId) {
-    return NextResponse.json({ error: "Missing verseId" }, { status: 400 })
+  const { userId, bookId } = await req.json()
+  if (!userId || !bookId) {
+    return NextResponse.json({ error: "Missing userId or bookId" }, { status: 400 })
   }
-  const data = await readData()
-  if (!data.includes(verseId)) {
-    data.push(verseId)
-    await writeData(data)
-  }
-  return NextResponse.json({ verseId })
+  const [row] = await db
+    .insert(favorites)
+    .values({ id: crypto.randomUUID(), userId, bookId })
+    .onConflictDoNothing({ target: [favorites.userId, favorites.bookId] })
+    .returning()
+  return NextResponse.json(row ?? { userId, bookId })
 }
 
 export async function DELETE(req: Request) {
-  const { verseId } = await req.json()
-  if (!verseId) {
-    return NextResponse.json({ error: "Missing verseId" }, { status: 400 })
+  const { userId, bookId } = await req.json()
+  if (!userId || !bookId) {
+    return NextResponse.json({ error: "Missing userId or bookId" }, { status: 400 })
   }
-  let data = await readData()
-  data = data.filter((id) => id !== verseId)
-  await writeData(data)
-  return NextResponse.json({ verseId })
+  await db
+    .delete(favorites)
+    .where(and(eq(favorites.userId, userId), eq(favorites.bookId, bookId)))
+  return NextResponse.json({ success: true })
 }
