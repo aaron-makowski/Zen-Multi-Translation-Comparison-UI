@@ -1,17 +1,4 @@
 import { NextResponse } from "next/server"
-<<<<<<< HEAD
-import { translations } from "@/lib/translations"
-
-const books = Object.entries(translations).map(([id, book]) => ({
-  id,
-  title: book.title,
-  description: book.description,
-  pdfPath: null as string | null,
-}))
-
-export async function GET() {
-  return NextResponse.json(books)
-=======
 import { db } from "@/lib/db"
 import { books } from "@/lib/schema"
 
@@ -36,5 +23,5 @@ export async function POST(req: Request) {
   }
   await db.insert(books).values(newBook)
   return NextResponse.json(newBook, { status: 201 })
->>>>>>> origin/codex/build-rest-api-for-books-and-translations
 }
+
