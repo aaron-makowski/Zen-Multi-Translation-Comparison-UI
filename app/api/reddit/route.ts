@@ -1,58 +1,38 @@
-<<<<<<< HEAD
 import { NextResponse } from "next/server"
-import { redis } from "../../../lib/redis"
+import { redis } from "@/lib/redis"
 
-export async function GET() {
-  try {
-    const res = await fetch("https://www.reddit.com/r/Zen.json")
-    if (!res.ok) {
-      return NextResponse.json(
-        { error: "Failed to fetch posts" },
-        { status: res.status }
-      )
+export async function GET(req: Request) {
+  const { searchParams } = new URL(req.url)
+  const subreddit = searchParams.get("subreddit") || "Zen"
+  const cacheKey = `reddit:${subreddit}`
+
+  if (redis) {
+    const cached = await redis.get(cacheKey)
+    if (cached) {
+      return NextResponse.json(cached)
     }
-    const json = await res.json()
-    const posts = (json.data?.children || []).map((child: any) => ({
-      id: child.data.id,
-      title: child.data.title,
-      author: child.data.author,
-      url: `https://www.reddit.com${child.data.permalink}`
-    }))
-
-    if (redis) {
-      await redis.set(cacheKey, posts, { ex: 300 })
-    }
-
-    return NextResponse.json(posts)
-  } catch {
-    return NextResponse.json(
-      { error: "Failed to fetch posts" },
-      { status: 500 }
-    )
   }
-=======
-import { NextResponse } from "next/server";
 
-export async function GET() {
-  const res = await fetch("https://www.reddit.com/r/Zen.json", {
+  const res = await fetch(`https://www.reddit.com/r/${subreddit}.json`, {
     headers: { "User-Agent": "zen-texts-app" },
-  });
+  })
 
   if (!res.ok) {
-    return NextResponse.json(
-      { error: "Failed to fetch posts" },
-      { status: res.status }
-    );
+    return NextResponse.json({ error: "Failed to fetch posts" }, { status: res.status })
   }
 
-  const data = await res.json();
-  const posts = (data.data?.children || []).map((child: any) => ({
+  const json = await res.json()
+  const posts = (json.data?.children || []).map((child: any) => ({
     id: child.data.id,
     title: child.data.title,
     author: child.data.author,
     url: `https://www.reddit.com${child.data.permalink}`,
-  }));
+    upvotes: child.data.ups,
+  }))
 
-  return NextResponse.json(posts);
->>>>>>> origin/codex/create-reddit-api-and-components
+  if (redis) {
+    await redis.set(cacheKey, posts, { ex: 300 })
+  }
+
+  return NextResponse.json(posts)
 }
