@@ -1,7 +1,7 @@
 "use client"
 import { useEffect, useState, FormEvent } from "react"
 import { Button } from "@/components/ui/button"
-import { formatKarmaBadge } from "@/lib/karma"
+import { getKarmaBadge } from "@/lib/karma"
 
 interface Comment {
   id: string
@@ -66,9 +66,14 @@ export function CommentSection({ verseId }: { verseId: string }) {
             <div className="flex items-center justify-between">
               <div className="text-sm flex-1">
                 <span className="font-medium">{c.user.name}</span>
-                <span className="ml-1 text-xs text-muted-foreground">
-                  {formatKarmaBadge(c.user.karma)}
-                </span>
+                {(() => {
+                  const badge = getKarmaBadge(c.user.karma)
+                  return (
+                    <span className={`ml-1 text-xs ${badge.color}`}>
+                      {badge.label}
+                    </span>
+                  )
+                })()}
                 : {c.content}
               </div>
               <div className="flex items-center gap-1 ml-2">
