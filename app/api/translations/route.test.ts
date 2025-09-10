@@ -7,12 +7,25 @@ const sample = [
   { id: 't3', verseId: '1', translator: 'C', text: 'three' },
 ]
 
-// mock database
-const findMany = vi.fn(({ limit, offset }) => sample.slice(offset, offset + limit))
+// mock database using chained query builder
+const runQuery = vi.fn((limit: number, offset: number) => sample.slice(offset, offset + limit))
 vi.mock('@/lib/db', () => ({
-  db: { query: { translations: { findMany } } }
+  db: {
+    select: () => ({
+      from: () => ({
+        where: () => ({
+          orderBy: () => ({
+            limit: (limit: number) => ({
+              offset: (offset: number) => Promise.resolve(runQuery(limit, offset)),
+            }),
+          }),
+        }),
+      }),
+    }),
+  },
 }))
-vi.mock('@/lib/schema', () => ({ translations: {}, verses: {} }))
+vi.mock('@/lib/schema', () => ({ translations: { verseId: {}, translator: {} }, verses: {} }))
+vi.mock('drizzle-orm', () => ({ eq: vi.fn(), asc: vi.fn() }))
 
 // mock redis with in-memory store to verify caching
 const store = new Map<string, any>()
@@ -50,7 +63,7 @@ describe('GET /api/translations', () => {
 
     expect(get).toHaveBeenCalledTimes(2)
     expect(set).toHaveBeenCalledTimes(1)
-    expect(findMany).toHaveBeenCalledTimes(1)
+    expect(runQuery).toHaveBeenCalledTimes(1)
   })
 
   it('returns 400 if verseId missing', async () => {
