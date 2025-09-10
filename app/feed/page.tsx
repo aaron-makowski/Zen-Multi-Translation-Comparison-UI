@@ -1,4 +1,4 @@
-import { formatKarmaBadge } from "@/lib/karma"
+import { getKarmaBadge } from "@/lib/karma"
 import { headers } from "next/headers"
 
 export const dynamic = "force-dynamic"
@@ -32,9 +32,12 @@ export default async function FeedPage() {
           {comments.map((c: any) => (
             <li key={c.id} className="text-sm">
               <span className="font-medium">{c.user.name}</span>
-              <span className="ml-1 text-xs text-muted-foreground">
-                {formatKarmaBadge(c.user.karma)}
-              </span>
+              {(() => {
+                const badge = getKarmaBadge(c.user.karma)
+                return (
+                  <span className={`ml-1 text-xs ${badge.color}`}>{badge.label}</span>
+                )
+              })()}
               : {c.content}
             </li>
           ))}
@@ -46,9 +49,12 @@ export default async function FeedPage() {
           {highlights.map((h: any) => (
             <li key={h.id} className="text-sm">
               <span className="font-medium">{h.user.name}</span>
-              <span className="ml-1 text-xs text-muted-foreground">
-                {formatKarmaBadge(h.user.karma)}
-              </span>
+              {(() => {
+                const badge = getKarmaBadge(h.user.karma)
+                return (
+                  <span className={`ml-1 text-xs ${badge.color}`}>{badge.label}</span>
+                )
+              })()}
               : {h.content}
             </li>
           ))}
