@@ -1,4 +1,4 @@
-import { formatKarmaBadge } from "@/lib/karma"
+import { formatBadge } from "@/lib/gamification"
 import { headers } from "next/headers"
 
 export const dynamic = "force-dynamic"
@@ -33,7 +33,7 @@ export default async function FeedPage() {
             <li key={c.id} className="text-sm">
               <span className="font-medium">{c.user.name}</span>
               <span className="ml-1 text-xs text-muted-foreground">
-                {formatKarmaBadge(c.user.karma)}
+                {formatBadge(c.user.karma)}
               </span>
               : {c.content}
             </li>
@@ -47,7 +47,7 @@ export default async function FeedPage() {
             <li key={h.id} className="text-sm">
               <span className="font-medium">{h.user.name}</span>
               <span className="ml-1 text-xs text-muted-foreground">
-                {formatKarmaBadge(h.user.karma)}
+                {formatBadge(h.user.karma)}
               </span>
               : {h.content}
             </li>

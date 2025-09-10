@@ -47,6 +47,10 @@ export function getKarmaBadge(karma: number): Badge {
   return current
 }
 
+export function formatBadge(karma: number): string {
+  return getKarmaBadge(karma).name
+}
+
 export function getNextKarmaBadge(karma: number): Badge | undefined {
   return karmaBadges.find((b) => b.requirement > karma)
 }
