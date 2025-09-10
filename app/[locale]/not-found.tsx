@@ -1,10 +1,6 @@
 import { Button } from "@/components/ui/button";
-<<<<<<< HEAD
-import Link from "next-intl/link";
-=======
 import Link from "next/link";
-import {useLocale} from "next-intl";
->>>>>>> origin/codex/set-up-next-intl-with-translations
+import { useLocale } from "next-intl";
 
 export default function NotFound() {
   const locale = useLocale();
