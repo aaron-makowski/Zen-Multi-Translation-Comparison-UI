@@ -2,6 +2,7 @@ import { NextResponse } from "next/server"
 import { promises as fs } from "fs"
 import path from "path"
 
+// File-based storage for bookmark IDs
 const BOOKMARKS_FILE = path.join(process.cwd(), "data", "bookmarks.json")
 
 async function readData() {
